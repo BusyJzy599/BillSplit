@@ -71,7 +71,7 @@ struct GroupDetailView: View {
                     Spacer()
                     Text(CurrencySettings.shared.formatted(debt.amount)).font(.subheadline).fontWeight(.semibold)
                     if debt.fromUserId == (authVM.currentUserId ?? "") {
-                        Button("Pay") { settle(debt) }.buttonStyle(.borderedProminent).controlSize(.small)
+                        Button("Pay") { settle(debt) }.buttonStyle(.borderedProminent).controlSize(.small).foregroundColor(.white)
                     }
                 }
             }
@@ -99,8 +99,8 @@ struct GroupDetailView: View {
     var addButtonsSection: some View {
         Section {
             HStack(spacing: 12) {
-                Button { showAddBill = true } label: { Label("Manual", systemImage: "square.and.pencil").frame(maxWidth: .infinity) }.buttonStyle(.borderedProminent)
-                Button { showReceiptScan = true } label: { Label("Scan", systemImage: "doc.text.viewfinder").frame(maxWidth: .infinity) }.buttonStyle(.bordered)
+                Button { showAddBill = true } label: { Label("Manual", systemImage: "square.and.pencil").frame(maxWidth: .infinity).foregroundColor(.white) }.buttonStyle(.borderedProminent).tint(.accentColor)
+                Button { showReceiptScan = true } label: { Label("Scan", systemImage: "doc.text.viewfinder").frame(maxWidth: .infinity) }.buttonStyle(.bordered).tint(.accentColor)
             }
         } header: { Text("Add Bill").font(.subheadline) }
     }
