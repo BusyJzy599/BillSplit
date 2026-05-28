@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GroupDetailView: View {
+    @Environment(\.dismiss) var dismiss
     @EnvironmentObject var authVM: AuthViewModel
     @StateObject var vm: GroupDetailViewModel
     @StateObject private var loc = LocaleManager.shared
@@ -222,6 +223,7 @@ struct GroupDetailView: View {
         Task {
             do {
                 try await GroupService.shared.deleteGroup(groupId)
+                await MainActor.run { dismiss() }
             } catch {
                 await MainActor.run { toast = .error(error.localizedDescription) }
             }
