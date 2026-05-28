@@ -11,7 +11,8 @@ class BillService {
 
     func createBill(groupId: Int, payerId: String, amount: Double,
                     description: String, participantIds: [String],
-                    currency: String = "cny", exchangeRate: Double = 1.0) async throws {
+                    currency: String = "cny", exchangeRate: Double = 1.0,
+                    category: String = "other") async throws {
         let bill = Bill(
             groupId: groupId,
             payerId: payerId,
@@ -20,19 +21,21 @@ class BillService {
             participantIds: participantIds,
             currency: currency,
             exchangeRate: exchangeRate,
+            category: category,
             createdAt: Date()
         )
         try await supabase.from("bills").insert(bill).execute()
     }
 
     func updateBill(id: Int, amount: Double, description: String, participantIds: [String],
-                    currency: String, exchangeRate: Double) async throws {
+                    currency: String, exchangeRate: Double, category: String) async throws {
         struct UpdatePayload: Encodable {
             let amount: Double
             let description: String
             let participant_ids: [String]
             let currency: String
             let exchange_rate: Double
+            let category: String
         }
         try await supabase.from("bills")
             .update(UpdatePayload(
@@ -40,7 +43,8 @@ class BillService {
                 description: description,
                 participant_ids: participantIds,
                 currency: currency,
-                exchange_rate: exchangeRate
+                exchange_rate: exchangeRate,
+                category: category
             ))
             .eq("id", value: id)
             .execute()

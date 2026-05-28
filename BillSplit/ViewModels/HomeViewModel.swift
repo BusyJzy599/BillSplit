@@ -13,14 +13,17 @@ class HomeViewModel: ObservableObject {
                     .select().contains("member_ids", value: [userId])
                     .order("created_at", ascending: false).execute().value
 
-                var bills: [Bill] = []
-                for group in groups {
-                    if let groupId = group.id {
-                        let bs: [Bill] = try await supabase.from("bills")
-                            .select().eq("group_id", value: groupId)
-                            .order("created_at", ascending: false).execute().value
-                        bills.append(contentsOf: bs)
+                let bills = try await withThrowingTaskGroup(of: [Bill].self) { tg in
+                    for group in groups {
+                        guard let groupId = group.id else { continue }
+                        tg.addTask {
+                            try await supabase.from("bills").select().eq("group_id", value: groupId)
+                                .order("created_at", ascending: false).execute().value
+                        }
                     }
+                    var all: [Bill] = []
+                    for try await batch in tg { all.append(contentsOf: batch) }
+                    return all
                 }
 
                 await MainActor.run {
@@ -77,7 +80,7 @@ class HomeViewModel: ObservableObject {
         var categories: [String: Double] = [:]
 
         for bill in allBills {
-            let cat = categorize(bill.description)
+            let cat = categorize(bill)
             categories[cat, default: 0] += bill.amount
         }
 
@@ -86,15 +89,9 @@ class HomeViewModel: ObservableObject {
             .sorted { $0.1 > $1.1 }
     }
 
-    private func categorize(_ desc: String) -> String {
-        let lower = desc.lowercased()
+    private func categorize(_ bill: Bill) -> String {
         let loc = LocaleManager.shared
-        if lower.contains("food") || lower.contains("dinner") || lower.contains("lunch") || lower.contains("餐") || lower.contains("饭") || lower.contains("吃") { return loc.food }
-        if lower.contains("taxi") || lower.contains("bus") || lower.contains("transport") || lower.contains("交通") || lower.contains("车") { return loc.transport }
-        if lower.contains("rent") || lower.contains("hotel") || lower.contains("housing") || lower.contains("住") || lower.contains("房") { return loc.housing }
-        if lower.contains("shop") || lower.contains("buy") || lower.contains("购物") || lower.contains("买") { return loc.shopping }
-        if lower.contains("game") || lower.contains("movie") || lower.contains("entertainment") || lower.contains("娱") || lower.contains("玩") { return loc.entertainment }
-        return loc.other
+        return bill.categoryEnum.displayName(loc.locale)
     }
 
     // MARK: - Color for heatmap cell

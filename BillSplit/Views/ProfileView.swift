@@ -18,8 +18,14 @@ struct ProfileView: View {
                         HStack(spacing: 12) {
                             AvatarView(avatarUrl: avatarUrl, displayName: displayName, size: 60)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(displayName.isEmpty ? loc.user : displayName)
-                                    .font(.headline)
+                                HStack(spacing: 4) {
+                                    Text(displayName.isEmpty ? loc.user : displayName)
+                                        .font(.headline)
+                                    Text({
+                                        let h = Calendar.current.component(.hour, from: Date())
+                                        switch h { case 6..<12: return "☀️"; case 12..<18: return "🌤️"; default: return "🌙" }
+                                    }()).font(.caption)
+                                }
                                 Text(authVM.currentUserId ?? "")
                                     .font(.system(.caption, design: .monospaced))
                                     .foregroundColor(.secondary)
@@ -44,7 +50,7 @@ struct ProfileView: View {
                         }
 
                         HStack {
-                            Text("Exchange Rate").font(.subheadline)
+                            Text(loc.exchangeRate).font(.subheadline)
                             Spacer()
                             Text("1 USD = \(String(format: "%.4f", Currency.rateUSDToCNY)) CNY")
                                 .font(.subheadline).fontWeight(.medium).foregroundColor(.accentColor)
@@ -52,20 +58,13 @@ struct ProfileView: View {
 
                         if let date = UserDefaults.standard.value(forKey: "cachedExchangeRateDate") as? Date {
                             HStack {
-                                Text("Updated").font(.caption).foregroundColor(.secondary)
+                                Text(loc.updated).font(.caption).foregroundColor(.secondary)
                                 Spacer()
                                 Text(date, style: .date).font(.caption).foregroundColor(.secondary)
                                 Text(date, style: .time).font(.caption).foregroundColor(.secondary)
                             }
                         }
 
-                        Button("Refresh Rate") {
-                            Task {
-                                let rate = await ExchangeRateService.shared.fetchLatest()
-                                Currency.rateUSDToCNY = rate
-                                NotificationCenter.default.post(name: NSNotification.Name("currencyChanged"), object: nil)
-                            }
-                        }.font(.subheadline)
                     }
 
                     Section(loc.languageLabel) {
@@ -93,6 +92,7 @@ struct ProfileView: View {
                 EditProfileView(displayName: displayName, avatarUrl: avatarUrl)
             }
             .onAppear { loadProfile() }
+            .onChange(of: showEditProfile) { _, v in if !v { loadProfile() } }
         }
     }
 

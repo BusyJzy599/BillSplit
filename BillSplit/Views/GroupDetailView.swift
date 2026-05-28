@@ -42,7 +42,7 @@ struct GroupDetailView: View {
             List {
                 summarySection
                 membersSection
-                if !vm.debts.isEmpty { debtsSection }
+                if !vm.bills.isEmpty { debtsSection }
                 if !settledHistory.isEmpty { settledSection }
                 addButtonsSection
                 billsSection
@@ -54,7 +54,7 @@ struct GroupDetailView: View {
     // MARK: - Sections
 
     var summarySection: some View {
-        Section { summaryView } header: { Text("Summary").font(.subheadline) }
+        Section { summaryView } header: { Text(loc.summary).font(.subheadline) }
     }
 
     var membersSection: some View {
@@ -65,7 +65,14 @@ struct GroupDetailView: View {
     var debtsSection: some View {
         Section {
             if vm.debts.isEmpty && !vm.bills.isEmpty {
-                HStack { Spacer(); Text("All settled!").font(.subheadline).foregroundColor(.green); Spacer() }
+                HStack {
+                    Spacer()
+                    VStack(spacing: 4) {
+                        Text("🎉").font(.title).scaleEffect(1.0).animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: vm.debts.isEmpty)
+                        Text(loc.allSettled).font(.subheadline).foregroundColor(.green).fontWeight(.semibold)
+                    }
+                    Spacer()
+                }
             }
             ForEach(vm.debts) { debt in
                 VStack(spacing: 6) {
@@ -89,7 +96,7 @@ struct GroupDetailView: View {
                 }
                 .padding(.vertical, 2)
             }
-        } header: { if !vm.debts.isEmpty { Text("Who Owes Who").font(.subheadline) } }
+        } header: { if !vm.debts.isEmpty { Text(loc.whoOwesWho).font(.subheadline) } }
     }
 
     var settledSection: some View {
@@ -112,7 +119,7 @@ struct GroupDetailView: View {
                                 Task {
                                     try? await SettlementService.shared.deleteSettlement(sid)
                                     await vm.reload()
-                                    _ = await MainActor.run { toast = .info("Settlement revoked") }
+                                    _ = await MainActor.run { toast = .info(loc.toastSettlementRevoked) }
                                 }
                             } label: {
                                 Image(systemName: "arrow.uturn.backward").font(.caption2).foregroundColor(.red)
@@ -121,11 +128,11 @@ struct GroupDetailView: View {
                     }
                 }
                 if history.count > 3 {
-                    Button(showAllSettled ? "Show less" : "Show all (\(history.count))") {
+                    Button(showAllSettled ? loc.showLess : loc.showAll(history.count)) {
                         withAnimation { showAllSettled.toggle() }
                     }.font(.caption).foregroundColor(.accentColor)
                 }
-            } header: { Text("Settled").font(.subheadline) }
+            } header: { Text(loc.settled).font(.subheadline) }
         )
     }
 
@@ -134,10 +141,10 @@ struct GroupDetailView: View {
     var addButtonsSection: some View {
         Section {
             HStack(spacing: 12) {
-                Button { showAddBill = true } label: { Label("Manual", systemImage: "square.and.pencil").frame(maxWidth: .infinity).foregroundColor(.white) }.buttonStyle(.borderedProminent).tint(.accentColor)
-                Button { showReceiptScan = true } label: { Label("Scan", systemImage: "doc.text.viewfinder").frame(maxWidth: .infinity) }.buttonStyle(.bordered).tint(.accentColor)
+                Button { showAddBill = true } label: { Label(loc.manual, systemImage: "square.and.pencil").frame(maxWidth: .infinity).foregroundColor(.white) }.buttonStyle(.borderedProminent).tint(.accentColor)
+                Button { showReceiptScan = true } label: { Label(loc.scan, systemImage: "doc.text.viewfinder").frame(maxWidth: .infinity) }.buttonStyle(.bordered).tint(.accentColor)
             }
-        } header: { Text("Add Bill").font(.subheadline) }
+        } header: { Text(loc.addBill).font(.subheadline) }
     }
 
     var billsSection: some View {
@@ -156,7 +163,7 @@ struct GroupDetailView: View {
             VStack(spacing: 4) {
                 Image(systemName: "dollarsign.circle.fill").font(.title3).foregroundStyle(.blue)
                 Text(CurrencySettings.shared.formatted(vm.totalSpent)).font(.headline).fontWeight(.bold)
-                Text("Total Spent").font(.caption2).foregroundColor(.secondary)
+                Text(loc.totalSpent).font(.caption2).foregroundColor(.secondary)
             }.frame(maxWidth: .infinity).padding(.vertical, 10)
             Divider()
             VStack(spacing: 4) {
@@ -164,7 +171,7 @@ struct GroupDetailView: View {
                 Image(systemName: bal > 0.01 ? "arrow.down.circle.fill" : bal < -0.01 ? "arrow.up.circle.fill" : "checkmark.circle.fill")
                     .font(.title3).foregroundStyle(bal > 0.01 ? .green : bal < -0.01 ? .orange : .secondary)
                 Text(CurrencySettings.shared.formatted(abs(bal))).font(.headline).fontWeight(.bold)
-                Text(bal > 0.01 ? "You receive" : bal < -0.01 ? "You owe" : "Settled")
+                Text(bal > 0.01 ? loc.youReceive : bal < -0.01 ? loc.youOwe : loc.settledStatus)
                     .font(.caption2).foregroundColor(.secondary)
             }.frame(maxWidth: .infinity).padding(.vertical, 10)
         }
@@ -209,10 +216,10 @@ struct GroupDetailView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(bill.description).font(.subheadline).fontWeight(.medium)
                     HStack(spacing: 4) {
-                        Text(isMyBill ? "You paid" : "\(vm.userNames[bill.payerId] ?? "...") paid")
+                        Text(isMyBill ? loc.youPaid : "\(vm.userNames[bill.payerId] ?? "...") \(loc.pay)")
                             .font(.caption).foregroundColor(isMyBill ? .blue : .secondary)
                         if isParticipant && !isMyBill {
-                            Text("· Your share: \(CurrencySettings.shared.formatted(myShare))")
+                            Text(loc.yourShareAmount(CurrencySettings.shared.formatted(myShare)))
                                 .font(.caption2).foregroundColor(.orange)
                         }
                     }
@@ -236,8 +243,8 @@ struct GroupDetailView: View {
     @ToolbarContentBuilder var toolbarContent: some ToolbarContent {
         ToolbarItem {
             Menu {
-                Button { UIPasteboard.general.string = vm.group.inviteCode; toast = .success("Copied!") }
-                    label: { Label("Copy Code", systemImage: "doc.on.doc") }
+                Button { UIPasteboard.general.string = vm.group.inviteCode; toast = .success(loc.toastCopied) }
+                    label: { Label(loc.copyCode, systemImage: "doc.on.doc") }
                 Divider()
                 if vm.group.creatorId == authVM.currentUserId {
                     Button(role: .destructive) { showDeleteGroupAlert = true } label: { Label(loc.deleteGroup, systemImage: "trash") }
@@ -263,7 +270,7 @@ struct GroupDetailView: View {
         Task {
             do {
                 try await SettlementService.shared.createSettlement(groupId: groupId, fromUserId: debt.fromUserId, toUserId: debt.toUserId, amount: debt.amount)
-                _ = await MainActor.run { toast = .success("Paid!") }
+                _ = await MainActor.run { toast = .success(loc.toastPaid) }
                 await vm.reload()
             } catch {
                 _ = await MainActor.run { toast = .error(error.localizedDescription) }
@@ -274,7 +281,7 @@ struct GroupDetailView: View {
     func confirmDeleteBill() {
         guard let bill = deletingBill, let billId = bill.id else { return }
         _ = Task {
-            do { try await BillService.shared.deleteBill(billId); await MainActor.run { toast = .success("Deleted") }; await vm.reload() }
+            do { try await BillService.shared.deleteBill(billId); await MainActor.run { toast = .success(loc.toastDeleted) }; await vm.reload() }
             catch { await MainActor.run { toast = .error(error.localizedDescription) } }
         }
     }

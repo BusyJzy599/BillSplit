@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS bills (
   participant_ids UUID[] NOT NULL DEFAULT '{}',
   currency TEXT NOT NULL DEFAULT 'cny',
   exchange_rate DOUBLE PRECISION NOT NULL DEFAULT 1.0,
+  category TEXT NOT NULL DEFAULT 'other',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

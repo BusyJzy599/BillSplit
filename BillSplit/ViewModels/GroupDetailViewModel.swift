@@ -119,21 +119,23 @@ class GroupDetailViewModel: ObservableObject {
 
     // MARK: - Bill icons
 
-    func billIcon(_ bill: Bill) -> String {
-        let d = bill.description.lowercased()
-        if d.contains("dinner") || d.contains("lunch") || d.contains("food") || d.contains("餐") || d.contains("饭") || d.contains("吃") { return "🍽️" }
-        if d.contains("taxi") || d.contains("bus") || d.contains("uber") || d.contains("交通") || d.contains("车") { return "🚗" }
-        if d.contains("drink") || d.contains("beer") || d.contains("coffee") || d.contains("酒") || d.contains("饮料") { return "🍺" }
-        if d.contains("hotel") || d.contains("rent") || d.contains("住") || d.contains("房") { return "🏠" }
-        if d.contains("shop") || d.contains("buy") || d.contains("购物") || d.contains("买") { return "🛍️" }
-        if d.contains("movie") || d.contains("game") || d.contains("娱") || d.contains("玩") { return "🎮" }
-        if d.contains("flight") || d.contains("train") || d.contains("机票") || d.contains("火车") { return "✈️" }
-        return "💰"
-    }
+    func billIcon(_ bill: Bill) -> String { bill.categoryEnum.icon }
 
     func billColor(_ bill: Bill) -> Color {
-        let icons: [String: Color] = ["🍽️": .orange, "🚗": .blue, "🍺": .yellow, "🏠": .brown, "🛍️": .pink, "🎮": .purple, "✈️": .cyan, "💰": .green]
-        return icons[billIcon(bill)] ?? .gray
+        switch bill.categoryEnum {
+        case .dinner: return .orange
+        case .coffee: return .brown
+        case .transport: return .blue
+        case .housing: return .indigo
+        case .shopping: return .pink
+        case .entertainment: return .purple
+        case .travel: return .cyan
+        case .medical: return .red
+        case .education: return .yellow
+        case .gift: return .mint
+        case .utilities: return .teal
+        case .other: return .green
+        }
     }
 
     func subscribeRealtime() {

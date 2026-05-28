@@ -16,8 +16,10 @@ struct AddBillView: View {
     @State private var selectedParticipantIds: Set<String>
     @State private var currency: Currency = CurrencySettings.shared.current
     @State private var exchangeRate: Double = Currency.rateUSDToCNY
+    @State private var selectedCategory: BillCategory = .other
     @FocusState private var isAmountFocused: Bool
     @State private var errorMessage: String?
+    @StateObject private var loc = LocaleManager.shared
     @State private var isSubmitting = false
 
     init(groupId: Int, memberIds: [String], userNames: [String: String], currentUserId: String, editBill: Bill? = nil) {
@@ -31,63 +33,87 @@ struct AddBillView: View {
         if let bill = editBill {
             _selectedPayerId = State(initialValue: bill.payerId)
             _selectedParticipantIds = State(initialValue: Set(bill.participantIds))
-            _currency = State(initialValue: Currency(rawValue: bill.currency) ?? .cny)
-            _exchangeRate = State(initialValue: bill.exchangeRate)
+            let cur = Currency(rawValue: bill.currency) ?? .cny
+            _currency = State(initialValue: cur)
+            // For CNY: exchangeRate is 1.0 (amount already in CNY). For USD: stored rate.
+            let rate = cur == .cny ? 1.0 : (bill.exchangeRate > 0 ? bill.exchangeRate : Currency.rateUSDToCNY)
+            _exchangeRate = State(initialValue: rate)
             _description = State(initialValue: bill.description)
-            // Reverse-convert from CNY to input currency amount
-            let original = bill.exchangeRate > 0 ? bill.amount / bill.exchangeRate : bill.amount
+            _selectedCategory = State(initialValue: BillCategory(rawValue: bill.category) ?? .other)
+            let original = rate > 0 ? bill.amount / rate : bill.amount
             _amountText = State(initialValue: String(format: "%.2f", original))
         } else {
             _selectedPayerId = State(initialValue: currentUserId)
             _selectedParticipantIds = State(initialValue: Set(memberIds))
+            let cur = CurrencySettings.shared.current
+            _currency = State(initialValue: cur)
+            _exchangeRate = State(initialValue: cur == .cny ? 1.0 : Currency.rateUSDToCNY)
         }
     }
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("金额") {
+                Section(loc.amount) {
                     TextField("0.00", text: $amountText)
                         .keyboardType(.decimalPad)
                         .font(.title2)
                         .focused($isAmountFocused)
                 }
 
-                Section("币种") {
-                    Picker("币种", selection: $currency) {
+                Section(loc.sectionCurrency) {
+                    Picker(loc.sectionCurrency, selection: $currency) {
                         ForEach(Currency.allCases, id: \.rawValue) { c in
                             Text("\(c.symbol) \(c.name)").tag(c)
                         }
                     }
                     .pickerStyle(.segmented)
-                    .onChange(of: currency) { _, _ in
-                        exchangeRate = Currency.rateUSDToCNY
+                    .onChange(of: currency) { _, new in
+                        exchangeRate = new == .cny ? 1.0 : Currency.rateUSDToCNY
                     }
 
                     HStack {
-                        Text("汇率 (→ CNY)")
+                        Text(currency == .cny ? loc.storedAsCNY : "1 \(currency.symbol) = \(String(format: "%.4f", exchangeRate)) ¥")
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Spacer()
-                        Text(String(format: "1 \(currency.symbol) = %.4f ¥", exchangeRate))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        if currency != .cny {
+                            Text("→ \(String(format: "¥%.2f", (Double(amountText) ?? 0) * exchangeRate))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
 
-                Section("描述") {
-                    TextField("例如: 晚餐", text: $description)
+                Section(loc.description) {
+                    TextField(loc.descriptionPlaceholder, text: $description)
                 }
 
-                Section("付款人") {
-                    Picker("付款人", selection: $selectedPayerId) {
+                Section(loc.locale == .zh ? "分类" : "Category") {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 4), spacing: 10) {
+                        ForEach(BillCategory.allCases, id: \.self) { cat in
+                            VStack(spacing: 4) {
+                                Text(cat.icon).font(.title2)
+                                    .frame(width: 44, height: 44)
+                                    .background(selectedCategory == cat ? Color.accentColor.opacity(0.15) : Color(.systemGray6))
+                                    .cornerRadius(10)
+                                Text(cat.displayName(loc.locale)).font(.system(size: 10)).foregroundColor(.secondary).lineLimit(1)
+                            }
+                            .onTapGesture { selectedCategory = cat }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+
+                Section(loc.sectionPayer) {
+                    Picker(loc.sectionPayer, selection: $selectedPayerId) {
                         ForEach(memberIds, id: \.self) { id in
                             Text(userNames[id] ?? "...").tag(id)
                         }
                     }
                 }
 
-                Section("参与人") {
+                Section(loc.sectionParticipants) {
                     ForEach(memberIds, id: \.self) { id in
                         HStack {
                             Text(userNames[id] ?? "...")
@@ -113,16 +139,16 @@ struct AddBillView: View {
                 if let error = errorMessage { Section { Text(error).foregroundColor(.red).font(.caption) } }
 
                 Section {
-                    Button(editBill != nil ? "Update Bill" : "Submit Bill") { submit() }
+                    Button(editBill != nil ? loc.updateBill : loc.submitBill) { submit() }
                         .disabled(isSubmitting || amountValue == nil || description.trimmingCharacters(in: .whitespaces).isEmpty || selectedParticipantIds.isEmpty)
                 }
             }
-            .navigationTitle(editBill != nil ? "编辑账单" : "新建账单")
+            .navigationTitle(editBill != nil ? loc.editBill : loc.newBill)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(loc.cancel) { dismiss() } }
                 ToolbarItem(placement: .keyboard) {
-                    Button("Done") { isAmountFocused = false }
+                    Button(loc.done) { isAmountFocused = false }
                 }
             }
         }
@@ -142,12 +168,14 @@ struct AddBillView: View {
                 if let bill = editBill, let billId = bill.id {
                     try await BillService.shared.updateBill(
                         id: billId, amount: amountInCNY, description: description,
-                        participantIds: Array(selectedParticipantIds), currency: currency.rawValue, exchangeRate: exchangeRate)
+                        participantIds: Array(selectedParticipantIds), currency: currency.rawValue, exchangeRate: exchangeRate,
+                        category: selectedCategory.rawValue)
                 } else {
                     try await BillService.shared.createBill(
                         groupId: groupId, payerId: selectedPayerId, amount: amountInCNY,
                         description: description, participantIds: Array(selectedParticipantIds),
-                        currency: currency.rawValue, exchangeRate: exchangeRate)
+                        currency: currency.rawValue, exchangeRate: exchangeRate,
+                        category: selectedCategory.rawValue)
                 }
                 await MainActor.run {
                     NotificationCenter.default.post(name: NSNotification.Name("refreshGroups"), object: nil)

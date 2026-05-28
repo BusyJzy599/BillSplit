@@ -14,14 +14,17 @@ struct HomeView: View {
                     ProgressView(loc.loading)
                 } else if vm.allBills.isEmpty && vm.allGroups.isEmpty {
                     VStack(spacing: 12) {
-                        Image(systemName: "chart.bar.xaxis").font(.system(size: 50)).foregroundColor(.secondary)
-                        Text("No data yet").font(.title3).fontWeight(.medium)
-                        Text("Add bills to see your spending analysis").font(.subheadline).foregroundColor(.secondary)
+                        Text(["💰", "🧾", "📊", "🤝", "✨"].randomElement() ?? "💰").font(.system(size: 50))
+                        Text(loc.noDataYet).font(.title3).fontWeight(.medium)
+                        Text(loc.noDataHint).font(.subheadline).foregroundColor(.secondary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
                         VStack(spacing: 16) {
+                            // Greeting
+                            greetingSection
+
                             // Summary cards
                             summarySection
 
@@ -50,19 +53,66 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Greeting
+
+    private var greetingEmoji: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 6..<9: return "🌅"
+        case 9..<12: return "☀️"
+        case 12..<14: return "🍜"
+        case 14..<17: return "🌤️"
+        case 17..<20: return "🌆"
+        case 20..<23: return "🌙"
+        default: return "🌃"
+        }
+    }
+
+    private var spendingMood: String {
+        let loc = LocaleManager.shared
+        let total = vm.totalPaid
+        if total == 0 { return "" }
+        let recentBills = vm.allBills.prefix(7)
+        let avg = recentBills.map(\.amount).reduce(0, +) / Double(max(recentBills.count, 1))
+        if avg < 50 { return loc.locale == .zh ? "精打细算，生活高手！💰" : "Thrifty living, nice work! 💰" }
+        if avg < 200 { return loc.locale == .zh ? "适度消费，刚刚好～ 👌" : "Balanced spending, just right～ 👌" }
+        return loc.locale == .zh ? "最近花销不小哦，注意记账！📝" : "Spending big lately, keep tracking! 📝"
+    }
+
+    private var greetingSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 6) {
+                Text(greetingEmoji).font(.title)
+                Text(vm.totalBills > 0
+                     ? (loc.locale == .zh ? "今天也辛苦了！" : "Another day, another adventure!")
+                     : (loc.locale == .zh ? "欢迎来到 BillSplit！" : "Welcome to BillSplit!"))
+                    .font(.title3).fontWeight(.bold)
+            }
+            if !spendingMood.isEmpty {
+                Text(spendingMood).font(.subheadline).foregroundColor(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 8)
+    }
+
     // MARK: - Summary
 
     private var summarySection: some View {
         HStack(spacing: 12) {
-            statCard(value: CurrencySettings.shared.formatted(vm.totalPaid), label: loc.totalSpent, icon: "dollarsign.circle.fill", color: .orange)
-            statCard(value: "\(vm.totalBills)", label: loc.billCount, icon: "doc.text.fill", color: .blue)
-            statCard(value: "\(vm.totalGroups)", label: loc.groupCount, icon: "person.3.fill", color: .green)
+            statCard(value: CurrencySettings.shared.formatted(vm.totalPaid), label: loc.totalSpent, icon: "dollarsign.circle.fill", color: .orange, emoji: "💸")
+            statCard(value: "\(vm.totalBills)", label: loc.billCount, icon: "doc.text.fill", color: .blue, emoji: "📋")
+            statCard(value: "\(vm.totalGroups)", label: loc.groupCount, icon: "person.3.fill", color: .green, emoji: "👥")
         }
     }
 
-    private func statCard(value: String, label: String, icon: String, color: Color) -> some View {
+    private func statCard(value: String, label: String, icon: String, color: Color, emoji: String = "") -> some View {
         VStack(spacing: 6) {
-            Image(systemName: icon).font(.title3).foregroundStyle(color)
+            if !emoji.isEmpty {
+                Text(emoji).font(.title3)
+            } else {
+                Image(systemName: icon).font(.title3).foregroundStyle(color)
+            }
             Text(value).font(.headline).fontWeight(.bold).lineLimit(1).minimumScaleFactor(0.7)
             Text(label).font(.caption2).foregroundColor(.secondary)
         }

@@ -98,6 +98,10 @@ class LocaleManager: ObservableObject {
     var updateBill: String { txt("Update Bill", "更新账单") }
     var manualInput: String { txt("Manual Input", "手动输入") }
     var scanReceipt: String { txt("Scan Receipt", "拍照识别") }
+    var sectionPayer: String { txt("Payer", "付款人") }
+    var sectionParticipants: String { txt("Participants", "参与人") }
+    var sectionCurrency: String { txt("Currency", "币种") }
+    var storedAsCNY: String { txt("Stored as CNY", "以人民币存储") }
 
     // MARK: - Join
     var navJoin: String { txt("Join Group", "加入账单组") }
@@ -110,10 +114,37 @@ class LocaleManager: ObservableObject {
     // MARK: - Profile
     var navProfile: String { txt("Profile", "个人中心") }
     var editProfile: String { txt("Edit Profile", "编辑资料") }
+    var editProfileTitle: String { txt("Edit Profile", "编辑资料") }
     var displayNameLabel: String { txt("Display Name", "显示名称") }
     var avatarLabel: String { txt("Avatar", "头像") }
     var choosePhoto: String { txt("Choose Photo", "选择照片") }
+    var summary: String { txt("Summary", "概览") }
     var user: String { txt("User", "用户") }
+    var nameLabel: String { txt("Name", "名字") }
+    var saveProfile: String { txt("Save", "保存") }
+    var addBill: String { txt("Add Bill", "添加账单") }
+    var settled: String { txt("Settled", "已结算") }
+    var whoOwesWho: String { txt("Who Owes Who", "欠款明细") }
+    func showAll(_ count: Int) -> String {
+        locale == .zh ? "显示全部 (\(count))" : "Show all (\(count))"
+    }
+    var showLess: String { txt("Show less", "收起") }
+    var allSettled: String { txt("All settled!", "全部结清!") }
+    var youReceive: String { txt("You receive", "应收") }
+    var youOwe: String { txt("You owe", "应付") }
+    var settledStatus: String { txt("Settled", "已结清") }
+    var toastPaid: String { txt("Paid! 🎉", "已还款! 🎉") }
+    var toastCopied: String { txt("Copied! 📋", "已复制! 📋") }
+    var toastSettlementRevoked: String { txt("Settlement revoked ↩️", "已撤销结算 ↩️") }
+    var toastDeleted: String { txt("Deleted 🗑️", "已删除 🗑️") }
+    var manual: String { txt("Manual", "手动") }
+    var scan: String { txt("Scan", "扫描") }
+    var copyCode: String { txt("Copy Code", "复制邀请码") }
+    var youPaid: String { txt("You paid", "你支付") }
+    var yourShare: String { txt("Your share:", "分摊:") }
+    func yourShareAmount(_ amount: String) -> String {
+        locale == .zh ? "· 分摊: \(amount)" : "· Your share: \(amount)"
+    }
 
     // MARK: - Receipt
     var receiptScan: String { txt("Receipt Scan", "收据识别") }
@@ -131,6 +162,54 @@ class LocaleManager: ObservableObject {
     var generateBills: String { txt("Generate Bills", "确认生成账单") }
     var codeGenFailed: String { txt("Code generation failed", "邀请码生成失败，请重试") }
     var imageCompressFailed: String { txt("Image compress failed", "图片压缩失败") }
+    var takeReceiptPhoto: String { txt("Take a photo of your receipt", "拍摄收据照片") }
+    var camera: String { txt("Camera", "拍照") }
+    var album: String { txt("Album", "相册") }
+    var aiAnalyzing: String { txt("AI analyzing receipt...", "AI 识别中...") }
+    var itemsLabel: String { txt("Items", "项目") }
+    var receiptInfo: String { txt("Receipt in", "收据币种") }
+    func receiptInfoFull(_ currency: String, _ count: Int) -> String {
+        locale == .zh ? "收据币种 \(currency) · \(count)人" : "Receipt in \(currency) · \(count) people"
+    }
+    func selectedLabel(_ selected: Int, _ total: Int) -> String {
+        locale == .zh ? "已选 \(selected)/\(total)" : "\(selected)/\(total) selected"
+    }
+    var perPerson: String { txt("/ person", "/人") }
+    var paidBy: String { txt("Paid by", "付款人") }
+    var creatingBills: String { txt("Creating bills...", "生成账单中...") }
+    func generateBillsBtn(_ count: Int, _ total: String) -> String {
+        locale == .zh ? "生成 \(count) 笔账单 (\(total))" : "Generate \(count) Bills (\(total))"
+    }
+    var rescan: String { txt("Rescan", "重新扫描") }
+    var editItem: String { txt("Edit Item", "编辑项目") }
+    var itemName: String { txt("Name", "名称") }
+    var itemAmount: String { txt("Amount", "金额") }
+    var confirmItems: String { txt("Confirm Items", "确认项目") }
+    var scanReceiptTitle: String { txt("Scan Receipt", "扫描收据") }
+
+    // MARK: - Home
+    var noDataYet: String { txt("No data yet", "暂无数据") }
+    var noDataHint: String { txt("Add bills to see your spending analysis", "添加账单以查看消费分析") }
+
+    // MARK: - Login
+    var appTagline: String { txt("Split bills with friends", "和朋友轻松分账") }
+    var email: String { txt("Email", "邮箱") }
+    var emailPlaceholder: String { txt("you@example.com", "you@example.com") }
+    var password: String { txt("Password", "密码") }
+    var passwordPlaceholder: String { txt("Min 6 characters", "至少6个字符") }
+    var nameField: String { txt("Name", "名字") }
+    var namePlaceholder: String { txt("Your name", "你的名字") }
+    var signIn: String { txt("Sign In", "登录") }
+    var signUp: String { txt("Sign Up", "注册") }
+    var toggleSignIn: String { txt("Already have an account? Sign In", "已有账号？登录") }
+    var toggleSignUp: String { txt("Don't have an account? Sign Up", "没有账号？注册") }
+    var testAccount1: String { txt("Test 1", "测试 1") }
+    var testAccount2: String { txt("Test 2", "测试 2") }
+    var emailConfirmRequired: String { txt("Email confirmation required. Disable it in Supabase Auth settings.", "需要邮箱验证，请在Supabase Auth设置中关闭。") }
+
+    // MARK: - Profile / Settings
+    var exchangeRate: String { txt("Exchange Rate", "汇率") }
+    var updated: String { txt("Updated", "更新于") }
 
     // MARK: - Errors
     func localizedError(_ string: String) -> String { string }

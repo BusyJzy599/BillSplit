@@ -48,6 +48,7 @@ struct GroupListView: View {
                     }
                     .listStyle(.insetGrouped)
                     .scrollContentBackground(.hidden)
+                    .refreshable { await vm.refreshGroups(userId: authVM.currentUserId ?? "") }
                 }
             }
             .navigationTitle(loc.navGroups)

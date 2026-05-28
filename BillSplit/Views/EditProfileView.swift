@@ -4,6 +4,7 @@ import PhotosUI
 struct EditProfileView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var authVM: AuthViewModel
+    @StateObject private var loc = LocaleManager.shared
 
     @State private var displayName: String
     @State private var selectedPhotoItem: PhotosPickerItem?
@@ -19,7 +20,7 @@ struct EditProfileView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("头像") {
+                Section(loc.avatarLabel) {
                     HStack {
                         Spacer()
                         if let selectedImage {
@@ -40,29 +41,29 @@ struct EditProfileView: View {
                     .listRowBackground(Color.clear)
 
                     PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
-                        Label("选择照片", systemImage: "photo.on.rectangle")
+                        Label(loc.choosePhoto, systemImage: "photo.on.rectangle")
                     }
                     .onChange(of: selectedPhotoItem) { _, newItem in
                         loadImage(from: newItem)
                     }
                 }
 
-                Section("名字") {
-                    TextField("显示名称", text: $displayName)
+                Section(loc.nameLabel) {
+                    TextField(loc.displayNameLabel, text: $displayName)
                 }
 
                 Section {
-                    Button("保存") {
+                    Button(loc.saveProfile) {
                         save()
                     }
                     .disabled(displayName.trimmingCharacters(in: .whitespaces).isEmpty || isUploading)
                 }
             }
-            .navigationTitle("编辑资料")
+            .navigationTitle(loc.editProfileTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
+                    Button(loc.cancel) { dismiss() }
                 }
             }
         }

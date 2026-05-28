@@ -19,6 +19,17 @@ class GroupListViewModel: ObservableObject {
         }
     }
 
+    func refreshGroups(userId: String) async {
+        do {
+            let groups = try await GroupService.shared.getGroups(for: userId)
+            await MainActor.run { self.groups = groups }
+            let allMemberIds = Set(groups.flatMap { $0.memberIds })
+            await fetchUserNames(ids: allMemberIds)
+        } catch {
+            print("Refresh groups failed: \(error)")
+        }
+    }
+
     private func fetchUserNames(ids: Set<String>) async {
         for id in ids where userNames[id] == nil {
             do {

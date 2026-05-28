@@ -14,7 +14,9 @@ struct ReceiptScanView: View {
     @State private var errorMessage: String?
     @State private var items: [ReceiptItem] = []
     @State private var payerId: String
+    @StateObject private var loc = LocaleManager.shared
     @State private var isSubmitting = false
+    @State private var ocrCategory: BillCategory = .other
     @State private var editingItem: ReceiptItem?
     @State private var editItemDesc = ""
     @State private var editItemAmt = ""
@@ -37,9 +39,9 @@ struct ReceiptScanView: View {
                     confirmingView
                 }
             }
-            .navigationTitle(state == .confirming ? "Confirm Items" : "Scan Receipt")
+            .navigationTitle(state == .confirming ? loc.confirmItems : loc.scanReceiptTitle)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button(loc.cancel) { dismiss() } } }
         }
         .onChange(of: state) { _, v in
             if v == .scanning { startScan() }
@@ -52,7 +54,7 @@ struct ReceiptScanView: View {
                     Color.black.opacity(0.7).ignoresSafeArea()
                     VStack(spacing: 16) {
                         ProgressView().tint(.white).scaleEffect(1.5)
-                        Text("AI analyzing receipt...").foregroundColor(.white).font(.headline)
+                        Text(loc.aiAnalyzing).foregroundColor(.white).font(.headline)
                         if let img = capturedImage {
                             Image(uiImage: img).resizable().scaledToFit().frame(maxHeight: 200).cornerRadius(12).padding(.horizontal, 40)
                         }
@@ -72,10 +74,10 @@ struct ReceiptScanView: View {
         VStack(spacing: 20) {
             Spacer()
             Image(systemName: "doc.text.viewfinder").resizable().frame(width: 80, height: 80).foregroundStyle(.tint)
-            Text("Take a photo of your receipt").font(.headline)
+            Text(loc.takeReceiptPhoto).font(.headline)
             HStack(spacing: 16) {
-                Button { showCamera = true } label: { Label("Camera", systemImage: "camera.fill").frame(maxWidth: .infinity) }.buttonStyle(.borderedProminent)
-                Button { showPhotoPicker = true } label: { Label("Album", systemImage: "photo.on.rectangle").frame(maxWidth: .infinity) }.buttonStyle(.bordered)
+                Button { showCamera = true } label: { Label(loc.camera, systemImage: "camera.fill").frame(maxWidth: .infinity) }.buttonStyle(.borderedProminent)
+                Button { showPhotoPicker = true } label: { Label(loc.album, systemImage: "photo.on.rectangle").frame(maxWidth: .infinity) }.buttonStyle(.bordered)
             }.padding(.horizontal, 40)
             Spacer()
         }
@@ -89,7 +91,7 @@ struct ReceiptScanView: View {
             if let image = capturedImage {
                 Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 250).cornerRadius(12).padding(.horizontal)
             }
-            ProgressView("AI analyzing receipt...").padding()
+            ProgressView(loc.aiAnalyzing).padding()
             if let err = errorMessage { Text(err).foregroundColor(.red).font(.caption) }
             Spacer()
         }
@@ -105,19 +107,19 @@ struct ReceiptScanView: View {
             Section {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Items").font(.headline)
-                        Text("Receipt in \(CurrencySettings.shared.current.rawValue.uppercased()) · \(memberIds.count) people")
+                        Text(loc.itemsLabel).font(.headline)
+                        Text(loc.receiptInfoFull(CurrencySettings.shared.current.rawValue.uppercased(), memberIds.count))
                             .font(.caption).foregroundColor(.secondary)
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(String(format: "\(CurrencySettings.shared.current.symbol)%.2f", selectedTotal)).font(.headline).foregroundColor(.accentColor)
-                        Text("\(selectedIndices.count)/\(items.count) selected").font(.caption).foregroundColor(.secondary)
+                        Text(loc.selectedLabel(selectedIndices.count, items.count)).font(.caption).foregroundColor(.secondary)
                     }
                 }
                 if selectedTotal > 0 && !selectedItems.filter({ $0.isShared }).isEmpty {
                     let perPerson = selectedTotal / Double(max(memberIds.count, 1))
-                    Text("Shared: \(CurrencySettings.shared.current.symbol)\(String(format: "%.2f", perPerson)) / person")
+                    Text("Shared: \(CurrencySettings.shared.current.symbol)\(String(format: "%.2f", perPerson))\(loc.perPerson)")
                         .font(.caption2).foregroundColor(.accentColor)
                 }
             }
@@ -133,9 +135,9 @@ struct ReceiptScanView: View {
                             .foregroundColor(selectedIndices.contains(idx) ? .accentColor : .secondary)
                     }.buttonStyle(.plain)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(item.description.isEmpty ? "Unnamed" : item.description).font(.subheadline)
+                        Text(item.description.isEmpty ? loc.unnamed : item.description).font(.subheadline)
                         if let amt = item.amount, amt > 0 {
-                            Text(String(format: "$%.2f", amt)).font(.caption).foregroundColor(.secondary)
+                            Text(String(format: "\(CurrencySettings.shared.current.symbol)%.2f", amt)).font(.caption).foregroundColor(.secondary)
                         }
                     }
                     Spacer()
@@ -151,7 +153,7 @@ struct ReceiptScanView: View {
 
             Section {
                 HStack {
-                    Text("Paid by").font(.subheadline)
+                    Text(loc.paidBy).font(.subheadline)
                     Spacer()
                     Picker("", selection: $payerId) {
                         ForEach(memberIds, id: \.self) { id in Text(userNames[id] ?? "...").tag(id) }
@@ -159,30 +161,46 @@ struct ReceiptScanView: View {
                 }
             }
 
+            Section(loc.locale == .zh ? "分类" : "Category") {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 4), spacing: 10) {
+                    ForEach(BillCategory.allCases, id: \.self) { cat in
+                        VStack(spacing: 4) {
+                            Text(cat.icon).font(.title2)
+                                .frame(width: 44, height: 44)
+                                .background(ocrCategory == cat ? Color.accentColor.opacity(0.15) : Color(.systemGray6))
+                                .cornerRadius(10)
+                            Text(cat.displayName(loc.locale)).font(.system(size: 10)).foregroundColor(.secondary).lineLimit(1)
+                        }
+                        .onTapGesture { ocrCategory = cat }
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+
             if let err = errorMessage { Section { Text(err).foregroundColor(.red).font(.caption) } }
 
             if isSubmitting {
-                HStack { Spacer(); ProgressView("Creating bills..."); Spacer() }
+                HStack { Spacer(); ProgressView(loc.creatingBills); Spacer() }
             } else {
                 Section {
-                    Button("Generate \(selectedIndices.count) Bills ($\(String(format: "%.2f", selectedTotal)))") { submitBills() }
+                    Button(loc.generateBillsBtn(selectedIndices.count, "\(CurrencySettings.shared.current.symbol)\(String(format: "%.2f", selectedTotal))")) { submitBills() }
                         .disabled(selectedIndices.isEmpty).frame(maxWidth: .infinity)
                 }
             }
 
-            Section { Button("Rescan") { state = .idle; items = []; selectedIndices = [0]; errorMessage = nil }.foregroundColor(.secondary) }
+            Section { Button(loc.rescan) { state = .idle; items = []; selectedIndices = [0]; errorMessage = nil }.foregroundColor(.secondary) }
         }
         .sheet(item: $editingItem) { _ in
             NavigationStack {
                 Form {
-                    TextField("Name", text: $editItemDesc)
-                    TextField("Amount", text: $editItemAmt).keyboardType(.decimalPad)
+                    TextField(loc.itemName, text: $editItemDesc)
+                    TextField(loc.itemAmount, text: $editItemAmt).keyboardType(.decimalPad)
                 }
-                .navigationTitle("Edit Item").navigationBarTitleDisplayMode(.inline)
+                .navigationTitle(loc.editItem).navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { editingItem = nil } }
+                    ToolbarItem(placement: .cancellationAction) { Button(loc.cancel) { editingItem = nil } }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
+                        Button(loc.save) {
                             if let idx = items.firstIndex(where: { $0.id == editingItem?.id }) {
                                 items[idx].description = editItemDesc
                                 items[idx].amount = Double(editItemAmt)
@@ -255,7 +273,7 @@ struct ReceiptScanView: View {
                     let inCNY = cur.convert(total, to: .cny)
                     try await BillService.shared.createBill(groupId: groupId, payerId: payerId, amount: inCNY,
                         description: sharedItems.map { $0.description }.joined(separator: ", "),
-                        participantIds: memberIds, currency: cur.rawValue, exchangeRate: rate)
+                        participantIds: memberIds, currency: cur.rawValue, exchangeRate: rate, category: ocrCategory.rawValue)
                 }
                 for item in personalItems {
                     let amt = item.amount ?? 0
@@ -263,7 +281,7 @@ struct ReceiptScanView: View {
                     try await BillService.shared.createBill(groupId: groupId, payerId: payerId, amount: inCNY,
                         description: item.description,
                         participantIds: [item.assignedToUserId ?? memberIds.first ?? ""],
-                        currency: cur.rawValue, exchangeRate: rate)
+                        currency: cur.rawValue, exchangeRate: rate, category: ocrCategory.rawValue)
                 }
                 await MainActor.run { dismiss() }
             } catch {

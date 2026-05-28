@@ -6,6 +6,8 @@ class AuthViewModel: ObservableObject {
     @Published var isLoading: Bool = true
     @Published var currentUserId: String?
     @Published var authError: String?
+    @Published var emailConfirmationSent = false
+    @Published var pendingEmail: String?
 
     init() {
         Task {
@@ -14,6 +16,10 @@ class AuthViewModel: ObservableObject {
                     self.isLoggedIn = session != nil
                     self.currentUserId = session?.user.id.uuidString.lowercased()
                     self.isLoading = false
+                    if session != nil {
+                        self.emailConfirmationSent = false
+                        self.pendingEmail = nil
+                    }
                 }
             }
         }
@@ -22,6 +28,7 @@ class AuthViewModel: ObservableObject {
     func signIn(email: String, password: String) {
         isLoading = true
         authError = nil
+        emailConfirmationSent = false
         Task {
             do {
                 _ = try await supabase.auth.signIn(email: email, password: password)
@@ -39,13 +46,18 @@ class AuthViewModel: ObservableObject {
         authError = nil
         Task {
             do {
-                let session = try await supabase.auth.signUp(email: email, password: password)
-                // Update display name in public.users
-                let uid = session.user.id.uuidString.lowercased()
-                try? await supabase.from("users")
-                    .update(["display_name": name])
-                    .eq("id", value: uid)
-                    .execute()
+                let response = try await supabase.auth.signUp(
+                    email: email,
+                    password: password,
+                    data: ["full_name": .string(name)]
+                )
+                await MainActor.run {
+                    self.isLoading = false
+                    if response.session == nil {
+                        self.emailConfirmationSent = true
+                        self.pendingEmail = email
+                    }
+                }
             } catch {
                 await MainActor.run {
                     self.authError = error.localizedDescription
@@ -53,6 +65,12 @@ class AuthViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    func clearConfirmationState() {
+        emailConfirmationSent = false
+        pendingEmail = nil
+        authError = nil
     }
 
     func signOut() {
