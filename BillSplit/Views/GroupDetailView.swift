@@ -133,8 +133,8 @@ struct GroupDetailView: View {
         .alert(loc.cannotLeave, isPresented: $showLeaveAlert) {
             Button(loc.cancel, role: .cancel) {}
         } message: { Text(loc.cannotLeaveMsg) }
-        .onChange(of: showAddBill) { _, v in if !v { vm.loadData() } }
-        .onChange(of: showReceiptScan) { _, v in if !v { vm.loadData() } }
+        .onChange(of: showAddBill) { _, v in if !v { Task { await vm.reload() } } }
+        .onChange(of: showReceiptScan) { _, v in if !v { Task { await vm.reload() } } }
         .onAppear { vm.loadData() }
         .onDisappear { vm.unsubscribeRealtime() }
     }
@@ -182,15 +182,19 @@ struct GroupDetailView: View {
         Task {
             try? await SettlementService.shared.createSettlement(groupId: groupId, fromUserId: debt.fromUserId, toUserId: debt.toUserId, amount: debt.amount)
             await MainActor.run { toast = .success("Marked as paid") }
-            vm.loadData()
+            await vm.reload()
         }
     }
     private func confirmDeleteBill() {
         guard let bill = deletingBill, let billId = bill.id else { return }
         Task {
-            try? await BillService.shared.deleteBill(billId)
-            await MainActor.run { toast = .success("Deleted") }
-            vm.loadData()
+            do {
+                try await BillService.shared.deleteBill(billId)
+                await MainActor.run { toast = .success("Deleted") }
+                await vm.reload()
+            } catch {
+                await MainActor.run { toast = .error(error.localizedDescription) }
+            }
         }
     }
     private func confirmDeleteGroup() {

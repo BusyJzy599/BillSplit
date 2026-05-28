@@ -129,17 +129,25 @@ struct GroupListView: View {
     private func confirmEdit() {
         guard let g = editingGroup, let gid = g.id else { return }
         Task {
-            try? await supabase.from("groups").update(["name": editGroupName, "icon": editGroupIcon]).eq("id", value: gid).execute()
-            await MainActor.run { showEditSheet = false }
-            vm.loadGroups(userId: authVM.currentUserId ?? "")
+            do {
+                try await supabase.from("groups").update(["name": editGroupName, "icon": editGroupIcon]).eq("id", value: gid).execute()
+                await MainActor.run { showEditSheet = false }
+                vm.loadGroups(userId: authVM.currentUserId ?? "")
+            } catch {
+                print("Edit group failed: \(error)")
+            }
         }
     }
 
     private func confirmDelete() {
         guard let g = deletingGroup, let gid = g.id else { return }
         Task {
-            try? await GroupService.shared.deleteGroup(gid)
-            vm.loadGroups(userId: authVM.currentUserId ?? "")
+            do {
+                try await GroupService.shared.deleteGroup(gid)
+                await MainActor.run { vm.loadGroups(userId: authVM.currentUserId ?? "") }
+            } catch {
+                print("Delete group failed: \(error)")
+            }
         }
     }
 }

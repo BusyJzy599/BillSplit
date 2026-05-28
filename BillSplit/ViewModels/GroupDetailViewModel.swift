@@ -11,6 +11,23 @@ class GroupDetailViewModel: ObservableObject {
 
     init(group: BillGroup) { self.group = group }
 
+    /// Async reload — awaits completion before returning
+    func reload() async {
+        guard let groupId = group.id else { return }
+        do {
+            var g = try await GroupService.shared.getGroup(id: groupId)
+            g.memberIds = Array(Set(g.memberIds))
+            let bills = try await BillService.shared.getBills(for: groupId)
+            let settlements = try await SettlementService.shared.getSettlements(for: groupId)
+            await MainActor.run {
+                self.group = g
+                self.bills = bills
+                self.settlements = settlements
+                recalcDebts()
+            }
+        } catch { print("Reload failed: \(error)") }
+    }
+
     func loadData() {
         guard let groupId = group.id else { return }
         Task {
