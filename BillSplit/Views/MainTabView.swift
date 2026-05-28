@@ -16,5 +16,6 @@ struct MainTabView: View {
                     Label("我的", systemImage: "person.circle")
                 }
         }
+        .tint(.accentColor)
     }
 }

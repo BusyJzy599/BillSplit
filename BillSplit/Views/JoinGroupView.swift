@@ -53,7 +53,6 @@ struct JoinGroupView: View {
                 .disabled(vm.inviteCode.count != 6 || vm.isLoading)
 
                 Spacer()
-                Spacer()
             }
             .padding()
             .background(Color(.systemGroupedBackground))
