@@ -16,6 +16,7 @@ struct GroupDetailView: View {
     @State private var toast: Toast?
     @State private var settlingIds = Set<UUID>()
     @State private var showAllSettled = false
+    @State private var revokingSettlementId: Int?
 
     init(group: BillGroup) {
         _vm = StateObject(wrappedValue: GroupDetailViewModel(group: group))
@@ -34,6 +35,15 @@ struct GroupDetailView: View {
             .onAppear { vm.loadData() }
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("currencyChanged"))) { _ in vm.objectWillChange.send() }
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("localeChanged"))) { _ in vm.objectWillChange.send() }
+            .alert(loc.revokeSettlementTitle, isPresented: Binding(
+                get: { revokingSettlementId != nil },
+                set: { if !$0 { revokingSettlementId = nil } }
+            )) {
+                Button(loc.cancel, role: .cancel) { revokingSettlementId = nil }
+                Button(loc.revoke, role: .destructive) { confirmRevokeSettlement() }
+            } message: {
+                Text(loc.revokeSettlementMsg)
+            }
             .onDisappear { vm.unsubscribeRealtime() }
     }
 
@@ -134,11 +144,7 @@ struct GroupDetailView: View {
                     if let sid = s.id {
                         Button {
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            Task {
-                                try? await SettlementService.shared.deleteSettlement(sid)
-                                await vm.reload()
-                                _ = await MainActor.run { toast = .info(loc.toastSettlementRevoked) }
-                            }
+                            revokingSettlementId = sid
                         } label: {
                             Image(systemName: "arrow.uturn.backward").font(.caption2).foregroundColor(.red)
                         }
@@ -278,10 +284,6 @@ struct GroupDetailView: View {
 
     // MARK: - Helpers
 
-    // debts are now shown in debtsSection (all debts, not just current user)
-    func balanceColor(_ id: String) -> Color {
-        let b = vm.memberBalance(id); if abs(b) < 0.01 { return .secondary }; return b > 0 ? .green : .orange
-    }
     func settle(_ debt: DebtEntry) {
         guard let groupId = vm.group.id, !settlingIds.contains(debt.id) else { return }
         settlingIds.insert(debt.id)
@@ -296,6 +298,20 @@ struct GroupDetailView: View {
             _ = await MainActor.run { settlingIds.remove(debt.id) }
         }
     }
+    func confirmRevokeSettlement() {
+        guard let sid = revokingSettlementId else { return }
+        Task {
+            do {
+                try await SettlementService.shared.deleteSettlement(sid)
+                await vm.reload()
+                _ = await MainActor.run { toast = .info(loc.toastSettlementRevoked) }
+            } catch {
+                _ = await MainActor.run { toast = .error(error.localizedDescription) }
+            }
+            _ = await MainActor.run { revokingSettlementId = nil }
+        }
+    }
+
     func confirmDeleteBill() {
         guard let bill = deletingBill, let billId = bill.id else { return }
         _ = Task {

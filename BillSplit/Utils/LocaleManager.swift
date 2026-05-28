@@ -78,6 +78,9 @@ class LocaleManager: ObservableObject {
     var cannotLeaveMsg: String { txt("Please settle all debts before leaving", "请先结清所有欠款后再退出账单组") }
     var leaveConfirmMsg: String { txt("You will leave this group. You can rejoin later.", "你将退出此账单组，但可以重新加入。") }
     var payButton: String { txt("Pay", "还款") }
+    var revokeSettlementTitle: String { txt("Revoke settlement?", "撤销结算？") }
+    var revoke: String { txt("Revoke", "撤销") }
+    var revokeSettlementMsg: String { txt("This will undo the settlement and restore the debt.", "这将撤销该笔结算，相关欠款将恢复。") }
     var confirmPasswordLabel: String { txt("Confirm Password", "确认密码") }
     var passwordMismatch: String { txt("Passwords don't match", "密码不匹配") }
     var backToLogin: String { txt("Back to Login", "返回登录") }
