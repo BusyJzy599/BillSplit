@@ -257,6 +257,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
+				SystemCapabilities = {
+					com.apple.SignInWithApple = {
+						enabled = 1;
+					};
+				};
 
 			};
 			buildConfigurationList = 9B35EC634C0CD3B8BC5280BE /* Build configuration list for PBXProject "BillSplit" */;
