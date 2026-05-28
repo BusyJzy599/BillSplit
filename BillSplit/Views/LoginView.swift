@@ -8,6 +8,18 @@ struct LoginView: View {
     @State private var name = ""
     @State private var isSignUp = false
 
+    private func quickAuth(_ email: String, _ password: String, _ name: String) {
+        Task {
+            do {
+                _ = try await supabase.auth.signIn(email: email, password: password)
+            } catch {
+                _ = try? await supabase.auth.signUp(email: email, password: password)
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                _ = try? await supabase.auth.signIn(email: email, password: password)
+            }
+        }
+    }
+
     var body: some View {
         ZStack {
             Color(.systemGroupedBackground).ignoresSafeArea()
@@ -83,12 +95,12 @@ struct LoginView: View {
                 }
                 .font(.subheadline).foregroundColor(.secondary)
 
-                // Test accounts
+                // Test accounts (auto sign-up if needed)
                 HStack(spacing: 12) {
-                    Button { authVM.signIn(email: "test1@billsplit.com", password: "test123") } label: {
+                    Button { quickAuth("test1@billsplit.com", "test123", "Test User 1") } label: {
                         Label("Test 1", systemImage: "person.fill").frame(maxWidth: .infinity).font(.subheadline)
                     }.buttonStyle(.bordered).tint(.blue)
-                    Button { authVM.signIn(email: "test2@billsplit.com", password: "test123") } label: {
+                    Button { quickAuth("test2@billsplit.com", "test123", "Test User 2") } label: {
                         Label("Test 2", systemImage: "person.fill").frame(maxWidth: .infinity).font(.subheadline)
                     }.buttonStyle(.bordered).tint(.green)
                 }
