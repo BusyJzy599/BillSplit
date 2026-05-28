@@ -18,6 +18,7 @@ struct ReceiptScanView: View {
     @State private var editingItem: ReceiptItem?
     @State private var editItemDesc = ""
     @State private var editItemAmt = ""
+    @State private var selectedIndices: Set<Int> = [0]
 
     init(groupId: Int, memberIds: [String], userNames: [String: String], currentUserId: String) {
         self.groupId = groupId; self.memberIds = memberIds; self.userNames = userNames; self.currentUserId = currentUserId
@@ -96,20 +97,26 @@ struct ReceiptScanView: View {
 
     // MARK: - Confirming
 
-    var totalAmount: Double { items.reduce(0) { $0 + ($1.amount ?? 0) } }
+    var selectedItems: [ReceiptItem] { items.enumerated().filter { selectedIndices.contains($0.offset) }.map(\.element) }
+    var selectedTotal: Double { selectedItems.reduce(0) { $0 + ($1.amount ?? 0) } }
 
     var confirmingView: some View {
         Form {
             Section {
-                HStack { Text("Items").font(.headline); Spacer(); Text(String(format: "$%.2f", totalAmount)).font(.headline).foregroundColor(.accentColor) }
-                Text("\(items.count) items · Tap edit / swipe delete").font(.caption).foregroundColor(.secondary)
+                HStack { Text("Items").font(.headline); Spacer(); Text(String(format: "$%.2f", selectedTotal)).font(.headline).foregroundColor(.accentColor) }
+                Text("\(selectedIndices.count)/\(items.count) selected · Tap to toggle").font(.caption).foregroundColor(.secondary)
             }
 
             Section {
-            ForEach(items) { item in
+            ForEach(Array(items.enumerated()), id: \.element.id) { idx, item in
                 HStack {
-                    Image(systemName: item.isShared ? "person.2.fill" : "person.fill")
-                        .foregroundColor(item.isShared ? .blue : .secondary).frame(width: 24)
+                    Button {
+                        if selectedIndices.contains(idx) { selectedIndices.remove(idx) }
+                        else { selectedIndices.insert(idx) }
+                    } label: {
+                        Image(systemName: selectedIndices.contains(idx) ? "checkmark.circle.fill" : "circle")
+                            .foregroundColor(selectedIndices.contains(idx) ? .accentColor : .secondary)
+                    }.buttonStyle(.plain)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(item.description.isEmpty ? "Unnamed" : item.description).font(.subheadline)
                         if let amt = item.amount, amt > 0 {
@@ -122,7 +129,9 @@ struct ReceiptScanView: View {
                         editItemAmt = item.amount.map { String(format: "%.2f", $0) } ?? ""
                     } label: { Image(systemName: "pencil").font(.caption).foregroundColor(.secondary) }
                 }
-            }.onDelete { idx in items.remove(atOffsets: idx) }
+            }.onDelete { idxSet in
+                for i in idxSet.sorted(by: >) { items.remove(at: i); selectedIndices.remove(i) }
+            }
             }
 
             Section {
@@ -139,12 +148,12 @@ struct ReceiptScanView: View {
                 HStack { Spacer(); ProgressView("Creating bills..."); Spacer() }
             } else {
                 Section {
-                    Button("Generate \(items.count) Bills ($\(String(format: "%.2f", totalAmount)))") { submitBills() }
-                        .disabled(items.isEmpty).frame(maxWidth: .infinity)
+                    Button("Generate \(selectedIndices.count) Bills ($\(String(format: "%.2f", selectedTotal)))") { submitBills() }
+                        .disabled(selectedIndices.isEmpty).frame(maxWidth: .infinity)
                 }
             }
 
-            Section { Button("Rescan") { state = .idle; items = []; errorMessage = nil }.foregroundColor(.secondary) }
+            Section { Button("Rescan") { state = .idle; items = []; selectedIndices = [0]; errorMessage = nil }.foregroundColor(.secondary) }
         }
         .sheet(item: $editingItem) { _ in
             NavigationStack {
@@ -189,7 +198,10 @@ struct ReceiptScanView: View {
                         let extracted = try await AIService.shared.extractItems(from: rawText)
                         if !extracted.isEmpty {
                             await MainActor.run {
-                                items = extracted.map { ReceiptItem(description: $0.description, amount: $0.amount, isShared: $0.isShared) }
+                                // Show all extracted items, default select first only
+                                items = extracted.enumerated().map { i, e in
+                                    ReceiptItem(description: e.description, amount: e.amount, isShared: e.isShared)
+                                }
                                 state = .confirming
                             }
                             return
@@ -213,7 +225,7 @@ struct ReceiptScanView: View {
 
     func submitBills() {
         isSubmitting = true
-        let validItems = items.filter { ($0.amount ?? 0) > 0 }
+        let validItems = selectedItems.filter { ($0.amount ?? 0) > 0 }
         let sharedItems = validItems.filter { $0.isShared }
         let personalItems = validItems.filter { !$0.isShared }
 
