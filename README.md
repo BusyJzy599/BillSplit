@@ -1,28 +1,42 @@
-# BillSplit
+<p align="center">
+  <img src="https://img.shields.io/badge/iOS-17.0+-blue?logo=apple" />
+  <img src="https://img.shields.io/badge/SwiftUI-5.0-orange?logo=swift" />
+  <img src="https://img.shields.io/badge/Supabase-Realtime-green?logo=supabase" />
+  <img src="https://img.shields.io/badge/AI-DeepSeek-purple?logo=openai" />
+</p>
 
-Split bills with friends. Built with SwiftUI + Supabase.
+<h1 align="center">💸 BillSplit</h1>
+<p align="center"><i>Split bills, not friendships.</i></p>
 
-## Features
+---
 
-- Create groups, invite friends via code
-- Add bills with 12 emoji categories
-- OCR receipt scanning (DeepSeek AI)
-- USD/CNY with live exchange rate
-- Real-time sync via Supabase Realtime
-- Spending heatmap & category pie chart
-- Settlements with revoke
-- English / 中文
+## ✨ What it does
 
-## Tech
+| | |
+|---|---|
+| 👥 **Groups** | Create groups, invite friends with a 6-digit code |
+| 💰 **Bills** | 12 emoji categories — 🍽️ ☕ 🚗 🏠 🛍️ 🎮 ✈️ 🏥 📚 🎁 💡 💰 |
+| 📸 **OCR Scan** | Snap a receipt → AI parses items → auto-generate bills |
+| 🌍 **Localized** | English · 中文 — every label, toast, and error message |
+| 🔐 **Auth** | Email sign up with verification + password strength meter |
+| 💱 **Currency** | USD ↔ CNY with daily auto-refreshed exchange rate |
+| 🔄 **Realtime** | WebSocket sync — changes appear instantly for everyone |
+| 📊 **Analytics** | 12-week heatmap, category pie chart, spending breakdown |
+| 💳 **Settlements** | Pay debts, revoke if mistaken, full history |
 
-SwiftUI, Supabase (Auth + DB + Storage + Realtime + Edge Functions), DeepSeek LLM
+## 🛠 Stack
 
-## Setup
+`SwiftUI` `Supabase Auth` `Postgres + RLS` `Supabase Storage` `Supabase Realtime` `Edge Functions` `DeepSeek LLM` `Vision OCR`
+
+## 🚀 Quick Start
 
 ```bash
-# Clone & open in Xcode
-open BillSplit.xcodeproj
-
-# Apply DB migration
-# Run supabase/migration.sql in Supabase SQL Editor
+git clone git@github.com:BusyJzy599/BillSplit.git
+open BillSplit/BillSplit.xcodeproj
 ```
+
+Then run `supabase/migration.sql` in your Supabase SQL Editor.
+
+---
+
+<p align="center"><sub>Built with ☕ and late nights</sub></p>
