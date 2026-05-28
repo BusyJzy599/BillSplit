@@ -3,6 +3,7 @@ import Supabase
 
 class AuthViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
+    @Published var isLoading: Bool = true
     @Published var currentUserId: String?
 
     init() {
@@ -11,8 +12,27 @@ class AuthViewModel: ObservableObject {
                 await MainActor.run {
                     self.isLoggedIn = session != nil
                     self.currentUserId = session?.user.id.uuidString
+                    self.isLoading = false
                 }
             }
+        }
+        autoLoginForTesting()
+    }
+
+    private func autoLoginForTesting() {
+        Task {
+            let email = "test@billsplit.com"
+            let password = "test123456"
+
+            // Try sign in
+            if let session = try? await supabase.auth.signIn(email: email, password: password) {
+                return
+            }
+
+            // Sign up new test user
+            _ = try? await supabase.auth.signUp(email: email, password: password)
+
+            await MainActor.run { self.isLoading = false }
         }
     }
 

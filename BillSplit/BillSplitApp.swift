@@ -18,7 +18,9 @@ struct BillSplitApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if authVM.isLoggedIn {
+            if authVM.isLoading {
+                ProgressView("加载中...")
+            } else if authVM.isLoggedIn {
                 MainTabView()
                     .environmentObject(authVM)
             } else {
