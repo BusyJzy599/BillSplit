@@ -31,18 +31,19 @@ class GroupListViewModel: ObservableObject {
     }
 
     private func fetchUserNames(ids: Set<String>) async {
-        for id in ids where userNames[id] == nil {
-            do {
-                let users: [AppUser] = try await supabase.from("users").select().eq("id", value: id).execute().value
-                if let user = users.first {
-                    await MainActor.run {
-                        self.userNames[id] = user.displayName
-                        self.userAvatars[id] = user.avatarUrl
-                    }
+        let missingIds = ids.filter { userNames[$0] == nil }
+        guard !missingIds.isEmpty else { return }
+        do {
+            let users: [AppUser] = try await supabase.from("users")
+                .select().in("id", values: Array(missingIds)).execute().value
+            await MainActor.run {
+                for user in users {
+                    self.userNames[user.id] = user.displayName
+                    self.userAvatars[user.id] = user.avatarUrl
                 }
-            } catch {
-                print("Fetch user failed: \(error)")
             }
+        } catch {
+            print("Fetch users failed: \(error)")
         }
     }
 

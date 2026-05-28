@@ -25,7 +25,9 @@ class RealtimeService {
             try? await channel.subscribeWithError()
 
             for await _ in changes {
-                await MainActor.run { onChange() }
+                if shouldRefresh(channelId) {
+                    await MainActor.run { onChange() }
+                }
             }
         }
         tasks[channelId] = task
@@ -43,7 +45,9 @@ class RealtimeService {
             try? await channel.subscribeWithError()
 
             for await _ in changes {
-                await MainActor.run { onChange() }
+                if shouldRefresh(channelId) {
+                    await MainActor.run { onChange() }
+                }
             }
         }
         tasks[channelId] = task
