@@ -42,6 +42,30 @@ struct ProfileView: View {
                             CurrencySettings.shared.objectWillChange.send()
                             NotificationCenter.default.post(name: NSNotification.Name("currencyChanged"), object: nil)
                         }
+
+                        HStack {
+                            Text("Exchange Rate").font(.subheadline)
+                            Spacer()
+                            Text("1 USD = \(String(format: "%.4f", Currency.rateUSDToCNY)) CNY")
+                                .font(.subheadline).fontWeight(.medium).foregroundColor(.accentColor)
+                        }
+
+                        if let date = UserDefaults.standard.value(forKey: "cachedExchangeRateDate") as? Date {
+                            HStack {
+                                Text("Updated").font(.caption).foregroundColor(.secondary)
+                                Spacer()
+                                Text(date, style: .date).font(.caption).foregroundColor(.secondary)
+                                Text(date, style: .time).font(.caption).foregroundColor(.secondary)
+                            }
+                        }
+
+                        Button("Refresh Rate") {
+                            Task {
+                                let rate = await ExchangeRateService.shared.fetchLatest()
+                                Currency.rateUSDToCNY = rate
+                                NotificationCenter.default.post(name: NSNotification.Name("currencyChanged"), object: nil)
+                            }
+                        }.font(.subheadline)
                     }
 
                     Section(loc.languageLabel) {
