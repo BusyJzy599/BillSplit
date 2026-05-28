@@ -119,17 +119,21 @@ struct GroupDetailView: View {
     // MARK: - Rows
 
     var summaryView: some View {
-        HStack(spacing: 12) {
-            VStack(spacing: 2) {
-                Text(CurrencySettings.shared.formatted(vm.totalSpent)).font(.title3).fontWeight(.bold)
-                Text("Total").font(.caption).foregroundColor(.secondary)
-            }.frame(maxWidth: .infinity).padding(.vertical, 8)
-            VStack(spacing: 2) {
+        HStack(spacing: 0) {
+            VStack(spacing: 4) {
+                Image(systemName: "dollarsign.circle.fill").font(.title3).foregroundStyle(.blue)
+                Text(CurrencySettings.shared.formatted(vm.totalSpent)).font(.headline).fontWeight(.bold)
+                Text("Total Spent").font(.caption2).foregroundColor(.secondary)
+            }.frame(maxWidth: .infinity).padding(.vertical, 10)
+            Divider()
+            VStack(spacing: 4) {
                 let bal = vm.memberBalance(authVM.currentUserId ?? "")
-                Text(bal > 0.01 ? "Receivable" : bal < -0.01 ? "Payable" : "Settled")
-                    .font(.caption).fontWeight(.semibold).foregroundColor(bal > 0.01 ? .green : bal < -0.01 ? .orange : .secondary)
-                Text(CurrencySettings.shared.formatted(abs(bal))).font(.title3).fontWeight(.bold)
-            }.frame(maxWidth: .infinity).padding(.vertical, 8)
+                Image(systemName: bal > 0.01 ? "arrow.down.circle.fill" : bal < -0.01 ? "arrow.up.circle.fill" : "checkmark.circle.fill")
+                    .font(.title3).foregroundStyle(bal > 0.01 ? .green : bal < -0.01 ? .orange : .secondary)
+                Text(CurrencySettings.shared.formatted(abs(bal))).font(.headline).fontWeight(.bold)
+                Text(bal > 0.01 ? "You receive" : bal < -0.01 ? "You owe" : "Settled")
+                    .font(.caption2).foregroundColor(.secondary)
+            }.frame(maxWidth: .infinity).padding(.vertical, 10)
         }
     }
 
