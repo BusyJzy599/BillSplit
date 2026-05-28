@@ -17,13 +17,14 @@ class GroupService {
 
     func createGroup(name: String, creatorId: String) async throws -> BillGroup {
         let code = try await generateUniqueCode()
-        let group = BillGroup(
+        var group = BillGroup(
             name: name,
             inviteCode: code,
             creatorId: creatorId,
             memberIds: [creatorId],
             createdAt: Date()
         )
+        group.memberIds = Array(Set(group.memberIds))
         let result: [BillGroup] = try await supabase.from("groups").insert(group).select().execute().value
         guard let created = result.first else { throw GroupError.codeGenerationFailed }
         return created
@@ -41,6 +42,7 @@ class GroupService {
         }
 
         group.memberIds.append(userId)
+        group.memberIds = Array(Set(group.memberIds))
         try await supabase.from("groups").update(["member_ids": group.memberIds]).eq("id", value: group.id!).execute()
         return group
     }

@@ -16,7 +16,8 @@ class GroupDetailViewModel: ObservableObject {
         Task {
             do {
                 // Load group
-                let g = try await GroupService.shared.getGroup(id: groupId)
+                var g = try await GroupService.shared.getGroup(id: groupId)
+                g.memberIds = Array(Set(g.memberIds))
                 await MainActor.run { self.group = g }
                 await fetchUserNames(ids: Set(g.memberIds))
 
