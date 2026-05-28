@@ -161,7 +161,10 @@ struct ReceiptScanView: View {
 
                 // Try AI extraction
                 if AIService.shared.isConfigured {
-                    let rawText = rawItems.map { $0.description }.joined(separator: "\n")
+                    let rawText = rawItems.map { item in
+                        if let amt = item.amount { return "\(item.description) $\(amt)" }
+                        return item.description
+                    }.joined(separator: "\n")
                     if let extracted = try? await AIService.shared.extractItems(from: rawText), !extracted.isEmpty {
                         await MainActor.run {
                             items = extracted.map { ReceiptItem(description: $0.description, amount: $0.amount, isShared: $0.isShared) }
