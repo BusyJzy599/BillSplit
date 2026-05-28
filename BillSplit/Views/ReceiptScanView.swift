@@ -37,13 +37,28 @@ struct ReceiptScanView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
         }
-        .onChange(of: showCamera) { _, v in if !v && capturedImage != nil { startScan() } }
-        .onChange(of: showPhotoPicker) { _, v in if !v && capturedImage != nil { startScan() } }
+        .onChange(of: state) { _, v in
+            if v == .scanning { startScan() }
+            if v == .confirming || v == .idle { showCamera = false; showPhotoPicker = false }
+        }
         .fullScreenCover(isPresented: $showCamera) {
-            CameraView(image: $capturedImage, onCapture: { showCamera = false }).ignoresSafeArea()
+            ZStack {
+                CameraView(image: $capturedImage, onCapture: { state = .scanning }).ignoresSafeArea()
+                if state == .scanning {
+                    Color.black.opacity(0.7).ignoresSafeArea()
+                    VStack(spacing: 16) {
+                        ProgressView().tint(.white).scaleEffect(1.5)
+                        Text("AI analyzing receipt...").foregroundColor(.white).font(.headline)
+                        if let img = capturedImage {
+                            Image(uiImage: img).resizable().scaledToFit().frame(maxHeight: 200).cornerRadius(12).padding(.horizontal, 40)
+                        }
+                        if let err = errorMessage { Text(err).foregroundColor(.red).font(.caption).padding() }
+                    }
+                }
+            }
         }
         .sheet(isPresented: $showPhotoPicker) {
-            PhotoPicker(image: $capturedImage, onPick: { showPhotoPicker = false })
+            PhotoPicker(image: $capturedImage, onPick: { state = .scanning })
         }
     }
 
