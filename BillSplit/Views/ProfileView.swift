@@ -86,6 +86,17 @@ struct ProfileView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
+
+                // App version
+                Section {
+                    HStack {
+                        Text("BillSplit")
+                        Spacer()
+                        Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")")
+                            .foregroundColor(.secondary)
+                    }
+                    .font(.caption)
+                }
             }
             .navigationTitle(loc.navProfile)
             .sheet(isPresented: $showEditProfile) {

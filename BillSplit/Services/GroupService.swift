@@ -58,6 +58,10 @@ class GroupService {
         try await supabase.from("groups").update(["member_ids": newMemberIds]).eq("id", value: groupId).execute()
     }
 
+    func removeMember(_ groupId: Int, userId: String) async throws {
+        try await leaveGroup(groupId, userId: userId)
+    }
+
     private func generateUniqueCode() async throws -> String {
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         for _ in 0..<10 {

@@ -17,6 +17,7 @@ struct GroupDetailView: View {
     @State private var settlingIds = Set<UUID>()
     @State private var showAllSettled = false
     @State private var revokingSettlementId: Int?
+    @State private var removingMemberId: String?
 
     init(group: BillGroup) {
         _vm = StateObject(wrappedValue: GroupDetailViewModel(group: group))
@@ -43,6 +44,17 @@ struct GroupDetailView: View {
                 Button(loc.revoke, role: .destructive) { confirmRevokeSettlement() }
             } message: {
                 Text(loc.revokeSettlementMsg)
+            }
+            .alert(loc.locale == .zh ? "移除成员" : "Remove member", isPresented: Binding(
+                get: { removingMemberId != nil },
+                set: { if !$0 { removingMemberId = nil } }
+            )) {
+                Button(loc.cancel, role: .cancel) { removingMemberId = nil }
+                Button(loc.locale == .zh ? "移除" : "Remove", role: .destructive) { confirmRemoveMember() }
+            } message: {
+                if let mid = removingMemberId {
+                    Text(loc.locale == .zh ? "确定要移除 \(vm.userNames[mid] ?? "...") 吗？" : "Remove \(vm.userNames[mid] ?? "...") from this group?")
+                }
             }
             .onDisappear { vm.unsubscribeRealtime() }
     }
@@ -200,7 +212,8 @@ struct GroupDetailView: View {
         }
     }
 
-    func memberRow(_ id: String) -> some View {
+    @ViewBuilder func memberRow(_ id: String) -> some View {
+        let isCreator = vm.group.creatorId == authVM.currentUserId
         HStack(spacing: 10) {
             AvatarView(avatarUrl: vm.userAvatars[id], displayName: vm.userNames[id] ?? "", size: 32)
             VStack(alignment: .leading, spacing: 2) {
@@ -219,6 +232,13 @@ struct GroupDetailView: View {
                     .cornerRadius(6)
             } else {
                 Image(systemName: "checkmark").font(.caption2).foregroundColor(.secondary)
+            }
+        }
+        .swipeActions(edge: .trailing) {
+            if isCreator && id != authVM.currentUserId {
+                Button(role: .destructive) {
+                    removingMemberId = id
+                } label: { Label(loc.locale == .zh ? "移除" : "Remove", systemImage: "person.fill.xmark") }
             }
         }
     }
@@ -268,6 +288,8 @@ struct GroupDetailView: View {
             Menu {
                 Button { UIPasteboard.general.string = vm.group.inviteCode; toast = .success(loc.toastCopied) }
                     label: { Label(loc.copyCode, systemImage: "doc.on.doc") }
+                Button { shareSummary() }
+                    label: { Label(loc.locale == .zh ? "分享账单摘要" : "Share Summary", systemImage: "square.and.arrow.up") }
                 Divider()
                 if vm.group.creatorId == authVM.currentUserId {
                     Button(role: .destructive) { showDeleteGroupAlert = true } label: { Label(loc.deleteGroup, systemImage: "trash") }
@@ -284,6 +306,30 @@ struct GroupDetailView: View {
 
     // MARK: - Helpers
 
+    func shareSummary() {
+        var lines = ["💸 \(vm.group.name)"]
+        lines.append("")
+        lines.append(loc.totalSpent + ": \(CurrencySettings.shared.formatted(vm.totalSpent))")
+        if !vm.debts.isEmpty {
+            lines.append("")
+            lines.append(loc.whoOwesWho + ":")
+            for d in vm.debts {
+                let from = vm.userNames[d.fromUserId] ?? "..."
+                let to = vm.userNames[d.toUserId] ?? "..."
+                lines.append("  \(from) → \(to): \(CurrencySettings.shared.formatted(d.amount))")
+            }
+        } else if !vm.bills.isEmpty {
+            lines.append("")
+            lines.append(loc.allSettled)
+        }
+        let text = lines.joined(separator: "\n")
+        let av = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        if let vc = UIApplication.shared.connectedScenes
+            .compactMap({ ($0 as? UIWindowScene)?.keyWindow }).first?.rootViewController {
+            vc.present(av, animated: true)
+        }
+    }
+
     func settle(_ debt: DebtEntry) {
         guard let groupId = vm.group.id, !settlingIds.contains(debt.id) else { return }
         settlingIds.insert(debt.id)
@@ -298,6 +344,19 @@ struct GroupDetailView: View {
             _ = await MainActor.run { settlingIds.remove(debt.id) }
         }
     }
+    func confirmRemoveMember() {
+        guard let memberId = removingMemberId, let groupId = vm.group.id else { return }
+        Task {
+            do {
+                try await GroupService.shared.removeMember(groupId, userId: memberId)
+                await vm.reload()
+            } catch {
+                _ = await MainActor.run { toast = .error(error.localizedDescription) }
+            }
+            _ = await MainActor.run { removingMemberId = nil }
+        }
+    }
+
     func confirmRevokeSettlement() {
         guard let sid = revokingSettlementId else { return }
         Task {
