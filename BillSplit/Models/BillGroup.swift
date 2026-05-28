@@ -6,6 +6,7 @@ struct BillGroup: Codable, Identifiable, Hashable {
     var inviteCode: String
     var creatorId: String
     var memberIds: [String]
+    var icon: String
     var createdAt: Date
 
     enum CodingKeys: String, CodingKey {
@@ -14,6 +15,7 @@ struct BillGroup: Codable, Identifiable, Hashable {
         case inviteCode = "invite_code"
         case creatorId = "creator_id"
         case memberIds = "member_ids"
+        case icon
         case createdAt = "created_at"
     }
 }

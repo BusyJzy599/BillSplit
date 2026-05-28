@@ -22,6 +22,7 @@ class GroupService {
             inviteCode: code,
             creatorId: creatorId,
             memberIds: [creatorId],
+            icon: "👥",
             createdAt: Date()
         )
         group.memberIds = Array(Set(group.memberIds))

@@ -8,6 +8,7 @@ struct GroupListView: View {
     @State private var newGroupName = ""
     @State private var editingGroup: BillGroup?
     @State private var editGroupName = ""
+    @State private var editGroupIcon = "👥"
     @State private var showEditSheet = false
     @State private var deletingGroup: BillGroup?
     @State private var showDeleteAlert = false
@@ -55,6 +56,7 @@ struct GroupListView: View {
                                     Button {
                                         editingGroup = group
                                         editGroupName = group.name
+                                        editGroupIcon = group.icon
                                         showEditSheet = true
                                     } label: { Label(loc.edit, systemImage: "pencil") }
                                     .tint(.orange)
@@ -97,10 +99,23 @@ struct GroupListView: View {
                 .presentationDetents([.height(220)])
             }
             .sheet(isPresented: $showEditSheet) {
+                let groupIcons = ["👥","🏠","✈️","🍽️","🎉","🎓","💼","🏖️","🎮","🏃","☕","🎵","💡","🐶","🌍","📚","🎬","⚽"]
                 NavigationStack {
                     Form {
                         Section(loc.groupName) {
                             TextField(loc.groupNamePlaceholder, text: $editGroupName)
+                        }
+                        Section("Icon") {
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 8) {
+                                ForEach(groupIcons, id: \.self) { icon in
+                                    Button { editGroupIcon = icon } label: {
+                                        Text(icon).font(.title2)
+                                    }
+                                    .frame(width: 44, height: 44)
+                                    .background(editGroupIcon == icon ? Color.accentColor.opacity(0.15) : Color.clear)
+                                    .cornerRadius(10)
+                                }
+                            }
                         }
                     }
                     .navigationTitle(loc.edit)
@@ -111,7 +126,7 @@ struct GroupListView: View {
                             Button(loc.save) {
                                 if let g = editingGroup, let gid = g.id {
                                     Task {
-                                        try? await supabase.from("groups").update(["name": editGroupName]).eq("id", value: gid).execute()
+                                        try? await supabase.from("groups").update(["name": editGroupName, "icon": editGroupIcon]).eq("id", value: gid).execute()
                                         vm.loadGroups(userId: authVM.currentUserId ?? "")
                                     }
                                     showEditSheet = false
@@ -150,7 +165,10 @@ struct GroupCard: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            AvatarView(avatarUrl: userAvatars[group.creatorId], displayName: userNames[group.creatorId] ?? "", size: 48)
+            ZStack {
+                Circle().fill(Color.accentColor.opacity(0.1)).frame(width: 48, height: 48)
+                Text(group.icon).font(.system(size: 24))
+            }
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(group.name)
