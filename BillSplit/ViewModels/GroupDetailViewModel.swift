@@ -98,14 +98,9 @@ class GroupDetailViewModel: ObservableObject {
     func memberBalance(_ userId: String) -> Double {
         var net: Double = 0
         for bill in bills {
-            if bill.payerId == userId {
-                net += bill.amount
-                let share = bill.amount / Double(bill.participantIds.count)
-                net -= share * Double(bill.participantIds.count)
-            } else if bill.participantIds.contains(userId) {
-                let share = bill.amount / Double(bill.participantIds.count)
-                net -= share
-            }
+            let share = bill.amount / Double(max(bill.participantIds.count, 1))
+            if bill.payerId == userId { net += bill.amount }
+            if bill.participantIds.contains(userId) { net -= share }
         }
         for s in settlements where s.status == .paid {
             if s.fromUserId == userId { net += s.amount }
