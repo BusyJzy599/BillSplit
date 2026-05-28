@@ -8,4 +8,14 @@ struct Bill: Codable, Identifiable {
     var description: String
     var participantIds: [String]
     var createdAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case groupId = "group_id"
+        case payerId = "payer_id"
+        case amount
+        case description
+        case participantIds = "participant_ids"
+        case createdAt = "created_at"
+    }
 }
