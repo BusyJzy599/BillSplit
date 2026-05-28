@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		006D7F44220A4AC34A0BB0D5 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2762F0F098CDC1D69A1797DE /* FirebaseFirestoreSwift */; };
 		035381BEC74E0D365173DDDE /* BillService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D30E96F65B7330DDFD46E8D /* BillService.swift */; };
 		0A5CBC4EDCB871337E0D1CE1 /* ReceiptItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7FEA2A3B9094681E5DEB59 /* ReceiptItem.swift */; };
 		1D42589993511784B0278923 /* ReceiptConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDACE9B8F94A3A1D5F3A6B0 /* ReceiptConfirmationView.swift */; };
@@ -21,6 +20,7 @@
 		66ACA92ABED0418564F4210E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA098F8644D7126E5E7B1F2 /* User.swift */; };
 		673C7A5E7162CF73732F9FB8 /* SettlementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70457437BB0F6F6C566D861 /* SettlementService.swift */; };
 		6EBFE9AF9EF0636B7D7D0093 /* GroupDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D416AAEA07B3866F610CB01 /* GroupDetailViewModel.swift */; };
+		765CC0B32C08FDF738503CB6 /* BillSplit.xcodeproj in Resources */ = {isa = PBXBuildFile; fileRef = 370AFF248F2CC1EEC5204FDF /* BillSplit.xcodeproj */; };
 		83A7A18D13D313CDD7CF91DC /* GroupListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6701323288603CE51E470AF /* GroupListView.swift */; };
 		85D26127EF79833952617D59 /* BillGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BB372C7576FB6AC6CA6D688 /* BillGroup.swift */; };
 		879308162665F92BA9C3934C /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4465A1C74FC6B56F24E61B9 /* GroupDetailView.swift */; };
@@ -43,6 +43,7 @@
 /* Begin PBXFileReference section */
 		2217E5E1F641B5B71B42FEA9 /* InviteCodeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteCodeCard.swift; sourceTree = "<group>"; };
 		2AAEEFE21002E52EC17E1E51 /* DebtCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtCalculator.swift; sourceTree = "<group>"; };
+		370AFF248F2CC1EEC5204FDF /* BillSplit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = BillSplit.xcodeproj; sourceTree = "<group>"; };
 		37BD7660C800E09457CCD77F /* JoinGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGroupView.swift; sourceTree = "<group>"; };
 		37F49F87F317B11EC939AD0F /* BillSplit.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BillSplit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D416AAEA07B3866F610CB01 /* GroupDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailViewModel.swift; sourceTree = "<group>"; };
@@ -79,7 +80,6 @@
 			files = (
 				CC42C8106B2301FA02D111AC /* FirebaseAuth in Frameworks */,
 				E3284CE5FCC7F2750EF4559E /* FirebaseFirestore in Frameworks */,
-				006D7F44220A4AC34A0BB0D5 /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,6 +168,7 @@
 		DFFF2203E03E71C94247B359 /* BillSplit */ = {
 			isa = PBXGroup;
 			children = (
+				370AFF248F2CC1EEC5204FDF /* BillSplit.xcodeproj */,
 				6BDCAD048D3BCF40D5B65CB9 /* BillSplitApp.swift */,
 				266C1F5CF6E222D6A9BA6982 /* Models */,
 				F57B6233B4797A4E95E81E32 /* Services */,
@@ -198,8 +199,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E32924EE0C10848A7AF80D45 /* Build configuration list for PBXNativeTarget "BillSplit" */;
 			buildPhases = (
-				83404ED71C006DD483DCD608 /* Firebase Emulator (Debug Only) */,
 				3A93A35EE42EF0972019A53B /* Sources */,
+				26CFDB7BBCAE0ADEFD902AB3 /* Resources */,
 				C297AA5EA0AEBF8CE0F275FD /* Frameworks */,
 			);
 			buildRules = (
@@ -210,7 +211,6 @@
 			packageProductDependencies = (
 				97EDDDA5E61F82A38ACF0E06 /* FirebaseAuth */,
 				B35C5F72A809A7B927DAED18 /* FirebaseFirestore */,
-				2762F0F098CDC1D69A1797DE /* FirebaseFirestoreSwift */,
 			);
 			productName = BillSplit;
 			productReference = 37F49F87F317B11EC939AD0F /* BillSplit.app */;
@@ -249,26 +249,16 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		83404ED71C006DD483DCD608 /* Firebase Emulator (Debug Only) */ = {
-			isa = PBXShellScriptBuildPhase;
+/* Begin PBXResourcesBuildPhase section */
+		26CFDB7BBCAE0ADEFD902AB3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Firebase Emulator (Debug Only)";
-			outputFileListPaths = (
-			);
-			outputPaths = (
+				765CC0B32C08FDF738503CB6 /* BillSplit.xcodeproj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ \"$CONFIGURATION\" == \"Debug\" ]; then\n  defaults write ${TARGET_BUILD_DIR}/${INFOPLIST_PATH} FirebaseEmulatorEnabled -bool YES\nfi\n";
 		};
-/* End PBXShellScriptBuildPhase section */
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3A93A35EE42EF0972019A53B /* Sources */ = {
@@ -503,11 +493,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2762F0F098CDC1D69A1797DE /* FirebaseFirestoreSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestoreSwift;
-		};
 		97EDDDA5E61F82A38ACF0E06 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

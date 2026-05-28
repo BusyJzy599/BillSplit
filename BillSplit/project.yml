@@ -35,12 +35,5 @@ targets:
         product: FirebaseAuth
       - package: Firebase
         product: FirebaseFirestore
-      - package: Firebase
-        product: FirebaseFirestoreSwift
-    preBuildScripts:
-      - name: "Firebase Emulator (Debug Only)"
-        script: |
-          if [ "$CONFIGURATION" == "Debug" ]; then
-            defaults write ${TARGET_BUILD_DIR}/${INFOPLIST_PATH} FirebaseEmulatorEnabled -bool YES
-          fi
+    preBuildScripts: []
     postCompileScripts: []

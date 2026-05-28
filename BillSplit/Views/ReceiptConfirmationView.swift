@@ -10,12 +10,14 @@ struct ReceiptConfirmationView: View {
     @State var payerId: String
     let onDismiss: () -> Void
 
-    @State private var editingItemId: UUID?
+    @State private var editingIndex: Int?
     @State private var showAddItem = false
     @State private var newDescription = ""
     @State private var newAmount = ""
     @State private var newIsShared = true
     @State private var newAssignedUserId: String?
+
+    private var isEditing: Bool { editingIndex != nil }
 
     var body: some View {
         Form {
@@ -122,14 +124,14 @@ struct ReceiptConfirmationView: View {
             }
             .presentationDetents([.height(350)])
         }
-        .sheet(item: $editingItemId) { itemId in
-            if let index = items.firstIndex(where: { $0.id == itemId }) {
+        .sheet(isPresented: Binding(
+            get: { editingIndex != nil },
+            set: { if !$0 { editingIndex = nil } }
+        )) {
+            if let index = editingIndex, index < items.count {
                 NavigationStack {
                     Form {
-                        TextField("描述", text: Binding(
-                            get: { items[index].description },
-                            set: { items[index].description = $0 }
-                        ))
+                        TextField("描述", text: $items[index].description)
                         TextField("金额", text: Binding(
                             get: {
                                 if let a = items[index].amount { return String(format: "%.2f", a) }
@@ -154,7 +156,7 @@ struct ReceiptConfirmationView: View {
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
-                            Button("完成") { editingItemId = nil }
+                            Button("完成") { editingIndex = nil }
                         }
                     }
                 }
@@ -197,7 +199,7 @@ struct ReceiptConfirmationView: View {
             }
 
             Button {
-                editingItemId = item.id
+                editingIndex = items.firstIndex(where: { $0.id == item.id })
             } label: {
                 Image(systemName: "pencil")
                     .font(.caption)
