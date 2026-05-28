@@ -8,7 +8,7 @@ struct GroupListView: View {
     @State private var newGroupName = ""
     @State private var editingGroup: BillGroup?
     @State private var editGroupName = ""
-    @State private var editGroupIcon = "👥"
+    @State private var editGroupIcon = ""
     @State private var showEditSheet = false
     @State private var deletingGroup: BillGroup?
     @State private var showDeleteAlert = false
@@ -25,44 +25,36 @@ struct GroupListView: View {
                         Text(loc.noGroupsHint).font(.subheadline).foregroundColor(.secondary)
                         Button { showCreateSheet = true } label: {
                             Label(loc.newGroup, systemImage: "plus").fontWeight(.semibold)
-                        }
-                        .buttonStyle(.borderedProminent)
+                        }.buttonStyle(.borderedProminent)
                         Spacer()
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity).padding()
+                    }.frame(maxWidth: .infinity, maxHeight: .infinity).padding()
                 } else {
                     List {
                         ForEach(vm.groups) { group in
                             NavigationLink(destination: GroupDetailView(group: group)) {
-                                GroupCard(group: group, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "")
+                                groupRow(group)
                             }
                             .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) { deletingGroup = group; showDeleteAlert = true }
-                                    label: { Label(loc.delete, systemImage: "trash") }
-                                Button { editingGroup = group; editGroupName = group.name; editGroupIcon = group.icon; showEditSheet = true }
-                                    label: { Label(loc.edit, systemImage: "pencil") }
-                                .tint(.orange)
+                                Button(role: .destructive) {
+                                    deletingGroup = group; showDeleteAlert = true
+                                } label: { Label(loc.delete, systemImage: "trash") }
+                                Button {
+                                    editingGroup = group; editGroupName = group.name; editGroupIcon = group.icon; showEditSheet = true
+                                } label: { Label(loc.edit, systemImage: "pencil") }.tint(.orange)
                             }
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                         }
                     }
-                    .listStyle(.plain)
+                    .listStyle(.insetGrouped)
                     .scrollContentBackground(.hidden)
                 }
             }
             .navigationTitle(loc.navGroups)
             .toolbar {
-                if !vm.groups.isEmpty {
-                    Button { showCreateSheet = true } label: { Image(systemName: "plus") }
-                }
+                if !vm.groups.isEmpty { Button { showCreateSheet = true } label: { Image(systemName: "plus") } }
             }
             .sheet(isPresented: $showCreateSheet) {
                 NavigationStack {
-                    Form {
-                        Section(loc.groupName) { TextField(loc.groupNamePlaceholder, text: $newGroupName) }
-                    }
+                    Form { Section(loc.groupName) { TextField(loc.groupNamePlaceholder, text: $newGroupName) } }
                     .navigationTitle(loc.newGroup).navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) { Button(loc.cancel) { showCreateSheet = false } }
@@ -76,81 +68,76 @@ struct GroupListView: View {
                 }.presentationDetents([.height(220)])
             }
             .sheet(isPresented: $showEditSheet) {
-                let icons = ["👥","🏠","✈️","🍽️","🎉","🎓","💼","🏖️","🎮","🏃","☕","🎵","💡","🐶","🌍","📚","🎬","⚽"]
-                NavigationStack {
-                    Form {
-                        Section(loc.groupName) { TextField(loc.groupNamePlaceholder, text: $editGroupName) }
-                        Section("Icon") {
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 8) {
-                                ForEach(icons, id: \.self) { icon in
-                                    Button { editGroupIcon = icon } label: { Text(icon).font(.title2) }
-                                        .frame(width: 44, height: 44)
-                                        .background(editGroupIcon == icon ? Color.accentColor.opacity(0.15) : Color.clear)
-                                        .cornerRadius(10)
-                                }
-                            }
-                        }
-                    }
-                    .navigationTitle(loc.edit).navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) { Button(loc.cancel) { showEditSheet = false } }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button(loc.save) {
-                                if let g = editingGroup, let gid = g.id {
-                                    Task {
-                                        try? await supabase.from("groups").update(["name": editGroupName, "icon": editGroupIcon]).eq("id", value: gid).execute()
-                                        vm.loadGroups(userId: authVM.currentUserId ?? "")
-                                    }
-                                    showEditSheet = false
-                                }
-                            }.disabled(editGroupName.trimmingCharacters(in: .whitespaces).isEmpty)
-                        }
-                    }
-                }.presentationDetents([.height(350)])
+                editSheet
             }
             .alert(loc.deleteGroup, isPresented: $showDeleteAlert) {
                 Button(loc.cancel, role: .cancel) {}
-                Button(loc.delete, role: .destructive) {
-                    if let g = deletingGroup, let gid = g.id {
-                        Task { try? await GroupService.shared.deleteGroup(gid) }
-                        vm.loadGroups(userId: authVM.currentUserId ?? "")
-                    }
-                }
+                Button(loc.delete, role: .destructive) { confirmDelete() }
             } message: { Text(loc.deleteBillMsg(deletingGroup?.name ?? "")) }
         }
         .onAppear { if let uid = authVM.currentUserId { vm.loadGroups(userId: uid) } }
     }
-}
 
-struct GroupCard: View {
-    let group: BillGroup
-    let userNames: [String: String]
-    let userAvatars: [String: String]
-    let currentUserId: String
-    @StateObject private var loc = LocaleManager.shared
+    // MARK: - Group Row
 
-    var body: some View {
-        HStack(spacing: 14) {
-            ZStack {
-                Circle().fill(Color.accentColor.opacity(0.1)).frame(width: 48, height: 48)
-                Text(group.icon).font(.system(size: 24))
-            }
-            VStack(alignment: .leading, spacing: 6) {
-                Text(group.name).font(.headline).fontWeight(.semibold).foregroundColor(.primary)
-                HStack(spacing: 8) {
+    private func groupRow(_ group: BillGroup) -> some View {
+        HStack(spacing: 12) {
+            Text(group.icon).font(.title2)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(group.name).font(.headline).fontWeight(.semibold)
+                HStack(spacing: 6) {
                     Label("\(group.memberIds.count)", systemImage: "person.2").font(.caption).foregroundColor(.secondary)
-                    Text("·").foregroundColor(.secondary)
-                    Label(group.inviteCode, systemImage: "key")
-                        .font(.system(.caption, design: .monospaced)).fontWeight(.medium).foregroundColor(.accentColor)
+                    Text(group.inviteCode).font(.system(.caption, design: .monospaced)).foregroundColor(.accentColor)
                 }
             }
             Spacer()
-            VStack(alignment: .trailing, spacing: 4) {
-                Text(group.createdAt, style: .date).font(.caption2).foregroundColor(.secondary)
-                Image(systemName: "chevron.right").font(.caption).foregroundColor(.secondary)
+            Text(group.createdAt, style: .date).font(.caption2).foregroundColor(.secondary)
+        }.padding(.vertical, 4)
+    }
+
+    // MARK: - Edit Sheet
+
+    private var editSheet: some View {
+        let icons = ["👥","🏠","✈️","🍽️","🎉","🎓","💼","🏖️","🎮","🏃","☕","🎵","💡","🐶","🌍","📚","🎬","⚽"]
+        return NavigationStack {
+            Form {
+                Section(loc.groupName) { TextField(loc.groupNamePlaceholder, text: $editGroupName) }
+                Section("Icon") {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 8) {
+                        ForEach(icons, id: \.self) { icon in
+                            Text(icon).font(.title2).frame(width: 40, height: 40)
+                                .background(editGroupIcon == icon ? Color.accentColor.opacity(0.2) : Color.clear)
+                                .cornerRadius(8).onTapGesture { editGroupIcon = icon }
+                        }
+                    }
+                }
             }
+            .navigationTitle(loc.edit).navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button(loc.cancel) { showEditSheet = false } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(loc.save) { confirmEdit() }.disabled(editGroupName.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }.presentationDetents([.height(350)])
+    }
+
+    // MARK: - Actions (properly awaited)
+
+    private func confirmEdit() {
+        guard let g = editingGroup, let gid = g.id else { return }
+        Task {
+            try? await supabase.from("groups").update(["name": editGroupName, "icon": editGroupIcon]).eq("id", value: gid).execute()
+            await MainActor.run { showEditSheet = false }
+            vm.loadGroups(userId: authVM.currentUserId ?? "")
         }
-        .padding(12)
-        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemBackground)).shadow(color: .black.opacity(0.04), radius: 4))
+    }
+
+    private func confirmDelete() {
+        guard let g = deletingGroup, let gid = g.id else { return }
+        Task {
+            try? await GroupService.shared.deleteGroup(gid)
+            vm.loadGroups(userId: authVM.currentUserId ?? "")
+        }
     }
 }

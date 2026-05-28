@@ -21,49 +21,43 @@ struct GroupDetailView: View {
         ZStack {
             Color(.systemGroupedBackground).ignoresSafeArea()
             List {
-                // Summary
-                Section { summaryRow } header: { Text("Summary").font(.subheadline) }
-                .listRowBackground(Color.clear).listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                Section { summaryView }
+                header: { Text("Summary").font(.subheadline) }
 
-                // Members
-                Section { ForEach(vm.group.memberIds, id: \.self) { id in memberRow(id) } }
-                header: { Text("\(loc.members) (\(vm.group.memberIds.count))").font(.subheadline) }
+                Section {
+                    ForEach(vm.group.memberIds, id: \.self, content: memberView)
+                } header: { Text("\(loc.members) (\(vm.group.memberIds.count))").font(.subheadline) }
 
-                // Debts
                 if !myDebts.isEmpty {
-                    Section { ForEach(myDebts) { debt in debtRow(debt) } }
-                    header: { Text(loc.toSettle).font(.subheadline) }
+                    Section {
+                        ForEach(myDebts) { debt in
+                            SettlementRow(debt: debt, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "", onMarkPaid: { settle(debt) })
+                        }
+                    } header: { Text(loc.toSettle).font(.subheadline) }
                 }
 
-                // Add buttons
                 Section {
                     HStack(spacing: 12) {
-                        Button { showAddBill = true } label: { Label(loc.manualInput, systemImage: "square.and.pencil").frame(maxWidth: .infinity) }
-                            .buttonStyle(.borderedProminent)
-                        Button { showReceiptScan = true } label: { Label(loc.scanReceipt, systemImage: "doc.text.viewfinder").frame(maxWidth: .infinity) }
-                            .buttonStyle(.bordered)
+                        Button { showAddBill = true } label: { Label(loc.manualInput, systemImage: "square.and.pencil").frame(maxWidth: .infinity) }.buttonStyle(.borderedProminent)
+                        Button { showReceiptScan = true } label: { Label(loc.scanReceipt, systemImage: "doc.text.viewfinder").frame(maxWidth: .infinity) }.buttonStyle(.bordered)
                     }
-                }
-                .listRowBackground(Color.clear).listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                } header: { Text("Add Bill").font(.subheadline) }
 
-                // Bills
                 Section {
                     if vm.bills.isEmpty {
                         VStack(spacing: 8) {
                             Image(systemName: "tray").font(.title2).foregroundColor(.secondary)
                             Text(loc.noBills).font(.subheadline).foregroundColor(.secondary)
-                        }
-                        .frame(maxWidth: .infinity).padding(.vertical, 20)
+                        }.frame(maxWidth: .infinity).padding(.vertical, 16)
                     }
-                    ForEach(vm.bills) { bill in billRow(bill) }
-                } header: { Text(loc.billRecords).font(.subheadline) }
+                    ForEach(vm.bills) { bill in billRowView(bill) }
+                } header: { if !vm.bills.isEmpty { Text(loc.billRecords).font(.subheadline) } }
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
         }
         .toast($toast)
         .navigationTitle(vm.group.name)
-        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem {
                 Menu {
@@ -95,16 +89,11 @@ struct GroupDetailView: View {
         }
         .alert(loc.deleteBillTitle, isPresented: $showDeleteConfirm) {
             Button(loc.cancel, role: .cancel) {}
-            Button(loc.delete, role: .destructive) {
-                if let bill = deletingBill, let billId = bill.id {
-                    Task { try? await BillService.shared.deleteBill(billId); vm.loadData() }
-                    toast = .success("Deleted")
-                }
-            }
+            Button(loc.delete, role: .destructive) { confirmDeleteBill() }
         } message: { Text(loc.deleteBillMsg(deletingBill?.description ?? "")) }
         .alert(loc.deleteGroup, isPresented: $showDeleteGroupAlert) {
             Button(loc.cancel, role: .cancel) {}
-            Button(loc.delete, role: .destructive) { vm.deleteGroup(userId: authVM.currentUserId ?? "") }
+            Button(loc.delete, role: .destructive) { confirmDeleteGroup() }
         } message: { Text("Delete \"\(vm.group.name)\"? This cannot be undone.") }
         .alert(loc.cannotLeave, isPresented: $showLeaveAlert) {
             Button(loc.cancel, role: .cancel) {}
@@ -115,26 +104,24 @@ struct GroupDetailView: View {
         .onDisappear { vm.unsubscribeRealtime() }
     }
 
-    // MARK: - Rows
+    // MARK: - Views
 
-    private var summaryRow: some View {
+    private var summaryView: some View {
         HStack(spacing: 12) {
-            VStack(spacing: 4) {
+            VStack(spacing: 2) {
                 Text(CurrencySettings.shared.formatted(vm.totalSpent)).font(.title3).fontWeight(.bold)
                 Text("Total").font(.caption).foregroundColor(.secondary)
             }.frame(maxWidth: .infinity).padding(.vertical, 8)
-            VStack(spacing: 4) {
+            VStack(spacing: 2) {
                 let bal = vm.memberBalance(authVM.currentUserId ?? "")
                 Text(bal > 0.01 ? "Receivable" : bal < -0.01 ? "Payable" : "Settled")
-                    .font(.subheadline).fontWeight(.semibold)
-                    .foregroundColor(bal > 0.01 ? .green : bal < -0.01 ? .orange : .secondary)
+                    .font(.caption).fontWeight(.semibold).foregroundColor(bal > 0.01 ? .green : bal < -0.01 ? .orange : .secondary)
                 Text(CurrencySettings.shared.formatted(abs(bal))).font(.title3).fontWeight(.bold)
             }.frame(maxWidth: .infinity).padding(.vertical, 8)
         }
     }
 
-    @ViewBuilder
-    private func memberRow(_ id: String) -> some View {
+    private func memberView(_ id: String) -> some View {
         HStack(spacing: 10) {
             AvatarView(avatarUrl: vm.userAvatars[id], displayName: vm.userNames[id] ?? "", size: 32)
             VStack(alignment: .leading, spacing: 2) {
@@ -146,20 +133,13 @@ struct GroupDetailView: View {
         }
     }
 
-    @ViewBuilder
-    private func debtRow(_ debt: DebtEntry) -> some View {
-        SettlementRow(debt: debt, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "", onMarkPaid: { markPaid(debt: debt) })
-    }
-
-    @ViewBuilder
-    private func billRow(_ bill: Bill) -> some View {
+    private func billRowView(_ bill: Bill) -> some View {
         HStack(spacing: 10) {
             ZStack { Circle().fill(vm.billColor(bill).opacity(0.15)).frame(width: 36, height: 36); Text(vm.billIcon(bill)).font(.system(size: 18)) }
             VStack(alignment: .leading, spacing: 2) {
                 Text(bill.description).font(.subheadline).fontWeight(.medium)
                 HStack(spacing: 4) {
-                    Text(vm.userNames[bill.payerId] ?? "...").font(.caption).foregroundColor(.secondary)
-                    Text("· \(bill.participantIds.count)").font(.caption2).foregroundColor(.secondary)
+                    Text("Paid by \(vm.userNames[bill.payerId] ?? "...")").font(.caption).foregroundColor(.secondary)
                     if bill.currency != CurrencySettings.shared.current.rawValue {
                         Text("· \(bill.displayOriginal)").font(.caption2).foregroundColor(.secondary)
                     }
@@ -183,12 +163,26 @@ struct GroupDetailView: View {
     private func balanceColor(_ id: String) -> Color {
         let b = vm.memberBalance(id); if abs(b) < 0.01 { return .secondary }; return b > 0 ? .green : .orange
     }
-    private func markPaid(debt: DebtEntry) {
+    private func settle(_ debt: DebtEntry) {
         guard let groupId = vm.group.id else { return }
         Task {
             try? await SettlementService.shared.createSettlement(groupId: groupId, fromUserId: debt.fromUserId, toUserId: debt.toUserId, amount: debt.amount)
             await MainActor.run { toast = .success("Marked as paid") }
             vm.loadData()
+        }
+    }
+    private func confirmDeleteBill() {
+        guard let bill = deletingBill, let billId = bill.id else { return }
+        Task {
+            try? await BillService.shared.deleteBill(billId)
+            await MainActor.run { toast = .success("Deleted") }
+            vm.loadData()
+        }
+    }
+    private func confirmDeleteGroup() {
+        guard let groupId = vm.group.id else { return }
+        Task {
+            try? await GroupService.shared.deleteGroup(groupId)
         }
     }
 }
