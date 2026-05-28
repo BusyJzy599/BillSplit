@@ -12,7 +12,7 @@ class BillService {
     func createBill(groupId: Int, payerId: String, amount: Double,
                     description: String, participantIds: [String],
                     currency: String = "cny", exchangeRate: Double = 1.0,
-                    category: String = "other") async throws {
+                    category: String = "other", date: Date = Date()) async throws {
         let bill = Bill(
             groupId: groupId,
             payerId: payerId,
@@ -22,7 +22,7 @@ class BillService {
             currency: currency,
             exchangeRate: exchangeRate,
             category: category,
-            createdAt: Date()
+            createdAt: date
         )
         try await supabase.from("bills").insert(bill).execute()
     }

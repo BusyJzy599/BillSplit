@@ -72,7 +72,7 @@ struct LoginView: View {
 
     var confirmationView: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            AppBackground().ignoresSafeArea()
             VStack(spacing: 24) {
                 Spacer()
                 ZStack {
@@ -108,7 +108,7 @@ struct LoginView: View {
 
     var loginFormView: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            AppBackground().ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 0) {

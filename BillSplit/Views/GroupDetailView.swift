@@ -265,6 +265,7 @@ struct GroupDetailView: View {
                     HStack(spacing: 4) {
                         Text(isMyBill ? loc.youPaid : "\(vm.userNames[bill.payerId] ?? "...") \(loc.pay)")
                             .font(.caption).foregroundColor(isMyBill ? .blue : .secondary)
+                        Text("· \(bill.createdAt, style: .date)").font(.caption2).foregroundColor(.secondary)
                         if isParticipant && !isMyBill {
                             Text(loc.yourShareAmount(CurrencySettings.shared.formatted(myShare)))
                                 .font(.caption2).foregroundColor(.orange)

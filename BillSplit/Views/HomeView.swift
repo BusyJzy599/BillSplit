@@ -8,7 +8,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                AppBackgroundLight().ignoresSafeArea()
 
                 if vm.isLoading {
                     ProgressView(loc.loading)

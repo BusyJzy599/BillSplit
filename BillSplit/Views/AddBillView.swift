@@ -17,6 +17,7 @@ struct AddBillView: View {
     @State private var currency: Currency = CurrencySettings.shared.current
     @State private var exchangeRate: Double = Currency.rateUSDToCNY
     @State private var selectedCategory: BillCategory = .other
+    @State private var billDate = Date()
     @FocusState private var isAmountFocused: Bool
     @State private var errorMessage: String?
     @StateObject private var loc = LocaleManager.shared
@@ -40,6 +41,7 @@ struct AddBillView: View {
             _exchangeRate = State(initialValue: rate)
             _description = State(initialValue: bill.description)
             _selectedCategory = State(initialValue: BillCategory(rawValue: bill.category) ?? .other)
+            _billDate = State(initialValue: bill.createdAt)
             let original = rate > 0 ? bill.amount / rate : bill.amount
             _amountText = State(initialValue: String(format: "%.2f", original))
         } else {
@@ -87,6 +89,12 @@ struct AddBillView: View {
 
                 Section(loc.description) {
                     TextField(loc.descriptionPlaceholder, text: $description)
+                }
+
+                Section(loc.locale == .zh ? "日期" : "Date") {
+                    DatePicker("", selection: $billDate, displayedComponents: .date)
+                        .datePickerStyle(.compact)
+                        .labelsHidden()
                 }
 
                 Section(loc.sectionCategory) {
@@ -176,7 +184,7 @@ struct AddBillView: View {
                         groupId: groupId, payerId: selectedPayerId, amount: amountInCNY,
                         description: description, participantIds: Array(selectedParticipantIds),
                         currency: currency.rawValue, exchangeRate: exchangeRate,
-                        category: selectedCategory.rawValue)
+                        category: selectedCategory.rawValue, date: billDate)
                 }
                 await MainActor.run {
                     NotificationCenter.default.post(name: NSNotification.Name("refreshGroups"), object: nil)
