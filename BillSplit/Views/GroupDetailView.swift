@@ -72,7 +72,7 @@ struct GroupDetailView: View {
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                     Spacer()
-                                    Text(bill.createdAt.dateValue(), style: .date)
+                                    Text(bill.createdAt, style: .date)
                                         .font(.caption2)
                                         .foregroundColor(.secondary)
                                 }
@@ -127,11 +127,11 @@ struct GroupDetailView: View {
             }
         }
         .sheet(isPresented: $showAddBill) {
-            AddBillView(groupId: vm.group.id ?? "", memberIds: vm.group.memberIds, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "")
+            AddBillView(groupId: vm.group.id ?? 0, memberIds: vm.group.memberIds, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "")
         }
         .sheet(isPresented: $showReceiptScan) {
             ReceiptScanView(
-                groupId: vm.group.id ?? "",
+                groupId: vm.group.id ?? 0,
                 memberIds: vm.group.memberIds,
                 userNames: vm.userNames,
                 currentUserId: authVM.currentUserId ?? ""
@@ -142,8 +142,7 @@ struct GroupDetailView: View {
         } message: {
             Text("请先结清所有欠款后再退出账单组")
         }
-        .onAppear { vm.startListening() }
-        .onDisappear { vm.stopListening() }
+        .onAppear { vm.loadData() }
     }
 
     private func markPaid(debt: DebtEntry) {

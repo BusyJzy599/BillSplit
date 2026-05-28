@@ -1,10 +1,10 @@
-import FirebaseFirestore
+import Foundation
 
 struct BillGroup: Codable, Identifiable, Hashable {
-    @DocumentID var id: String?
+    var id: Int?
     var name: String
     var inviteCode: String
     var creatorId: String
     var memberIds: [String]
-    var createdAt: Timestamp
+    var createdAt: Date
 }

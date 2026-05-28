@@ -1,5 +1,5 @@
-import FirebaseFirestore
 import SwiftUI
+import Supabase
 
 class GroupDetailViewModel: ObservableObject {
     @Published var group: BillGroup
@@ -8,52 +8,45 @@ class GroupDetailViewModel: ObservableObject {
     @Published var userNames: [String: String] = [:]
     @Published var debts: [DebtEntry] = []
 
-    private var groupListener: ListenerRegistration?
-    private var billsListener: ListenerRegistration?
-    private var settlementsListener: ListenerRegistration?
-
     init(group: BillGroup) { self.group = group }
 
-    func startListening() {
+    func loadData() {
         guard let groupId = group.id else { return }
+        Task {
+            do {
+                // Load group
+                let g = try await GroupService.shared.getGroup(id: groupId)
+                await MainActor.run { self.group = g }
+                await fetchUserNames(ids: Set(g.memberIds))
 
-        groupListener = GroupService.shared.groupListener(groupId: groupId) { [weak self] snapshot, _ in
-            guard let self = self, let data = snapshot?.data() else { return }
-            var g = try! Firestore.Decoder().decode(BillGroup.self, from: data)
-            g.id = groupId
-            self.group = g
-            self.fetchUserNames(ids: Set(g.memberIds))
+                // Load bills
+                let bills = try await BillService.shared.getBills(for: groupId)
+                await MainActor.run { self.bills = bills }
+
+                // Load settlements
+                let settlements = try await SettlementService.shared.getSettlements(for: groupId)
+                await MainActor.run { self.settlements = settlements }
+
+                await MainActor.run { recalcDebts() }
+            } catch {
+                print("Load data failed: \(error)")
+            }
         }
-
-        billsListener = BillService.shared.billsListener(for: groupId) { [weak self] snapshot, _ in
-            guard let docs = snapshot?.documents else { return }
-            self?.bills = docs.compactMap { try? $0.data(as: Bill.self) }
-            self?.recalcDebts()
-        }
-
-        settlementsListener = SettlementService.shared.settlementsListener(for: groupId) { [weak self] snapshot, _ in
-            guard let docs = snapshot?.documents else { return }
-            self?.settlements = docs.compactMap { try? $0.data(as: Settlement.self) }
-            self?.recalcDebts()
-        }
-    }
-
-    func stopListening() {
-        groupListener?.remove()
-        billsListener?.remove()
-        settlementsListener?.remove()
     }
 
     private func recalcDebts() {
         debts = DebtCalculator.compute(bills: bills, settlements: settlements)
     }
 
-    private func fetchUserNames(ids: Set<String>) {
+    private func fetchUserNames(ids: Set<String>) async {
         for id in ids where userNames[id] == nil {
-            Firestore.firestore().collection("users").document(id).getDocument { [weak self] doc, _ in
-                if let user = try? doc?.data(as: AppUser.self) {
-                    self?.userNames[id] = user.displayName
+            do {
+                let users: [AppUser] = try await supabase.from("users").select().eq("id", value: id).execute().value
+                if let user = users.first {
+                    await MainActor.run { self.userNames[id] = user.displayName }
                 }
+            } catch {
+                print("Fetch user failed: \(error)")
             }
         }
     }

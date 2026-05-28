@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AddBillView: View {
     @Environment(\.dismiss) var dismiss
-    let groupId: String
+    let groupId: Int
     let memberIds: [String]
     let userNames: [String: String]
     let currentUserId: String
@@ -12,7 +12,7 @@ struct AddBillView: View {
     @State private var selectedPayerId: String
     @State private var selectedParticipantIds: Set<String>
 
-    init(groupId: String, memberIds: [String], userNames: [String: String], currentUserId: String) {
+    init(groupId: Int, memberIds: [String], userNames: [String: String], currentUserId: String) {
         self.groupId = groupId
         self.memberIds = memberIds
         self.userNames = userNames

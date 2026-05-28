@@ -1,33 +1,32 @@
-import FirebaseFirestore
 import SwiftUI
+import Supabase
 
 class GroupListViewModel: ObservableObject {
     @Published var groups: [BillGroup] = []
     @Published var userNames: [String: String] = [:]
 
-    private var listener: ListenerRegistration?
-
-    func startListening(userId: String) {
-        listener = GroupService.shared.groupsListener(for: userId) { [weak self] snapshot, error in
-            guard let docs = snapshot?.documents else { return }
-            let groups = docs.compactMap { try? $0.data(as: BillGroup.self) }
-            self?.groups = groups
-
-            let allMemberIds = Set(groups.flatMap { $0.memberIds })
-            self?.fetchUserNames(ids: allMemberIds)
+    func loadGroups(userId: String) {
+        Task {
+            do {
+                let groups = try await GroupService.shared.getGroups(for: userId)
+                await MainActor.run { self.groups = groups }
+                let allMemberIds = Set(groups.flatMap { $0.memberIds })
+                await fetchUserNames(ids: allMemberIds)
+            } catch {
+                print("Load groups failed: \(error)")
+            }
         }
     }
 
-    func stopListening() {
-        listener?.remove()
-    }
-
-    private func fetchUserNames(ids: Set<String>) {
+    private func fetchUserNames(ids: Set<String>) async {
         for id in ids where userNames[id] == nil {
-            Firestore.firestore().collection("users").document(id).getDocument { [weak self] doc, _ in
-                if let user = try? doc?.data(as: AppUser.self) {
-                    self?.userNames[id] = user.displayName
+            do {
+                let users: [AppUser] = try await supabase.from("users").select().eq("id", value: id).execute().value
+                if let user = users.first {
+                    await MainActor.run { self.userNames[id] = user.displayName }
                 }
+            } catch {
+                print("Fetch user failed: \(error)")
             }
         }
     }
@@ -36,6 +35,7 @@ class GroupListViewModel: ObservableObject {
         Task {
             do {
                 _ = try await GroupService.shared.createGroup(name: name, creatorId: userId)
+                await loadGroups(userId: userId)
             } catch {
                 print("Create group failed: \(error)")
             }

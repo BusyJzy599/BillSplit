@@ -1,24 +1,24 @@
-import FirebaseAuth
 import SwiftUI
+import Supabase
 
 class AuthViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var currentUserId: String?
 
-    private var handle: AuthStateDidChangeListenerHandle?
-
     init() {
-        handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
-            self?.isLoggedIn = user != nil
-            self?.currentUserId = user?.uid
+        Task {
+            for await (_, session) in supabase.auth.authStateChanges {
+                await MainActor.run {
+                    self.isLoggedIn = session != nil
+                    self.currentUserId = session?.user.id.uuidString
+                }
+            }
         }
     }
 
-    deinit {
-        if let handle = handle { Auth.auth().removeStateDidChangeListener(handle) }
-    }
-
     func signOut() {
-        try? AuthService.shared.signOut()
+        Task {
+            try? await AuthService.shared.signOut()
+        }
     }
 }

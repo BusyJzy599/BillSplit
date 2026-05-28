@@ -3,7 +3,7 @@ import SwiftUI
 struct ReceiptConfirmationView: View {
     @Environment(\.dismiss) var dismiss
     @State var items: [ReceiptItem]
-    let groupId: String
+    let groupId: Int
     let memberIds: [String]
     let userNames: [String: String]
     let currentUserId: String

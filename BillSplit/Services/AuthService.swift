@@ -1,11 +1,9 @@
-import FirebaseAuth
-import FirebaseFirestore
 import AuthenticationServices
 import CryptoKit
+import Supabase
 
 class AuthService: NSObject, ObservableObject {
     static let shared = AuthService()
-    private let db = Firestore.firestore()
 
     private var currentNonce: String?
 
@@ -22,15 +20,15 @@ class AuthService: NSObject, ObservableObject {
     }
 
     func saveUserIfNeeded(userId: String, displayName: String, email: String) async throws {
-        let doc = try await db.collection("users").document(userId).getDocument()
-        if !doc.exists {
-            let user = AppUser(displayName: displayName, email: email, createdAt: Timestamp())
-            try db.collection("users").document(userId).setData(from: user)
+        let existing: [AppUser] = try await supabase.from("users").select().eq("id", value: userId).execute().value
+        if existing.isEmpty {
+            let user = AppUser(id: userId, displayName: displayName, email: email, createdAt: Date())
+            try await supabase.from("users").insert(user).execute()
         }
     }
 
-    func signOut() throws {
-        try Auth.auth().signOut()
+    func signOut() async throws {
+        try await supabase.auth.signOut()
     }
 
     private func randomNonceString(length: Int = 32) -> String {
@@ -54,17 +52,17 @@ extension AuthService: ASAuthorizationControllerDelegate {
               let token = credential.identityToken,
               let tokenString = String(data: token, encoding: .utf8) else { return }
 
-        let firebaseCredential = OAuthProvider.appleCredential(
-            withIDToken: tokenString,
-            rawNonce: nonce,
-            fullName: credential.fullName
-        )
-        Auth.auth().signIn(with: firebaseCredential) { [weak self] result, error in
-            guard let self = self, let user = result?.user else { return }
-            let name = credential.fullName.map { "\($0.givenName ?? "") \($0.familyName ?? "")".trimmingCharacters(in: .whitespaces) } ?? "用户"
-            Task {
-                try? await self.saveUserIfNeeded(userId: user.uid, displayName: name, email: user.email ?? "")
+        Task {
+            do {
+                try await supabase.auth.signInWithIdToken(
+                    credentials: .init(provider: .apple, idToken: tokenString, nonce: nonce)
+                )
+                let user = try await supabase.auth.session.user
+                let name = credential.fullName.map { "\($0.givenName ?? "") \($0.familyName ?? "")".trimmingCharacters(in: .whitespaces) } ?? "用户"
+                try? await saveUserIfNeeded(userId: user.id.uuidString, displayName: name, email: user.email ?? "")
                 await MainActor.run { self.objectWillChange.send() }
+            } catch {
+                print("Sign in failed: \(error)")
             }
         }
     }

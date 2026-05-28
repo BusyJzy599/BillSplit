@@ -49,9 +49,8 @@ struct GroupListView: View {
                 .presentationDetents([.height(200)])
             }
             .onAppear {
-                if let uid = authVM.currentUserId { vm.startListening(userId: uid) }
+                if let uid = authVM.currentUserId { vm.loadGroups(userId: uid) }
             }
-            .onDisappear { vm.stopListening() }
         }
     }
 }
@@ -81,7 +80,7 @@ struct GroupCard: View {
                         .fontWeight(.bold)
                         .foregroundColor(.accentColor)
                     Spacer()
-                    Text(group.createdAt.dateValue(), style: .date)
+                    Text(group.createdAt, style: .date)
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }

@@ -30,10 +30,9 @@
 		A9262964B09135591B89975A /* InviteCodeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2217E5E1F641B5B71B42FEA9 /* InviteCodeCard.swift */; };
 		C0EFC2A29D7F20A677409987 /* GroupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A5B24AF322D105948F51B /* GroupService.swift */; };
 		C515A640CC8F8F5BCA5C3BA1 /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9FF4A2D14453F090CF2A75 /* OCRService.swift */; };
-		CC42C8106B2301FA02D111AC /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 97EDDDA5E61F82A38ACF0E06 /* FirebaseAuth */; };
+		CC42C8106B2301FA02D111AC /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 808584BDDDCE06A49B9E13D9 /* Supabase */; };
 		D9AE468E84C63A98295B03DA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F6A257212196F9D96EAA2A4 /* LoginView.swift */; };
 		DB9038A448526258B609D9D4 /* BillSplitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDCAD048D3BCF40D5B65CB9 /* BillSplitApp.swift */; };
-		E3284CE5FCC7F2750EF4559E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B35C5F72A809A7B927DAED18 /* FirebaseFirestore */; };
 		E4D180E33CBD94A03C2EBCEA /* DebtCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEEFE21002E52EC17E1E51 /* DebtCalculator.swift */; };
 		F95AB31E556C2F24CD671E17 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42397EE31BFC15E069E8370D /* GlassCard.swift */; };
 		F9AE549B0F7888BEE388CBB5 /* AddBillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5E279B6553B7BE68B162D1 /* AddBillView.swift */; };
@@ -78,8 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CC42C8106B2301FA02D111AC /* FirebaseAuth in Frameworks */,
-				E3284CE5FCC7F2750EF4559E /* FirebaseFirestore in Frameworks */,
+				CC42C8106B2301FA02D111AC /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,8 +207,7 @@
 			);
 			name = BillSplit;
 			packageProductDependencies = (
-				97EDDDA5E61F82A38ACF0E06 /* FirebaseAuth */,
-				B35C5F72A809A7B927DAED18 /* FirebaseFirestore */,
+				808584BDDDCE06A49B9E13D9 /* Supabase */,
 			);
 			productName = BillSplit;
 			productReference = 37F49F87F317B11EC939AD0F /* BillSplit.app */;
@@ -238,7 +235,7 @@
 			mainGroup = D61CAC73CE5C88485A3545F9;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				166B876B5CD6787ECB1BB4E9 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 54;
 			projectDirPath = "";
@@ -482,26 +479,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		166B876B5CD6787ECB1BB4E9 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			repositoryURL = "https://github.com/supabase-community/supabase-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 11.0.0;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		97EDDDA5E61F82A38ACF0E06 /* FirebaseAuth */ = {
+		808584BDDDCE06A49B9E13D9 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		B35C5F72A809A7B927DAED18 /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
+			package = 166B876B5CD6787ECB1BB4E9 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

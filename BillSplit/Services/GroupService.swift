@@ -1,16 +1,18 @@
-import FirebaseFirestore
+import Foundation
+import Supabase
 
 class GroupService {
     static let shared = GroupService()
-    private let db = Firestore.firestore()
 
-    func groupsListener(for userId: String, onUpdate: @escaping (QuerySnapshot?, Error?) -> Void) -> ListenerRegistration {
-        return db.collection("groups")
-            .whereField("memberIds", arrayContains: userId)
-            .order(by: "createdAt", descending: true)
-            .addSnapshotListener { snapshot, error in
-                onUpdate(snapshot, error)
-            }
+    func getGroups(for userId: String) async throws -> [BillGroup] {
+        let groups: [BillGroup] = try await supabase.from("groups").select().contains("memberIds", value: [userId]).order("createdAt", ascending: false).execute().value
+        return groups
+    }
+
+    func getGroup(id: Int) async throws -> BillGroup {
+        let groups: [BillGroup] = try await supabase.from("groups").select().eq("id", value: id).execute().value
+        guard let group = groups.first else { throw GroupError.notFound }
+        return group
     }
 
     func createGroup(name: String, creatorId: String) async throws -> BillGroup {
@@ -20,61 +22,45 @@ class GroupService {
             inviteCode: code,
             creatorId: creatorId,
             memberIds: [creatorId],
-            createdAt: Timestamp()
+            createdAt: Date()
         )
-        let ref = try db.collection("groups").addDocument(from: group)
-        var result = group
-        result.id = ref.documentID
-        return result
+        let result: [BillGroup] = try await supabase.from("groups").insert(group).select().execute().value
+        guard let created = result.first else { throw GroupError.codeGenerationFailed }
+        return created
     }
 
     func joinGroup(inviteCode: String, userId: String) async throws -> BillGroup {
-        let snapshot = try await db.collection("groups")
-            .whereField("inviteCode", isEqualTo: inviteCode.uppercased())
-            .getDocuments()
+        let groups: [BillGroup] = try await supabase.from("groups").select().eq("inviteCode", value: inviteCode.uppercased()).execute().value
 
-        guard let doc = snapshot.documents.first else {
+        guard var group = groups.first else {
             throw GroupError.notFound
         }
-
-        var group = try doc.data(as: BillGroup.self)
-        group.id = doc.documentID
 
         if group.memberIds.contains(userId) {
             throw GroupError.alreadyMember
         }
 
-        try await doc.reference.updateData([
-            "memberIds": FieldValue.arrayUnion([userId])
-        ])
         group.memberIds.append(userId)
+        try await supabase.from("groups").update(["memberIds": group.memberIds]).eq("id", value: group.id!).execute()
         return group
     }
 
-    func deleteGroup(_ groupId: String) async throws {
-        try await db.collection("groups").document(groupId).delete()
+    func deleteGroup(_ groupId: Int) async throws {
+        try await supabase.from("groups").delete().eq("id", value: groupId).execute()
     }
 
-    func leaveGroup(_ groupId: String, userId: String) async throws {
-        try await db.collection("groups").document(groupId).updateData([
-            "memberIds": FieldValue.arrayRemove([userId])
-        ])
-    }
-
-    func groupListener(groupId: String, onUpdate: @escaping (DocumentSnapshot?, Error?) -> Void) -> ListenerRegistration {
-        return db.collection("groups").document(groupId).addSnapshotListener { snapshot, error in
-            onUpdate(snapshot, error)
-        }
+    func leaveGroup(_ groupId: Int, userId: String) async throws {
+        let group = try await getGroup(id: groupId)
+        let newMemberIds = group.memberIds.filter { $0 != userId }
+        try await supabase.from("groups").update(["memberIds": newMemberIds]).eq("id", value: groupId).execute()
     }
 
     private func generateUniqueCode() async throws -> String {
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         for _ in 0..<10 {
             let code = String((0..<6).map { _ in chars.randomElement()! })
-            let snapshot = try await db.collection("groups")
-                .whereField("inviteCode", isEqualTo: code)
-                .getDocuments()
-            if snapshot.documents.isEmpty { return code }
+            let existing: [BillGroup] = try await supabase.from("groups").select().eq("inviteCode", value: code).execute().value
+            if existing.isEmpty { return code }
         }
         throw GroupError.codeGenerationFailed
     }

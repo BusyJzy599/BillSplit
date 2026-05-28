@@ -1,8 +1,8 @@
-import FirebaseFirestore
+import Foundation
 
-struct AppUser: Codable, Identifiable {
-    @DocumentID var id: String?
+struct AppUser: Codable, Identifiable, Hashable {
+    var id: String
     var displayName: String
     var email: String
-    var createdAt: Timestamp
+    var createdAt: Date
 }

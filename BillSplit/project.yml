@@ -12,9 +12,9 @@ settings:
     INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "用于选择收据照片"
 
 packages:
-  Firebase:
-    url: https://github.com/firebase/firebase-ios-sdk
-    from: "11.0.0"
+  Supabase:
+    url: https://github.com/supabase-community/supabase-swift
+    from: "2.0.0"
 
 targets:
   BillSplit:
@@ -31,9 +31,7 @@ targets:
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: true
     dependencies:
-      - package: Firebase
-        product: FirebaseAuth
-      - package: Firebase
-        product: FirebaseFirestore
+      - package: Supabase
+        product: Supabase
     preBuildScripts: []
     postCompileScripts: []

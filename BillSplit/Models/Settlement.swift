@@ -1,4 +1,4 @@
-import FirebaseFirestore
+import Foundation
 
 enum SettlementStatus: String, Codable {
     case pending
@@ -6,9 +6,9 @@ enum SettlementStatus: String, Codable {
 }
 
 struct Settlement: Codable, Identifiable {
-    @DocumentID var id: String?
-    var billId: String
-    var groupId: String
+    var id: Int?
+    var billId: Int?
+    var groupId: Int
     var fromUserId: String
     var toUserId: String
     var amount: Double

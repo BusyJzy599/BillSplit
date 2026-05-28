@@ -1,11 +1,11 @@
-import FirebaseFirestore
+import Foundation
 
 struct Bill: Codable, Identifiable {
-    @DocumentID var id: String?
-    var groupId: String
+    var id: Int?
+    var groupId: Int
     var payerId: String
     var amount: Double
     var description: String
     var participantIds: [String]
-    var createdAt: Timestamp
+    var createdAt: Date
 }

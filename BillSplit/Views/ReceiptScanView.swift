@@ -3,7 +3,7 @@ import PhotosUI
 
 struct ReceiptScanView: View {
     @Environment(\.dismiss) var dismiss
-    let groupId: String
+    let groupId: Int
     let memberIds: [String]
     let userNames: [String: String]
     let currentUserId: String
