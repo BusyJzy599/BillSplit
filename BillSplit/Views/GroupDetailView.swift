@@ -4,6 +4,7 @@ struct GroupDetailView: View {
     @EnvironmentObject var authVM: AuthViewModel
     @StateObject var vm: GroupDetailViewModel
     @State private var showAddBill = false
+    @State private var showReceiptScan = false
     @State private var showLeaveAlert = false
 
     init(group: BillGroup) {
@@ -110,12 +111,31 @@ struct GroupDetailView: View {
         .navigationTitle(vm.group.name)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            Button { showAddBill = true } label: {
+            Menu {
+                Button {
+                    showAddBill = true
+                } label: {
+                    Label("手动输入", systemImage: "keyboard")
+                }
+                Button {
+                    showReceiptScan = true
+                } label: {
+                    Label("拍照识别", systemImage: "doc.text.viewfinder")
+                }
+            } label: {
                 Image(systemName: "plus")
             }
         }
         .sheet(isPresented: $showAddBill) {
             AddBillView(groupId: vm.group.id ?? "", memberIds: vm.group.memberIds, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "")
+        }
+        .sheet(isPresented: $showReceiptScan) {
+            ReceiptScanView(
+                groupId: vm.group.id ?? "",
+                memberIds: vm.group.memberIds,
+                userNames: vm.userNames,
+                currentUserId: authVM.currentUserId ?? ""
+            )
         }
         .alert("有未结清欠款", isPresented: $showLeaveAlert) {
             Button("取消", role: .cancel) {}
