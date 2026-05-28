@@ -201,9 +201,13 @@ struct GroupDetailView: View {
     func settle(_ debt: DebtEntry) {
         guard let groupId = vm.group.id else { return }
         Task {
-            try? await SettlementService.shared.createSettlement(groupId: groupId, fromUserId: debt.fromUserId, toUserId: debt.toUserId, amount: debt.amount)
-            await MainActor.run { toast = .success("Marked as paid") }
-            await vm.reload()
+            do {
+                try await SettlementService.shared.createSettlement(groupId: groupId, fromUserId: debt.fromUserId, toUserId: debt.toUserId, amount: debt.amount)
+                await MainActor.run { toast = .success("Paid!") }
+                await vm.reload()
+            } catch {
+                await MainActor.run { toast = .error(error.localizedDescription) }
+            }
         }
     }
     func confirmDeleteBill() {
@@ -215,7 +219,13 @@ struct GroupDetailView: View {
     }
     func confirmDeleteGroup() {
         guard let groupId = vm.group.id else { return }
-        Task { try? await GroupService.shared.deleteGroup(groupId) }
+        Task {
+            do {
+                try await GroupService.shared.deleteGroup(groupId)
+            } catch {
+                await MainActor.run { toast = .error(error.localizedDescription) }
+            }
+        }
     }
 }
 

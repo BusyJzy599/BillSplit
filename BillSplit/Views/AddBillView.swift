@@ -17,6 +17,8 @@ struct AddBillView: View {
     @State private var currency: Currency = CurrencySettings.shared.current
     @State private var exchangeRate: Double = Currency.rateUSDToCNY
     @FocusState private var isAmountFocused: Bool
+    @State private var errorMessage: String?
+    @State private var isSubmitting = false
 
     init(groupId: Int, memberIds: [String], userNames: [String: String], currentUserId: String, editBill: Bill? = nil) {
         self.groupId = groupId
@@ -108,11 +110,11 @@ struct AddBillView: View {
                     }
                 }
 
+                if let error = errorMessage { Section { Text(error).foregroundColor(.red).font(.caption) } }
+
                 Section {
-                    Button(editBill != nil ? "更新账单" : "提交账单") {
-                        submit()
-                    }
-                    .disabled(amountValue == nil || description.trimmingCharacters(in: .whitespaces).isEmpty || selectedParticipantIds.isEmpty)
+                    Button(editBill != nil ? "Update Bill" : "Submit Bill") { submit() }
+                        .disabled(isSubmitting || amountValue == nil || description.trimmingCharacters(in: .whitespaces).isEmpty || selectedParticipantIds.isEmpty)
                 }
             }
             .navigationTitle(editBill != nil ? "编辑账单" : "新建账单")
@@ -133,29 +135,24 @@ struct AddBillView: View {
     private func submit() {
         guard let inputAmount = amountValue else { return }
         let amountInCNY = currency.convert(inputAmount, to: .cny)
+        isSubmitting = true; errorMessage = nil
 
         Task {
-            if let bill = editBill, let billId = bill.id {
-                try? await BillService.shared.updateBill(
-                    id: billId,
-                    amount: amountInCNY,
-                    description: description,
-                    participantIds: Array(selectedParticipantIds),
-                    currency: currency.rawValue,
-                    exchangeRate: exchangeRate
-                )
-            } else {
-                try? await BillService.shared.createBill(
-                    groupId: groupId,
-                    payerId: selectedPayerId,
-                    amount: amountInCNY,
-                    description: description,
-                    participantIds: Array(selectedParticipantIds),
-                    currency: currency.rawValue,
-                    exchangeRate: exchangeRate
-                )
+            do {
+                if let bill = editBill, let billId = bill.id {
+                    try await BillService.shared.updateBill(
+                        id: billId, amount: amountInCNY, description: description,
+                        participantIds: Array(selectedParticipantIds), currency: currency.rawValue, exchangeRate: exchangeRate)
+                } else {
+                    try await BillService.shared.createBill(
+                        groupId: groupId, payerId: selectedPayerId, amount: amountInCNY,
+                        description: description, participantIds: Array(selectedParticipantIds),
+                        currency: currency.rawValue, exchangeRate: exchangeRate)
+                }
+                await MainActor.run { dismiss() }
+            } catch {
+                await MainActor.run { errorMessage = error.localizedDescription; isSubmitting = false }
             }
-            await MainActor.run { dismiss() }
         }
     }
 }

@@ -133,9 +133,7 @@ struct GroupListView: View {
                 try await supabase.from("groups").update(["name": editGroupName, "icon": editGroupIcon]).eq("id", value: gid).execute()
                 await MainActor.run { showEditSheet = false }
                 vm.loadGroups(userId: authVM.currentUserId ?? "")
-            } catch {
-                print("Edit group failed: \(error)")
-            }
+            } catch { print("Edit group failed: \(error)") }
         }
     }
 
@@ -145,9 +143,7 @@ struct GroupListView: View {
             do {
                 try await GroupService.shared.deleteGroup(gid)
                 await MainActor.run { vm.loadGroups(userId: authVM.currentUserId ?? "") }
-            } catch {
-                print("Delete group failed: \(error)")
-            }
+            } catch { print("Delete group failed: \(error)") }
         }
     }
 }
