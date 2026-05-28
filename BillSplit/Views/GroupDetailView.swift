@@ -37,7 +37,8 @@ struct GroupDetailView: View {
             List {
                 summarySection
                 membersSection
-                if !myDebts.isEmpty { debtsSection }
+                if !vm.debts.isEmpty { debtsSection }
+                if !settledHistory.isEmpty { settledSection }
                 addButtonsSection
                 billsSection
             }
@@ -57,9 +58,41 @@ struct GroupDetailView: View {
     }
 
     var debtsSection: some View {
-        Section { ForEach(myDebts, content: debtRow) }
-        header: { Text(loc.toSettle).font(.subheadline) }
+        Section {
+            ForEach(vm.debts) { debt in
+                HStack {
+                    AvatarView(avatarUrl: vm.userAvatars[debt.fromUserId], displayName: vm.userNames[debt.fromUserId] ?? "", size: 28)
+                    Text(vm.userNames[debt.fromUserId] ?? "...").font(.subheadline)
+                    Image(systemName: "arrow.right").font(.caption).foregroundColor(.secondary)
+                    AvatarView(avatarUrl: vm.userAvatars[debt.toUserId], displayName: vm.userNames[debt.toUserId] ?? "", size: 28)
+                    Text(vm.userNames[debt.toUserId] ?? "...").font(.subheadline)
+                    Spacer()
+                    Text(CurrencySettings.shared.formatted(debt.amount)).font(.subheadline).fontWeight(.semibold)
+                    if debt.fromUserId == (authVM.currentUserId ?? "") {
+                        Button("Pay") { settle(debt) }.buttonStyle(.borderedProminent).controlSize(.small)
+                    }
+                }
+            }
+        } header: { Text("Who Owes Who").font(.subheadline) }
     }
+
+    var settledSection: some View {
+        Section {
+            ForEach(settledHistory) { s in
+                HStack {
+                    Text(vm.userNames[s.fromUserId] ?? "...").font(.subheadline)
+                    Image(systemName: "arrow.right").font(.caption).foregroundColor(.secondary)
+                    Text(vm.userNames[s.toUserId] ?? "...").font(.subheadline)
+                    Spacer()
+                    Text(CurrencySettings.shared.formatted(s.amount)).font(.subheadline)
+                    Image(systemName: "checkmark.circle.fill").foregroundColor(.green).font(.caption)
+                }
+                .foregroundColor(.secondary)
+            }
+        } header: { Text("Settled").font(.subheadline) }
+    }
+
+    // Remove old debtRow and myDebts since we now show all debts
 
     var addButtonsSection: some View {
         Section {
@@ -108,9 +141,7 @@ struct GroupDetailView: View {
         }
     }
 
-    func debtRow(_ debt: DebtEntry) -> some View {
-        SettlementRow(debt: debt, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "", onMarkPaid: { settle(debt) })
-    }
+    var settledHistory: [Settlement] { vm.settlements.filter { $0.status == .paid } }
 
     @ViewBuilder func billEntry(_ bill: Bill) -> some View {
         let uid = authVM.currentUserId ?? ""
@@ -163,10 +194,7 @@ struct GroupDetailView: View {
 
     // MARK: - Helpers
 
-    var myDebts: [DebtEntry] {
-        let uid = authVM.currentUserId ?? ""
-        return vm.debts.filter { $0.fromUserId == uid || $0.toUserId == uid }
-    }
+    // debts are now shown in debtsSection (all debts, not just current user)
     func balanceColor(_ id: String) -> Color {
         let b = vm.memberBalance(id); if abs(b) < 0.01 { return .secondary }; return b > 0 ? .green : .orange
     }
