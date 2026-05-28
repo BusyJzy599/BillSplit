@@ -103,27 +103,58 @@ struct ReceiptScanView: View {
         }
     }
 
+    @State private var aiItems: [AIExtractedItem] = []
+    @State private var useAI = true
+
     private func scanImage() {
         guard let image = capturedImage else { return }
-        isScanning = true
-        errorMessage = nil
+        isScanning = true; errorMessage = nil
 
         Task {
             do {
-                let items = try await OCRService.shared.recognizeText(from: image)
-                await MainActor.run {
-                    isScanning = false
-                    if items.isEmpty {
-                        errorMessage = "未识别到文字，请拍摄清晰的收据"
-                    } else {
-                        receiptItems = items
+                // Step 1: Vision OCR
+                let rawItems = try await OCRService.shared.recognizeText(from: image)
+                guard !rawItems.isEmpty else {
+                    await MainActor.run {
+                        isScanning = false
+                        errorMessage = "No text found. Try a clearer photo."
+                    }
+                    return
+                }
+
+                // Step 2: AI extraction (if configured)
+                if AIService.shared.isConfigured && useAI {
+                    let rawText = rawItems.map { $0.description }.joined(separator: "\n")
+                    do {
+                        let extracted = try await AIService.shared.extractItems(from: rawText)
+                        await MainActor.run {
+                            isScanning = false
+                            aiItems = extracted
+                            receiptItems = extracted.map {
+                                ReceiptItem(description: $0.description, amount: $0.amount, isShared: $0.isShared)
+                            }
+                            navigateToConfirm = true
+                        }
+                    } catch {
+                        // AI failed, fall back to raw OCR
+                        await MainActor.run {
+                            isScanning = false
+                            receiptItems = rawItems
+                            navigateToConfirm = true
+                        }
+                    }
+                } else {
+                    // No AI, use raw OCR
+                    await MainActor.run {
+                        isScanning = false
+                        receiptItems = rawItems
                         navigateToConfirm = true
                     }
                 }
             } catch {
                 await MainActor.run {
                     isScanning = false
-                    errorMessage = "识别失败: \(error.localizedDescription)"
+                    errorMessage = "Scan failed: \(error.localizedDescription)"
                 }
             }
         }

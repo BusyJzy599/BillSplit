@@ -49,6 +49,7 @@
 		FBA9FC6CFACD609253138BA8 /* SettlementRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E6F01F98CFC267698D99D6 /* SettlementRow.swift */; };
 		2DA8A9A8D92201FF502B496D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */; };
 		C51C64309D108D7309F598D8 /* ToastModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0382F895F607D9A273E00D /* ToastModifier.swift */; };
+		D65B0F1BB2C9B386C7DAE8AA /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A995EE1EBA868446D16B0D /* AIService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -94,6 +95,7 @@
 		E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0 /* ImageCompressor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCompressor.swift; sourceTree = "<group>"; };
 		E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CD0382F895F607D9A273E00D /* ToastModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastModifier.swift; sourceTree = "<group>"; };
+		F7A995EE1EBA868446D16B0D /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,6 +221,7 @@
 				4D30E96F65B7330DDFD46E8D /* BillService.swift */,
 				886A5B24AF322D105948F51B /* GroupService.swift */,
 				DE9FF4A2D14453F090CF2A75 /* OCRService.swift */,
+				F7A995EE1EBA868446D16B0D /* AIService.swift */,
 				C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8 /* RealtimeService.swift */,
 				C70457437BB0F6F6C566D861 /* SettlementService.swift */,
 				D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9 /* StorageService.swift */,
@@ -323,6 +326,7 @@
 				D9AE468E84C63A98295B03DA /* LoginView.swift in Sources */,
 				5AD8425D41C9DEAF986A18B7 /* MainTabView.swift in Sources */,
 				C515A640CC8F8F5BCA5C3BA1 /* OCRService.swift in Sources */,
+				D65B0F1BB2C9B386C7DAE8AA /* AIService.swift in Sources */,
 				5C27DC98CA62D6CE7F4B8109 /* ProfileView.swift in Sources */,
 				1D42589993511784B0278923 /* ReceiptConfirmationView.swift in Sources */,
 				0A5CBC4EDCB871337E0D1CE1 /* ReceiptItem.swift in Sources */,
