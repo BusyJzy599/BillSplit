@@ -1,0 +1,46 @@
+name: BillSplit
+options:
+  bundleIdPrefix: com.billsplit
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+
+settings:
+  base:
+    INFOPLIST_KEY_CFBundleDisplayName: "账单共享"
+    INFOPLIST_KEY_NSCameraUsageDescription: "用于拍照识别收据"
+    INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "用于选择收据照片"
+
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: "11.0.0"
+
+targets:
+  BillSplit:
+    type: application
+    platform: iOS
+    sources:
+      - path: .
+        excludes:
+          - project.yml
+          - SETUP.md
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.billsplit.app
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: true
+    dependencies:
+      - package: Firebase
+        product: FirebaseAuth
+      - package: Firebase
+        product: FirebaseFirestore
+      - package: Firebase
+        product: FirebaseFirestoreSwift
+    preBuildScripts:
+      - name: "Firebase Emulator (Debug Only)"
+        script: |
+          if [ "$CONFIGURATION" == "Debug" ]; then
+            defaults write ${TARGET_BUILD_DIR}/${INFOPLIST_PATH} FirebaseEmulatorEnabled -bool YES
+          fi
+    postCompileScripts: []

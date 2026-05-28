@@ -1,0 +1,524 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		006D7F44220A4AC34A0BB0D5 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2762F0F098CDC1D69A1797DE /* FirebaseFirestoreSwift */; };
+		035381BEC74E0D365173DDDE /* BillService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D30E96F65B7330DDFD46E8D /* BillService.swift */; };
+		0A5CBC4EDCB871337E0D1CE1 /* ReceiptItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7FEA2A3B9094681E5DEB59 /* ReceiptItem.swift */; };
+		1D42589993511784B0278923 /* ReceiptConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDACE9B8F94A3A1D5F3A6B0 /* ReceiptConfirmationView.swift */; };
+		3598B42AAD6958A94D2C7331 /* Settlement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D266572B4436194DEAF35310 /* Settlement.swift */; };
+		41754B8D81A39D75B2D176D8 /* Bill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7ADEF4CD5203B0E21C6EA5 /* Bill.swift */; };
+		426FC1001BD3C9659907D12A /* JoinGroupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4185E28591FBCEA634B9464D /* JoinGroupViewModel.swift */; };
+		4E45581248F4031D13180A49 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B4D55F9B3C09E08AA308D2B /* AuthViewModel.swift */; };
+		5AD8425D41C9DEAF986A18B7 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68016F30C517693AF6B9A035 /* MainTabView.swift */; };
+		5C27DC98CA62D6CE7F4B8109 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D6F93516546A77D88D8CCD1 /* ProfileView.swift */; };
+		60714D8D47D7AB7570586009 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCECB85FF8EE34EBE9D01606 /* AuthService.swift */; };
+		66ACA92ABED0418564F4210E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA098F8644D7126E5E7B1F2 /* User.swift */; };
+		673C7A5E7162CF73732F9FB8 /* SettlementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70457437BB0F6F6C566D861 /* SettlementService.swift */; };
+		6EBFE9AF9EF0636B7D7D0093 /* GroupDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D416AAEA07B3866F610CB01 /* GroupDetailViewModel.swift */; };
+		83A7A18D13D313CDD7CF91DC /* GroupListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6701323288603CE51E470AF /* GroupListView.swift */; };
+		85D26127EF79833952617D59 /* BillGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BB372C7576FB6AC6CA6D688 /* BillGroup.swift */; };
+		879308162665F92BA9C3934C /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4465A1C74FC6B56F24E61B9 /* GroupDetailView.swift */; };
+		898941861EBF4737DE383DC2 /* JoinGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BD7660C800E09457CCD77F /* JoinGroupView.swift */; };
+		92DB6B4B3949929FCA5D176D /* ReceiptScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFFFDE021FE7B82F63BF751 /* ReceiptScanView.swift */; };
+		9EA057DEE098153A2FF50768 /* GroupListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD747AFB7319F10A53FA431C /* GroupListViewModel.swift */; };
+		A9262964B09135591B89975A /* InviteCodeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2217E5E1F641B5B71B42FEA9 /* InviteCodeCard.swift */; };
+		C0EFC2A29D7F20A677409987 /* GroupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A5B24AF322D105948F51B /* GroupService.swift */; };
+		C515A640CC8F8F5BCA5C3BA1 /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9FF4A2D14453F090CF2A75 /* OCRService.swift */; };
+		CC42C8106B2301FA02D111AC /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 97EDDDA5E61F82A38ACF0E06 /* FirebaseAuth */; };
+		D9AE468E84C63A98295B03DA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F6A257212196F9D96EAA2A4 /* LoginView.swift */; };
+		DB9038A448526258B609D9D4 /* BillSplitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDCAD048D3BCF40D5B65CB9 /* BillSplitApp.swift */; };
+		E3284CE5FCC7F2750EF4559E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B35C5F72A809A7B927DAED18 /* FirebaseFirestore */; };
+		E4D180E33CBD94A03C2EBCEA /* DebtCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEEFE21002E52EC17E1E51 /* DebtCalculator.swift */; };
+		F95AB31E556C2F24CD671E17 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42397EE31BFC15E069E8370D /* GlassCard.swift */; };
+		F9AE549B0F7888BEE388CBB5 /* AddBillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5E279B6553B7BE68B162D1 /* AddBillView.swift */; };
+		FBA9FC6CFACD609253138BA8 /* SettlementRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E6F01F98CFC267698D99D6 /* SettlementRow.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2217E5E1F641B5B71B42FEA9 /* InviteCodeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteCodeCard.swift; sourceTree = "<group>"; };
+		2AAEEFE21002E52EC17E1E51 /* DebtCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtCalculator.swift; sourceTree = "<group>"; };
+		37BD7660C800E09457CCD77F /* JoinGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGroupView.swift; sourceTree = "<group>"; };
+		37F49F87F317B11EC939AD0F /* BillSplit.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BillSplit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D416AAEA07B3866F610CB01 /* GroupDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailViewModel.swift; sourceTree = "<group>"; };
+		3D7ADEF4CD5203B0E21C6EA5 /* Bill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bill.swift; sourceTree = "<group>"; };
+		3FDACE9B8F94A3A1D5F3A6B0 /* ReceiptConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptConfirmationView.swift; sourceTree = "<group>"; };
+		4185E28591FBCEA634B9464D /* JoinGroupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGroupViewModel.swift; sourceTree = "<group>"; };
+		42397EE31BFC15E069E8370D /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
+		4BB372C7576FB6AC6CA6D688 /* BillGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillGroup.swift; sourceTree = "<group>"; };
+		4BFFFDE021FE7B82F63BF751 /* ReceiptScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptScanView.swift; sourceTree = "<group>"; };
+		4D30E96F65B7330DDFD46E8D /* BillService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillService.swift; sourceTree = "<group>"; };
+		4F6A257212196F9D96EAA2A4 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		5FA098F8644D7126E5E7B1F2 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		68016F30C517693AF6B9A035 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		6BDCAD048D3BCF40D5B65CB9 /* BillSplitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillSplitApp.swift; sourceTree = "<group>"; };
+		7D6F93516546A77D88D8CCD1 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		7E5E279B6553B7BE68B162D1 /* AddBillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBillView.swift; sourceTree = "<group>"; };
+		886A5B24AF322D105948F51B /* GroupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupService.swift; sourceTree = "<group>"; };
+		8F7FEA2A3B9094681E5DEB59 /* ReceiptItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptItem.swift; sourceTree = "<group>"; };
+		9B4D55F9B3C09E08AA308D2B /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		A4E6F01F98CFC267698D99D6 /* SettlementRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettlementRow.swift; sourceTree = "<group>"; };
+		C70457437BB0F6F6C566D861 /* SettlementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettlementService.swift; sourceTree = "<group>"; };
+		CCECB85FF8EE34EBE9D01606 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		D266572B4436194DEAF35310 /* Settlement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settlement.swift; sourceTree = "<group>"; };
+		D6701323288603CE51E470AF /* GroupListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupListView.swift; sourceTree = "<group>"; };
+		DD747AFB7319F10A53FA431C /* GroupListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupListViewModel.swift; sourceTree = "<group>"; };
+		DE9FF4A2D14453F090CF2A75 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
+		E4465A1C74FC6B56F24E61B9 /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C297AA5EA0AEBF8CE0F275FD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC42C8106B2301FA02D111AC /* FirebaseAuth in Frameworks */,
+				E3284CE5FCC7F2750EF4559E /* FirebaseFirestore in Frameworks */,
+				006D7F44220A4AC34A0BB0D5 /* FirebaseFirestoreSwift in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		19C51B82D0513D67FE528BFA /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				9B4D55F9B3C09E08AA308D2B /* AuthViewModel.swift */,
+				3D416AAEA07B3866F610CB01 /* GroupDetailViewModel.swift */,
+				DD747AFB7319F10A53FA431C /* GroupListViewModel.swift */,
+				4185E28591FBCEA634B9464D /* JoinGroupViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		266C1F5CF6E222D6A9BA6982 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3D7ADEF4CD5203B0E21C6EA5 /* Bill.swift */,
+				4BB372C7576FB6AC6CA6D688 /* BillGroup.swift */,
+				8F7FEA2A3B9094681E5DEB59 /* ReceiptItem.swift */,
+				D266572B4436194DEAF35310 /* Settlement.swift */,
+				5FA098F8644D7126E5E7B1F2 /* User.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		48E93C51ABFAFEAF03348229 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				2AAEEFE21002E52EC17E1E51 /* DebtCalculator.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		4F511B081460ABDEA73FCA75 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				37F49F87F317B11EC939AD0F /* BillSplit.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		90877BF90646740EA037966E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				7E5E279B6553B7BE68B162D1 /* AddBillView.swift */,
+				E4465A1C74FC6B56F24E61B9 /* GroupDetailView.swift */,
+				D6701323288603CE51E470AF /* GroupListView.swift */,
+				37BD7660C800E09457CCD77F /* JoinGroupView.swift */,
+				4F6A257212196F9D96EAA2A4 /* LoginView.swift */,
+				68016F30C517693AF6B9A035 /* MainTabView.swift */,
+				7D6F93516546A77D88D8CCD1 /* ProfileView.swift */,
+				3FDACE9B8F94A3A1D5F3A6B0 /* ReceiptConfirmationView.swift */,
+				4BFFFDE021FE7B82F63BF751 /* ReceiptScanView.swift */,
+				9166EA19EDC4520D81B84540 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9166EA19EDC4520D81B84540 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				42397EE31BFC15E069E8370D /* GlassCard.swift */,
+				2217E5E1F641B5B71B42FEA9 /* InviteCodeCard.swift */,
+				A4E6F01F98CFC267698D99D6 /* SettlementRow.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		D61CAC73CE5C88485A3545F9 = {
+			isa = PBXGroup;
+			children = (
+				DFFF2203E03E71C94247B359 /* BillSplit */,
+				266C1F5CF6E222D6A9BA6982 /* Models */,
+				F57B6233B4797A4E95E81E32 /* Services */,
+				48E93C51ABFAFEAF03348229 /* Utils */,
+				19C51B82D0513D67FE528BFA /* ViewModels */,
+				90877BF90646740EA037966E /* Views */,
+				4F511B081460ABDEA73FCA75 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DFFF2203E03E71C94247B359 /* BillSplit */ = {
+			isa = PBXGroup;
+			children = (
+				6BDCAD048D3BCF40D5B65CB9 /* BillSplitApp.swift */,
+				266C1F5CF6E222D6A9BA6982 /* Models */,
+				F57B6233B4797A4E95E81E32 /* Services */,
+				48E93C51ABFAFEAF03348229 /* Utils */,
+				19C51B82D0513D67FE528BFA /* ViewModels */,
+				90877BF90646740EA037966E /* Views */,
+			);
+			name = BillSplit;
+			path = .;
+			sourceTree = "<group>";
+		};
+		F57B6233B4797A4E95E81E32 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				CCECB85FF8EE34EBE9D01606 /* AuthService.swift */,
+				4D30E96F65B7330DDFD46E8D /* BillService.swift */,
+				886A5B24AF322D105948F51B /* GroupService.swift */,
+				DE9FF4A2D14453F090CF2A75 /* OCRService.swift */,
+				C70457437BB0F6F6C566D861 /* SettlementService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		407C353EA7DF30DE5779440D /* BillSplit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E32924EE0C10848A7AF80D45 /* Build configuration list for PBXNativeTarget "BillSplit" */;
+			buildPhases = (
+				83404ED71C006DD483DCD608 /* Firebase Emulator (Debug Only) */,
+				3A93A35EE42EF0972019A53B /* Sources */,
+				C297AA5EA0AEBF8CE0F275FD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BillSplit;
+			packageProductDependencies = (
+				97EDDDA5E61F82A38ACF0E06 /* FirebaseAuth */,
+				B35C5F72A809A7B927DAED18 /* FirebaseFirestore */,
+				2762F0F098CDC1D69A1797DE /* FirebaseFirestoreSwift */,
+			);
+			productName = BillSplit;
+			productReference = 37F49F87F317B11EC939AD0F /* BillSplit.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E0E22A0AE3DC32AC943B22BB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 9B35EC634C0CD3B8BC5280BE /* Build configuration list for PBXProject "BillSplit" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = D61CAC73CE5C88485A3545F9;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
+			preferredProjectObjectVersion = 54;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				407C353EA7DF30DE5779440D /* BillSplit */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		83404ED71C006DD483DCD608 /* Firebase Emulator (Debug Only) */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Firebase Emulator (Debug Only)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$CONFIGURATION\" == \"Debug\" ]; then\n  defaults write ${TARGET_BUILD_DIR}/${INFOPLIST_PATH} FirebaseEmulatorEnabled -bool YES\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3A93A35EE42EF0972019A53B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F9AE549B0F7888BEE388CBB5 /* AddBillView.swift in Sources */,
+				60714D8D47D7AB7570586009 /* AuthService.swift in Sources */,
+				4E45581248F4031D13180A49 /* AuthViewModel.swift in Sources */,
+				41754B8D81A39D75B2D176D8 /* Bill.swift in Sources */,
+				85D26127EF79833952617D59 /* BillGroup.swift in Sources */,
+				035381BEC74E0D365173DDDE /* BillService.swift in Sources */,
+				DB9038A448526258B609D9D4 /* BillSplitApp.swift in Sources */,
+				E4D180E33CBD94A03C2EBCEA /* DebtCalculator.swift in Sources */,
+				F95AB31E556C2F24CD671E17 /* GlassCard.swift in Sources */,
+				879308162665F92BA9C3934C /* GroupDetailView.swift in Sources */,
+				6EBFE9AF9EF0636B7D7D0093 /* GroupDetailViewModel.swift in Sources */,
+				83A7A18D13D313CDD7CF91DC /* GroupListView.swift in Sources */,
+				9EA057DEE098153A2FF50768 /* GroupListViewModel.swift in Sources */,
+				C0EFC2A29D7F20A677409987 /* GroupService.swift in Sources */,
+				A9262964B09135591B89975A /* InviteCodeCard.swift in Sources */,
+				898941861EBF4737DE383DC2 /* JoinGroupView.swift in Sources */,
+				426FC1001BD3C9659907D12A /* JoinGroupViewModel.swift in Sources */,
+				D9AE468E84C63A98295B03DA /* LoginView.swift in Sources */,
+				5AD8425D41C9DEAF986A18B7 /* MainTabView.swift in Sources */,
+				C515A640CC8F8F5BCA5C3BA1 /* OCRService.swift in Sources */,
+				5C27DC98CA62D6CE7F4B8109 /* ProfileView.swift in Sources */,
+				1D42589993511784B0278923 /* ReceiptConfirmationView.swift in Sources */,
+				0A5CBC4EDCB871337E0D1CE1 /* ReceiptItem.swift in Sources */,
+				92DB6B4B3949929FCA5D176D /* ReceiptScanView.swift in Sources */,
+				3598B42AAD6958A94D2C7331 /* Settlement.swift in Sources */,
+				FBA9FC6CFACD609253138BA8 /* SettlementRow.swift in Sources */,
+				673C7A5E7162CF73732F9FB8 /* SettlementService.swift in Sources */,
+				66ACA92ABED0418564F4210E /* User.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2C6B9F657EC5B8ABA3CC519D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.billsplit.app;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CF9186971941AE21592F395D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "账单共享";
+				INFOPLIST_KEY_NSCameraUsageDescription = "用于拍照识别收据";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择收据照片";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E946FC69B2B94779B252A0C9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.billsplit.app;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EB23DCCC36CEFACEF54CB7FD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "账单共享";
+				INFOPLIST_KEY_NSCameraUsageDescription = "用于拍照识别收据";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择收据照片";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9B35EC634C0CD3B8BC5280BE /* Build configuration list for PBXProject "BillSplit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB23DCCC36CEFACEF54CB7FD /* Debug */,
+				CF9186971941AE21592F395D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E32924EE0C10848A7AF80D45 /* Build configuration list for PBXNativeTarget "BillSplit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C6B9F657EC5B8ABA3CC519D /* Debug */,
+				E946FC69B2B94779B252A0C9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2762F0F098CDC1D69A1797DE /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
+		};
+		97EDDDA5E61F82A38ACF0E06 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		B35C5F72A809A7B927DAED18 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93C8527BC37174971C82E0D6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = E0E22A0AE3DC32AC943B22BB /* Project object */;
+}
