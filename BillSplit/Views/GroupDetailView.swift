@@ -14,6 +14,7 @@ struct GroupDetailView: View {
     @State private var showLeaveAlert = false
     @State private var toast: Toast?
     @State private var settlingIds = Set<UUID>()
+    @State private var showAllSettled = false
 
     init(group: BillGroup) {
         _vm = StateObject(wrappedValue: GroupDetailViewModel(group: group))
@@ -90,16 +91,39 @@ struct GroupDetailView: View {
     }
 
     var settledSection: some View {
-        Section {
-            ForEach(settledHistory) { s in
-                HStack(spacing: 6) {
-                    Image(systemName: "checkmark.circle.fill").foregroundColor(.green).font(.caption)
-                    Text("\(vm.userNames[s.fromUserId] ?? "...") → \(vm.userNames[s.toUserId] ?? "...")").font(.caption)
-                    Spacer()
-                    Text(CurrencySettings.shared.formatted(s.amount)).font(.caption).fontWeight(.medium)
+        let history = settledHistory
+        let display = showAllSettled ? history : Array(history.prefix(3))
+        guard !display.isEmpty else {
+            return AnyView(EmptyView())
+        }
+        return AnyView(
+            Section {
+                ForEach(display) { s in
+                    HStack(spacing: 6) {
+                        Image(systemName: "checkmark.circle.fill").foregroundColor(.green).font(.caption)
+                        Text("\(vm.userNames[s.fromUserId] ?? "...") → \(vm.userNames[s.toUserId] ?? "...")").font(.caption)
+                        Spacer()
+                        Text(CurrencySettings.shared.formatted(s.amount)).font(.caption).fontWeight(.medium)
+                        if let sid = s.id {
+                            Button {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                Task {
+                                    try? await SettlementService.shared.deleteSettlement(sid)
+                                    await vm.reload()
+                                }
+                            } label: {
+                                Image(systemName: "arrow.uturn.backward").font(.caption2).foregroundColor(.red)
+                            }
+                        }
+                    }
                 }
-            }
-        } header: { Text("Settled").font(.subheadline) }
+                if history.count > 3 {
+                    Button(showAllSettled ? "Show less" : "Show all (\(history.count))") {
+                        withAnimation { showAllSettled.toggle() }
+                    }.font(.caption).foregroundColor(.accentColor)
+                }
+            } header: { Text("Settled").font(.subheadline) }
+        )
     }
 
     // All debts and settled history shown in their respective sections
