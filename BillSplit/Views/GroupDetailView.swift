@@ -61,42 +61,48 @@ struct GroupDetailView: View {
 
     var debtsSection: some View {
         Section {
+            if vm.debts.isEmpty && !vm.bills.isEmpty {
+                HStack { Spacer(); Text("All settled!").font(.subheadline).foregroundColor(.green); Spacer() }
+            }
             ForEach(vm.debts) { debt in
-                HStack {
-                    AvatarView(avatarUrl: vm.userAvatars[debt.fromUserId], displayName: vm.userNames[debt.fromUserId] ?? "", size: 28)
-                    Text(vm.userNames[debt.fromUserId] ?? "...").font(.subheadline)
-                    Image(systemName: "arrow.right").font(.caption).foregroundColor(.secondary)
-                    AvatarView(avatarUrl: vm.userAvatars[debt.toUserId], displayName: vm.userNames[debt.toUserId] ?? "", size: 28)
-                    Text(vm.userNames[debt.toUserId] ?? "...").font(.subheadline)
-                    Spacer()
-                    Text(CurrencySettings.shared.formatted(debt.amount)).font(.subheadline).fontWeight(.semibold)
-                    if debt.fromUserId == (authVM.currentUserId ?? "") {
-                        Button { UIImpactFeedbackGenerator(style: .medium).impactOccurred(); settle(debt) }
-                        label: { Text("Pay").foregroundColor(.white) }
-                        .buttonStyle(.borderedProminent).controlSize(.small)
+                VStack(spacing: 6) {
+                    HStack(spacing: 8) {
+                        AvatarView(avatarUrl: vm.userAvatars[debt.fromUserId], displayName: vm.userNames[debt.fromUserId] ?? "", size: 26)
+                        Text(vm.userNames[debt.fromUserId] ?? "...").font(.subheadline).fontWeight(.medium)
+                        Spacer()
+                        Text(CurrencySettings.shared.formatted(debt.amount)).font(.subheadline).fontWeight(.bold).foregroundColor(.orange)
+                    }
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.turn.right.down").font(.caption2).foregroundColor(.secondary).padding(.leading, 13)
+                        AvatarView(avatarUrl: vm.userAvatars[debt.toUserId], displayName: vm.userNames[debt.toUserId] ?? "", size: 20)
+                        Text(vm.userNames[debt.toUserId] ?? "...").font(.caption).foregroundColor(.secondary)
+                        Spacer()
+                        if debt.fromUserId == (authVM.currentUserId ?? "") {
+                            Button { UIImpactFeedbackGenerator(style: .medium).impactOccurred(); settle(debt) }
+                                label: { Text("Pay").font(.caption2).foregroundColor(.white) }
+                                .buttonStyle(.borderedProminent).controlSize(.mini)
+                        }
                     }
                 }
+                .padding(.vertical, 2)
             }
-        } header: { Text("Who Owes Who").font(.subheadline) }
+        } header: { if !vm.debts.isEmpty { Text("Who Owes Who").font(.subheadline) } }
     }
 
     var settledSection: some View {
         Section {
             ForEach(settledHistory) { s in
-                HStack {
-                    Text(vm.userNames[s.fromUserId] ?? "...").font(.subheadline)
-                    Image(systemName: "arrow.right").font(.caption).foregroundColor(.secondary)
-                    Text(vm.userNames[s.toUserId] ?? "...").font(.subheadline)
-                    Spacer()
-                    Text(CurrencySettings.shared.formatted(s.amount)).font(.subheadline)
+                HStack(spacing: 6) {
                     Image(systemName: "checkmark.circle.fill").foregroundColor(.green).font(.caption)
+                    Text("\(vm.userNames[s.fromUserId] ?? "...") → \(vm.userNames[s.toUserId] ?? "...")").font(.caption)
+                    Spacer()
+                    Text(CurrencySettings.shared.formatted(s.amount)).font(.caption).fontWeight(.medium)
                 }
-                .foregroundColor(.secondary)
             }
         } header: { Text("Settled").font(.subheadline) }
     }
 
-    // Remove old debtRow and myDebts since we now show all debts
+    // All debts and settled history shown in their respective sections
 
     var addButtonsSection: some View {
         Section {
