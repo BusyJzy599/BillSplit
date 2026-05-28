@@ -26,11 +26,23 @@ class AuthViewModel: ObservableObject {
 
             // Try sign in
             if let session = try? await supabase.auth.signIn(email: email, password: password) {
+                await MainActor.run {
+                    self.isLoggedIn = true
+                    self.currentUserId = session.user.id.uuidString
+                    self.isLoading = false
+                }
                 return
             }
 
-            // Sign up new test user
-            _ = try? await supabase.auth.signUp(email: email, password: password)
+            // Sign up if new user
+            if let session = try? await supabase.auth.signUp(email: email, password: password) {
+                await MainActor.run {
+                    self.isLoggedIn = true
+                    self.currentUserId = session.user.id.uuidString
+                    self.isLoading = false
+                }
+                return
+            }
 
             await MainActor.run { self.isLoading = false }
         }
