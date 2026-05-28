@@ -7,8 +7,11 @@ class HomeViewModel: ObservableObject {
     @Published var isLoading = true
 
     func load(userId: String) {
-        Task {
-            do {
+        Task { await refresh(userId: userId) }
+    }
+
+    func refresh(userId: String) async {
+        do {
                 let groups: [BillGroup] = try await supabase.from("groups")
                     .select().contains("member_ids", value: [userId])
                     .order("created_at", ascending: false).execute().value
@@ -35,7 +38,6 @@ class HomeViewModel: ObservableObject {
                 await MainActor.run { self.isLoading = false }
                 print("Home load failed: \(error)")
             }
-        }
     }
 
     // MARK: - Summary stats

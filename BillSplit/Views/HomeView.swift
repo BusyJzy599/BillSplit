@@ -43,6 +43,7 @@ struct HomeView: View {
                         }
                         .padding(16)
                     }
+                    .refreshable { if let uid = authVM.currentUserId { await vm.refresh(userId: uid) } }
                 }
             }
             .navigationTitle(loc.navHome)
@@ -146,17 +147,17 @@ struct HomeView: View {
     private var heatmapGrid: some View {
         let data = vm.dailySpending
         let cols = 7
+        let maxAmount = data.map(\.amount).max() ?? 1
         return LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: cols), spacing: 2) {
             ForEach(0..<data.count, id: \.self) { i in
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(heatmapCellColor(data[i].amount))
+                    .fill(cellColor(data[i].amount, max: maxAmount))
                     .frame(height: 14)
             }
         }
     }
 
-    private func heatmapCellColor(_ amount: Double) -> Color {
-        let maxAmount = vm.dailySpending.map(\.amount).max() ?? 1
+    private func cellColor(_ amount: Double, max maxAmount: Double) -> Color {
         let ratio = maxAmount > 0 ? amount / maxAmount : 0
         if ratio <= 0 { return Color(.systemGray5) }
         switch ratio {
@@ -225,38 +226,19 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Summary Card (not used, kept for compatibility)
-
-struct SummaryCard: View {
-    let title: String; let value: String; let icon: String; let color: Color
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon).font(.title2).foregroundStyle(color)
-            Text(value).font(.title3).fontWeight(.bold)
-            Text(title).font(.caption).foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity).padding(.vertical, 16)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemBackground)).shadow(color: .black.opacity(0.04), radius: 6))
-    }
-}
-
 // MARK: - Pie Chart
 
 struct PieChartView: View {
     let data: [(name: String, amount: Double)]
     var body: some View {
-        GeometryReader { geo in
-            let total = data.map(\.amount).reduce(0, +)
-            let angles = computeAngles(total: max(total, 1))
-            let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
-            let radius = min(geo.size.width, geo.size.height) / 2
-            let colors: [Color] = [.orange, .blue, .green, .pink, .purple, .yellow, .teal, .red]
-            ZStack {
-                ForEach(0..<angles.count, id: \.self) { i in
-                    if angles[i].2 > 1 {
-                        PieSlice(center: center, radius: radius, startAngle: angles[i].0, endAngle: angles[i].1)
-                            .fill(colors[i % colors.count])
-                    }
+        let total = data.map(\.amount).reduce(0, +)
+        let angles = computeAngles(total: max(total, 1))
+        let colors: [Color] = [.orange, .blue, .green, .pink, .purple, .yellow, .teal, .red]
+        ZStack {
+            ForEach(0..<angles.count, id: \.self) { i in
+                if angles[i].2 > 1 {
+                    PieSlice(startAngle: angles[i].0, endAngle: angles[i].1)
+                        .fill(colors[i % colors.count])
                 }
             }
         }
@@ -274,8 +256,10 @@ struct PieChartView: View {
 }
 
 struct PieSlice: Shape {
-    let center: CGPoint; let radius: CGFloat; let startAngle: Angle; let endAngle: Angle
+    let startAngle: Angle; let endAngle: Angle
     func path(in rect: CGRect) -> Path {
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let radius = min(rect.width, rect.height) / 2
         var p = Path()
         p.move(to: center)
         p.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)

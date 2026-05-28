@@ -76,6 +76,8 @@ class LocaleManager: ObservableObject {
     var leaveGroup: String { txt("Leave Group", "退出账单组") }
     var cannotLeave: String { txt("Outstanding debts", "有未结清欠款") }
     var cannotLeaveMsg: String { txt("Please settle all debts before leaving", "请先结清所有欠款后再退出账单组") }
+    var leaveConfirmMsg: String { txt("You will leave this group. You can rejoin later.", "你将退出此账单组，但可以重新加入。") }
+    var payButton: String { txt("Pay", "还款") }
     var deleteBillTitle: String { txt("Delete Bill", "删除账单") }
     func deleteBillMsg(_ desc: String) -> String {
         locale == .zh ? "确定要删除「\(desc)」吗？该操作不可撤销。" : "Delete \"\(desc)\"? This cannot be undone."

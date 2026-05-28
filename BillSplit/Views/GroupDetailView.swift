@@ -104,7 +104,7 @@ struct GroupDetailView: View {
                         Spacer()
                         if debt.fromUserId == (authVM.currentUserId ?? "") {
                             Button { UIImpactFeedbackGenerator(style: .medium).impactOccurred(); settle(debt) }
-                                label: { Text("Pay").font(.caption2).foregroundColor(.white) }
+                                label: { Text(loc.payButton).font(.caption2).foregroundColor(.white) }
                                 .buttonStyle(.borderedProminent).controlSize(.mini)
                         }
                     }
@@ -114,41 +114,36 @@ struct GroupDetailView: View {
         } header: { if !vm.debts.isEmpty { Text(loc.whoOwesWho).font(.subheadline) } }
     }
 
-    var settledSection: some View {
+    @ViewBuilder var settledSection: some View {
         let history = settledHistory
         let display = showAllSettled ? history : Array(history.prefix(3))
-        guard !display.isEmpty else {
-            return AnyView(EmptyView())
-        }
-        return AnyView(
-            Section {
-                ForEach(display) { s in
-                    HStack(spacing: 6) {
-                        Image(systemName: "checkmark.circle.fill").foregroundColor(.green).font(.caption)
-                        Text("\(vm.userNames[s.fromUserId] ?? "...") → \(vm.userNames[s.toUserId] ?? "...")").font(.caption)
-                        Spacer()
-                        Text(CurrencySettings.shared.formatted(s.amount)).font(.caption).fontWeight(.medium)
-                        if let sid = s.id {
-                            Button {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                Task {
-                                    try? await SettlementService.shared.deleteSettlement(sid)
-                                    await vm.reload()
-                                    _ = await MainActor.run { toast = .info(loc.toastSettlementRevoked) }
-                                }
-                            } label: {
-                                Image(systemName: "arrow.uturn.backward").font(.caption2).foregroundColor(.red)
+        Section {
+            ForEach(display) { s in
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill").foregroundColor(.green).font(.caption)
+                    Text("\(vm.userNames[s.fromUserId] ?? "...") → \(vm.userNames[s.toUserId] ?? "...")").font(.caption)
+                    Spacer()
+                    Text(CurrencySettings.shared.formatted(s.amount)).font(.caption).fontWeight(.medium)
+                    if let sid = s.id {
+                        Button {
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            Task {
+                                try? await SettlementService.shared.deleteSettlement(sid)
+                                await vm.reload()
+                                _ = await MainActor.run { toast = .info(loc.toastSettlementRevoked) }
                             }
+                        } label: {
+                            Image(systemName: "arrow.uturn.backward").font(.caption2).foregroundColor(.red)
                         }
                     }
                 }
-                if history.count > 3 {
-                    Button(showAllSettled ? loc.showLess : loc.showAll(history.count)) {
-                        withAnimation { showAllSettled.toggle() }
-                    }.font(.caption).foregroundColor(.accentColor)
-                }
-            } header: { Text(loc.settled).font(.subheadline) }
-        )
+            }
+            if history.count > 3 {
+                Button(showAllSettled ? loc.showLess : loc.showAll(history.count)) {
+                    withAnimation { showAllSettled.toggle() }
+                }.font(.caption).foregroundColor(.accentColor)
+            }
+        } header: { Text(loc.settled).font(.subheadline) }
     }
 
     // All debts and settled history shown in their respective sections
@@ -247,11 +242,11 @@ struct GroupDetailView: View {
             Button(role: .destructive) {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 deletingBill = bill; showDeleteConfirm = true
-            } label: { Label("Delete", systemImage: "trash") }
+            } label: { Label(loc.delete, systemImage: "trash") }
             Button {
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 editingBill = bill
-            } label: { Label("Edit", systemImage: "pencil") }.tint(.accentColor)
+            } label: { Label(loc.edit, systemImage: "pencil") }.tint(.accentColor)
         }
     }
 
@@ -360,6 +355,6 @@ struct AlertModifiers: ViewModifier {
             .alert(loc.leaveGroup + "?", isPresented: $showLeaveConfirmAlert) {
                 Button(loc.cancel, role: .cancel) {}
                 Button(loc.leaveGroup, role: .destructive) { vm.leaveGroup(userId: authVM.currentUserId ?? "") }
-            } message: { Text(loc.locale == .zh ? "你将退出此账单组，但可以重新加入。" : "You will leave this group. You can rejoin later.") }
+            } message: { Text(loc.leaveConfirmMsg) }
     }
 }
