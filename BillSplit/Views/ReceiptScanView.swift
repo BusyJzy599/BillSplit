@@ -230,17 +230,25 @@ struct ReceiptScanView: View {
         let validItems = selectedItems.filter { ($0.amount ?? 0) > 0 }
         let sharedItems = validItems.filter { $0.isShared }
         let personalItems = validItems.filter { !$0.isShared }
+        let cur = CurrencySettings.shared.current
+        let rate = Currency.rateUSDToCNY
 
         Task {
             do {
                 if !sharedItems.isEmpty {
                     let total = sharedItems.reduce(0.0) { $0 + ($1.amount ?? 0) }
-                    try await BillService.shared.createBill(groupId: groupId, payerId: payerId, amount: total,
-                        description: sharedItems.map { $0.description }.joined(separator: ", "), participantIds: memberIds)
+                    let inCNY = cur.convert(total, to: .cny)
+                    try await BillService.shared.createBill(groupId: groupId, payerId: payerId, amount: inCNY,
+                        description: sharedItems.map { $0.description }.joined(separator: ", "),
+                        participantIds: memberIds, currency: cur.rawValue, exchangeRate: rate)
                 }
                 for item in personalItems {
-                    try await BillService.shared.createBill(groupId: groupId, payerId: payerId, amount: item.amount ?? 0,
-                        description: item.description, participantIds: [item.assignedToUserId ?? memberIds.first ?? ""])
+                    let amt = item.amount ?? 0
+                    let inCNY = cur.convert(amt, to: .cny)
+                    try await BillService.shared.createBill(groupId: groupId, payerId: payerId, amount: inCNY,
+                        description: item.description,
+                        participantIds: [item.assignedToUserId ?? memberIds.first ?? ""],
+                        currency: cur.rawValue, exchangeRate: rate)
                 }
                 await MainActor.run { dismiss() }
             } catch {
