@@ -8,9 +8,12 @@ struct GroupListView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
+                Color(.systemGroupedBackground).ignoresSafeArea()
+
                 if vm.groups.isEmpty && !authVM.isLoading {
                     VStack(spacing: 16) {
+                        Spacer()
                         Image(systemName: "person.3.fill")
                             .resizable()
                             .frame(width: 60, height: 36)
@@ -28,6 +31,7 @@ struct GroupListView: View {
                                 .fontWeight(.semibold)
                         }
                         .buttonStyle(.borderedProminent)
+                        Spacer()
                     }
                     .padding()
                 } else {
@@ -46,7 +50,6 @@ struct GroupListView: View {
                     }
                 }
             }
-            .background(Color(.systemGroupedBackground))
             .navigationTitle("我的账单组")
             .toolbar {
                 if !vm.groups.isEmpty {

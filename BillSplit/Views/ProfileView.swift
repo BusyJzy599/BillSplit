@@ -9,46 +9,48 @@ struct ProfileView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    HStack(spacing: 12) {
-                        AvatarView(avatarUrl: avatarUrl, displayName: displayName, size: 60)
+            ZStack {
+                Color(.systemGroupedBackground).ignoresSafeArea()
+                List {
+                    Section {
+                        HStack(spacing: 12) {
+                            AvatarView(avatarUrl: avatarUrl, displayName: displayName, size: 60)
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(displayName.isEmpty ? "用户" : displayName)
-                                .font(.headline)
-                            Text(authVM.currentUserId ?? "")
-                                .font(.system(.caption, design: .monospaced))
-                                .foregroundColor(.secondary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(displayName.isEmpty ? "用户" : displayName)
+                                    .font(.headline)
+                                Text(authVM.currentUserId ?? "")
+                                    .font(.system(.caption, design: .monospaced))
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+
+                            Button {
+                                showEditProfile = true
+                            } label: {
+                                Image(systemName: "pencil.circle")
+                                    .font(.title2)
+                            }
                         }
+                        .padding(.vertical, 8)
+                    }
 
-                        Spacer()
-
-                        Button {
-                            showEditProfile = true
+                    Section {
+                        Button(role: .destructive) {
+                            authVM.signOut()
                         } label: {
-                            Image(systemName: "pencil.circle")
-                                .font(.title2)
+                            Label("退出登录", systemImage: "rectangle.portrait.and.arrow.right")
                         }
                     }
-                    .padding(.vertical, 8)
                 }
-
-                Section {
-                    Button(role: .destructive) {
-                        authVM.signOut()
-                    } label: {
-                        Label("退出登录", systemImage: "rectangle.portrait.and.arrow.right")
-                    }
-                }
+                .scrollContentBackground(.hidden)
             }
             .navigationTitle("个人中心")
             .sheet(isPresented: $showEditProfile) {
                 EditProfileView(displayName: displayName, avatarUrl: avatarUrl)
             }
-            .onAppear {
-                loadProfile()
-            }
+            .onAppear { loadProfile() }
         }
     }
 

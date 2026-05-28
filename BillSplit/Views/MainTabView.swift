@@ -3,6 +3,10 @@ import SwiftUI
 struct MainTabView: View {
     var body: some View {
         TabView {
+            HomeView()
+                .tabItem {
+                    Label("首页", systemImage: "house.fill")
+                }
             GroupListView()
                 .tabItem {
                     Label("账单组", systemImage: "list.bullet.rectangle")

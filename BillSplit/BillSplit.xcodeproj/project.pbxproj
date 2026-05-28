@@ -43,6 +43,8 @@
 		F9AE549B0F7888BEE388CBB5 /* AddBillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5E279B6553B7BE68B162D1 /* AddBillView.swift */; };
 		FBA9FC6CFACD609253138BA8 /* SettlementRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E6F01F98CFC267698D99D6 /* SettlementRow.swift */; };
 		BBA0AB8D5006D61D65B0D983 /* BillSplit.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 4B092AA8A92708C65481B20A /* BillSplit.entitlements */; };
+		BAB698ABFCD4445075211582 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3254049E2B5E0F849517DAE /* HomeView.swift */; };
+		F842993C38918B5AB0330E97 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D641F39662FE90BFE21D4551 /* HomeViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +84,8 @@
 		E4465A1C74FC6B56F24E61B9 /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0 /* ImageCompressor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCompressor.swift; sourceTree = "<group>"; };
 		4B092AA8A92708C65481B20A /* BillSplit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BillSplit.entitlements; sourceTree = "<group>"; };
+		C3254049E2B5E0F849517DAE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		D641F39662FE90BFE21D4551 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +106,7 @@
 				9B4D55F9B3C09E08AA308D2B /* AuthViewModel.swift */,
 				3D416AAEA07B3866F610CB01 /* GroupDetailViewModel.swift */,
 				DD747AFB7319F10A53FA431C /* GroupListViewModel.swift */,
+				D641F39662FE90BFE21D4551 /* HomeViewModel.swift */,
 				4185E28591FBCEA634B9464D /* JoinGroupViewModel.swift */,
 			);
 			path = ViewModels;
@@ -145,6 +150,7 @@
 			isa = PBXGroup;
 			children = (
 				7E5E279B6553B7BE68B162D1 /* AddBillView.swift */,
+				C3254049E2B5E0F849517DAE /* HomeView.swift */,
 				E4465A1C74FC6B56F24E61B9 /* GroupDetailView.swift */,
 				D6701323288603CE51E470AF /* GroupListView.swift */,
 				37BD7660C800E09457CCD77F /* JoinGroupView.swift */,
@@ -322,6 +328,8 @@
 				C2D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7 /* RealtimeService.swift in Sources */,
 				D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8 /* StorageService.swift in Sources */,
 				E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8B9 /* ImageCompressor.swift in Sources */,
+				BAB698ABFCD4445075211582 /* HomeView.swift in Sources */,
+				F842993C38918B5AB0330E97 /* HomeViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
