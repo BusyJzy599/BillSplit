@@ -17,56 +17,39 @@ struct GroupListView: View {
         NavigationStack {
             ZStack {
                 Color(.systemGroupedBackground).ignoresSafeArea()
-
                 if vm.groups.isEmpty && !authVM.isLoading {
                     VStack(spacing: 16) {
                         Spacer()
-                        Image(systemName: "person.3.fill")
-                            .resizable()
-                            .frame(width: 60, height: 36)
-                            .foregroundStyle(.secondary)
-                        Text(loc.noGroups)
-                            .font(.title3)
-                            .fontWeight(.medium)
-                        Text(loc.noGroupsHint)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                        Image(systemName: "person.3.fill").resizable().frame(width: 60, height: 36).foregroundStyle(.secondary)
+                        Text(loc.noGroups).font(.title3).fontWeight(.medium)
+                        Text(loc.noGroupsHint).font(.subheadline).foregroundColor(.secondary)
                         Button { showCreateSheet = true } label: {
-                            Label(loc.newGroup, systemImage: "plus")
-                                .fontWeight(.semibold)
+                            Label(loc.newGroup, systemImage: "plus").fontWeight(.semibold)
                         }
                         .buttonStyle(.borderedProminent)
                         Spacer()
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity).padding()
                 } else {
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(vm.groups) { group in
-                                NavigationLink(destination: GroupDetailView(group: group)) {
-                                    GroupCard(group: group, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "")
-                                }
-                                .buttonStyle(.plain)
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) {
-                                        deletingGroup = group
-                                        showDeleteAlert = true
-                                    } label: { Label(loc.delete, systemImage: "trash") }
-                                    Button {
-                                        editingGroup = group
-                                        editGroupName = group.name
-                                        editGroupIcon = group.icon
-                                        showEditSheet = true
-                                    } label: { Label(loc.edit, systemImage: "pencil") }
-                                    .tint(.orange)
-                                }
+                    List {
+                        ForEach(vm.groups) { group in
+                            NavigationLink(destination: GroupDetailView(group: group)) {
+                                GroupCard(group: group, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "")
                             }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) { deletingGroup = group; showDeleteAlert = true }
+                                    label: { Label(loc.delete, systemImage: "trash") }
+                                Button { editingGroup = group; editGroupName = group.name; editGroupIcon = group.icon; showEditSheet = true }
+                                    label: { Label(loc.edit, systemImage: "pencil") }
+                                .tint(.orange)
+                            }
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
-                        .padding(.bottom, 16)
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                 }
             }
             .navigationTitle(loc.navGroups)
@@ -78,48 +61,37 @@ struct GroupListView: View {
             .sheet(isPresented: $showCreateSheet) {
                 NavigationStack {
                     Form {
-                        Section(loc.groupName) {
-                            TextField(loc.groupNamePlaceholder, text: $newGroupName)
-                        }
+                        Section(loc.groupName) { TextField(loc.groupNamePlaceholder, text: $newGroupName) }
                     }
-                    .navigationTitle(loc.newGroup)
-                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationTitle(loc.newGroup).navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) { Button(loc.cancel) { showCreateSheet = false } }
                         ToolbarItem(placement: .confirmationAction) {
                             Button(loc.create) {
                                 vm.createGroup(name: newGroupName, userId: authVM.currentUserId ?? "")
-                                newGroupName = ""
-                                showCreateSheet = false
-                            }
-                            .disabled(newGroupName.trimmingCharacters(in: .whitespaces).isEmpty)
+                                newGroupName = ""; showCreateSheet = false
+                            }.disabled(newGroupName.trimmingCharacters(in: .whitespaces).isEmpty)
                         }
                     }
-                }
-                .presentationDetents([.height(220)])
+                }.presentationDetents([.height(220)])
             }
             .sheet(isPresented: $showEditSheet) {
-                let groupIcons = ["👥","🏠","✈️","🍽️","🎉","🎓","💼","🏖️","🎮","🏃","☕","🎵","💡","🐶","🌍","📚","🎬","⚽"]
+                let icons = ["👥","🏠","✈️","🍽️","🎉","🎓","💼","🏖️","🎮","🏃","☕","🎵","💡","🐶","🌍","📚","🎬","⚽"]
                 NavigationStack {
                     Form {
-                        Section(loc.groupName) {
-                            TextField(loc.groupNamePlaceholder, text: $editGroupName)
-                        }
+                        Section(loc.groupName) { TextField(loc.groupNamePlaceholder, text: $editGroupName) }
                         Section("Icon") {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 8) {
-                                ForEach(groupIcons, id: \.self) { icon in
-                                    Button { editGroupIcon = icon } label: {
-                                        Text(icon).font(.title2)
-                                    }
-                                    .frame(width: 44, height: 44)
-                                    .background(editGroupIcon == icon ? Color.accentColor.opacity(0.15) : Color.clear)
-                                    .cornerRadius(10)
+                                ForEach(icons, id: \.self) { icon in
+                                    Button { editGroupIcon = icon } label: { Text(icon).font(.title2) }
+                                        .frame(width: 44, height: 44)
+                                        .background(editGroupIcon == icon ? Color.accentColor.opacity(0.15) : Color.clear)
+                                        .cornerRadius(10)
                                 }
                             }
                         }
                     }
-                    .navigationTitle(loc.edit)
-                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationTitle(loc.edit).navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) { Button(loc.cancel) { showEditSheet = false } }
                         ToolbarItem(placement: .confirmationAction) {
@@ -131,12 +103,10 @@ struct GroupListView: View {
                                     }
                                     showEditSheet = false
                                 }
-                            }
-                            .disabled(editGroupName.trimmingCharacters(in: .whitespaces).isEmpty)
+                            }.disabled(editGroupName.trimmingCharacters(in: .whitespaces).isEmpty)
                         }
                     }
-                }
-                .presentationDetents([.height(200)])
+                }.presentationDetents([.height(350)])
             }
             .alert(loc.deleteGroup, isPresented: $showDeleteAlert) {
                 Button(loc.cancel, role: .cancel) {}
@@ -146,13 +116,9 @@ struct GroupListView: View {
                         vm.loadGroups(userId: authVM.currentUserId ?? "")
                     }
                 }
-            } message: {
-                Text(loc.deleteBillMsg(deletingGroup?.name ?? ""))
-            }
+            } message: { Text(loc.deleteBillMsg(deletingGroup?.name ?? "")) }
         }
-        .onAppear {
-            if let uid = authVM.currentUserId { vm.loadGroups(userId: uid) }
-        }
+        .onAppear { if let uid = authVM.currentUserId { vm.loadGroups(userId: uid) } }
     }
 }
 
@@ -169,39 +135,22 @@ struct GroupCard: View {
                 Circle().fill(Color.accentColor.opacity(0.1)).frame(width: 48, height: 48)
                 Text(group.icon).font(.system(size: 24))
             }
-
             VStack(alignment: .leading, spacing: 6) {
-                Text(group.name)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
-
+                Text(group.name).font(.headline).fontWeight(.semibold).foregroundColor(.primary)
                 HStack(spacing: 8) {
-                    Label("\(group.memberIds.count)", systemImage: "person.2")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    Label("\(group.memberIds.count)", systemImage: "person.2").font(.caption).foregroundColor(.secondary)
                     Text("·").foregroundColor(.secondary)
                     Label(group.inviteCode, systemImage: "key")
-                        .font(.system(.caption, design: .monospaced))
-                        .fontWeight(.medium)
-                        .foregroundColor(.accentColor)
+                        .font(.system(.caption, design: .monospaced)).fontWeight(.medium).foregroundColor(.accentColor)
                 }
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 4) {
-                Text(group.createdAt, style: .date)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                Text(group.createdAt, style: .date).font(.caption2).foregroundColor(.secondary)
+                Image(systemName: "chevron.right").font(.caption).foregroundColor(.secondary)
             }
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
-        )
+        .padding(12)
+        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemBackground)).shadow(color: .black.opacity(0.04), radius: 4))
     }
 }
