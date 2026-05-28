@@ -75,10 +75,11 @@ enum GroupError: LocalizedError {
     case codeGenerationFailed
 
     var errorDescription: String? {
+        let l = LocaleManager.shared
         switch self {
-        case .notFound: return "Group not found. Check the invite code."
-        case .alreadyMember: return "You are already in this group."
-        case .codeGenerationFailed: return "Failed to generate invite code. Try again."
+        case .notFound: return l.groupNotFound
+        case .alreadyMember: return l.alreadyInGroup
+        case .codeGenerationFailed: return l.codeGenFailed
         }
     }
 }

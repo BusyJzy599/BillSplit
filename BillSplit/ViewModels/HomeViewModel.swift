@@ -88,12 +88,13 @@ class HomeViewModel: ObservableObject {
 
     private func categorize(_ desc: String) -> String {
         let lower = desc.lowercased()
-        if lower.contains("餐") || lower.contains("饭") || lower.contains("吃") || lower.contains("food") || lower.contains("dinner") || lower.contains("lunch") { return "餐饮" }
-        if lower.contains("交通") || lower.contains("车") || lower.contains("打车") || lower.contains("taxi") || lower.contains("bus") { return "交通" }
-        if lower.contains("住") || lower.contains("房") || lower.contains("租") || lower.contains("rent") || lower.contains("hotel") { return "住宿" }
-        if lower.contains("购物") || lower.contains("买") || lower.contains("shop") || lower.contains("buy") { return "购物" }
-        if lower.contains("娱") || lower.contains("玩") || lower.contains("电影") || lower.contains("game") || lower.contains("movie") { return "娱乐" }
-        return "其他"
+        let loc = LocaleManager.shared
+        if lower.contains("food") || lower.contains("dinner") || lower.contains("lunch") || lower.contains("餐") || lower.contains("饭") || lower.contains("吃") { return loc.food }
+        if lower.contains("taxi") || lower.contains("bus") || lower.contains("transport") || lower.contains("交通") || lower.contains("车") { return loc.transport }
+        if lower.contains("rent") || lower.contains("hotel") || lower.contains("housing") || lower.contains("住") || lower.contains("房") { return loc.housing }
+        if lower.contains("shop") || lower.contains("buy") || lower.contains("购物") || lower.contains("买") { return loc.shopping }
+        if lower.contains("game") || lower.contains("movie") || lower.contains("entertainment") || lower.contains("娱") || lower.contains("玩") { return loc.entertainment }
+        return loc.other
     }
 
     // MARK: - Color for heatmap cell
