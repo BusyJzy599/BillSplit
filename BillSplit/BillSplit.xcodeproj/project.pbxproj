@@ -47,6 +47,7 @@
 		F95AB31E556C2F24CD671E17 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42397EE31BFC15E069E8370D /* GlassCard.swift */; };
 		F9AE549B0F7888BEE388CBB5 /* AddBillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5E279B6553B7BE68B162D1 /* AddBillView.swift */; };
 		FBA9FC6CFACD609253138BA8 /* SettlementRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E6F01F98CFC267698D99D6 /* SettlementRow.swift */; };
+		2DA8A9A8D92201FF502B496D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -90,6 +91,7 @@
 		DE9FF4A2D14453F090CF2A75 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
 		E4465A1C74FC6B56F24E61B9 /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0 /* ImageCompressor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCompressor.swift; sourceTree = "<group>"; };
+		E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,6 +202,7 @@
 			children = (
 				370AFF248F2CC1EEC5204FDF /* BillSplit.xcodeproj */,
 				4B092AA8A92708C65481B20A /* BillSplit.entitlements */,
+				E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */,
 				6BDCAD048D3BCF40D5B65CB9 /* BillSplitApp.swift */,
 			);
 			name = BillSplit;
@@ -286,6 +289,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BBA0AB8D5006D61D65B0D983 /* BillSplit.entitlements in Resources */,
+				2DA8A9A8D92201FF502B496D /* LaunchScreen.storyboard in Resources */,
 				765CC0B32C08FDF738503CB6 /* BillSplit.xcodeproj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -406,7 +410,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "BillSplit";
 				INFOPLIST_KEY_NSCameraUsageDescription = "用于拍照识别收据";
-				INFOPLIST_KEY_UILaunchScreen = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择收据照片";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -491,7 +495,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "BillSplit";
 				INFOPLIST_KEY_NSCameraUsageDescription = "用于拍照识别收据";
-				INFOPLIST_KEY_UILaunchScreen = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择收据照片";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
