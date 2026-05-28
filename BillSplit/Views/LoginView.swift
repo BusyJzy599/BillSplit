@@ -1,5 +1,4 @@
 import SwiftUI
-import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var authService: AuthService
@@ -27,16 +26,23 @@ struct LoginView: View {
 
                 Spacer()
 
-                SignInWithAppleButton(.signIn) { request in
-                    request.requestedScopes = [.fullName, .email]
-                } onCompletion: { _ in }
-                .signInWithAppleButtonStyle(.black)
-                .frame(height: 50)
-                .cornerRadius(12)
-                .padding(.horizontal, 40)
-                .onTapGesture {
+                Button {
                     authService.startSignInWithAppleFlow()
+                } label: {
+                    HStack {
+                        Image(systemName: "apple.logo")
+                            .resizable()
+                            .frame(width: 20, height: 24)
+                        Text("使用 Apple 登录")
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(.black)
+                    .cornerRadius(12)
                 }
+                .padding(.horizontal, 40)
 
                 Spacer()
             }
