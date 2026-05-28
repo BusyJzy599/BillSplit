@@ -34,12 +34,14 @@ struct GroupListView: View {
                             NavigationLink(destination: GroupDetailView(group: group)) {
                                 groupRow(group)
                             }
-                            .swipeActions(edge: .trailing) {
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
-                                    deletingGroup = group; showDeleteAlert = true
+                                    deletingGroup = group
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { showDeleteAlert = true }
                                 } label: { Label(loc.delete, systemImage: "trash") }
                                 Button {
-                                    editingGroup = group; editGroupName = group.name; editGroupIcon = group.icon; showEditSheet = true
+                                    editingGroup = group; editGroupName = group.name; editGroupIcon = group.icon
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { showEditSheet = true }
                                 } label: { Label(loc.edit, systemImage: "pencil") }.tint(.orange)
                             }
                         }

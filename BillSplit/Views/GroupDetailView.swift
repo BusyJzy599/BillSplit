@@ -50,7 +50,36 @@ struct GroupDetailView: View {
                             Text(loc.noBills).font(.subheadline).foregroundColor(.secondary)
                         }.frame(maxWidth: .infinity).padding(.vertical, 16)
                     }
-                    ForEach(vm.bills) { bill in billRowView(bill) }
+                    ForEach(vm.bills) { bill in
+                        HStack(spacing: 10) {
+                            ZStack { Circle().fill(vm.billColor(bill).opacity(0.15)).frame(width: 36, height: 36); Text(vm.billIcon(bill)).font(.system(size: 18)) }
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(bill.description).font(.subheadline).fontWeight(.medium)
+                                HStack(spacing: 4) {
+                                    Text("Paid by \(vm.userNames[bill.payerId] ?? "...")").font(.caption).foregroundColor(.secondary)
+                                    if bill.currency != CurrencySettings.shared.current.rawValue {
+                                        Text("· \(bill.displayOriginal)").font(.caption2).foregroundColor(.secondary)
+                                    }
+                                }
+                            }
+                            Spacer()
+                            Text(CurrencySettings.shared.formatted(bill.amount)).font(.headline).foregroundColor(.accentColor)
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                deletingBill = bill
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { showDeleteConfirm = true }
+                            } label: { Label(loc.delete, systemImage: "trash") }
+                            Button {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { editingBill = bill }
+                            } label: { Label(loc.edit, systemImage: "pencil") }.tint(.orange)
+                        }
+                        .contextMenu {
+                            Button { editingBill = bill } label: { Label(loc.edit, systemImage: "pencil") }
+                            Button(role: .destructive) { deletingBill = bill; showDeleteConfirm = true }
+                                label: { Label(loc.delete, systemImage: "trash") }
+                        }
+                    }
                 } header: { if !vm.bills.isEmpty { Text(loc.billRecords).font(.subheadline) } }
             }
             .listStyle(.insetGrouped)
@@ -130,27 +159,6 @@ struct GroupDetailView: View {
             }
             Spacer()
             Text(vm.balanceText(id)).font(.caption).fontWeight(.medium).foregroundColor(balanceColor(id))
-        }
-    }
-
-    private func billRowView(_ bill: Bill) -> some View {
-        HStack(spacing: 10) {
-            ZStack { Circle().fill(vm.billColor(bill).opacity(0.15)).frame(width: 36, height: 36); Text(vm.billIcon(bill)).font(.system(size: 18)) }
-            VStack(alignment: .leading, spacing: 2) {
-                Text(bill.description).font(.subheadline).fontWeight(.medium)
-                HStack(spacing: 4) {
-                    Text("Paid by \(vm.userNames[bill.payerId] ?? "...")").font(.caption).foregroundColor(.secondary)
-                    if bill.currency != CurrencySettings.shared.current.rawValue {
-                        Text("· \(bill.displayOriginal)").font(.caption2).foregroundColor(.secondary)
-                    }
-                }
-            }
-            Spacer()
-            Text(CurrencySettings.shared.formatted(bill.amount)).font(.headline).foregroundColor(.accentColor)
-        }
-        .swipeActions(edge: .trailing) {
-            Button(role: .destructive) { deletingBill = bill; showDeleteConfirm = true } label: { Label(loc.delete, systemImage: "trash") }
-            Button { editingBill = bill } label: { Label(loc.edit, systemImage: "pencil") }.tint(.orange)
         }
     }
 
