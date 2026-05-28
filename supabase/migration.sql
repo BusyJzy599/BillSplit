@@ -85,7 +85,7 @@ CREATE POLICY "Groups updatable by creator" ON groups
 CREATE POLICY "Groups deletable by creator" ON groups
   FOR DELETE USING (auth.uid() = creator_id);
 
--- Bills: group members can read/payer can create
+-- Bills: group members can read/create/update/delete
 CREATE POLICY "Bills viewable by group members" ON bills
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM groups WHERE groups.id = bills.group_id AND auth.uid() = ANY(groups.member_ids))
@@ -94,8 +94,20 @@ CREATE POLICY "Bills creatable by group members" ON bills
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM groups WHERE groups.id = bills.group_id AND auth.uid() = ANY(groups.member_ids))
   );
+CREATE POLICY "Bills updatable by group members" ON bills
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM groups WHERE groups.id = bills.group_id AND auth.uid() = ANY(groups.member_ids))
+  );
+CREATE POLICY "Bills deletable by group members" ON bills
+  FOR DELETE USING (
+    EXISTS (SELECT 1 FROM groups WHERE groups.id = bills.group_id AND auth.uid() = ANY(groups.member_ids))
+  );
 
--- Settlements: involved users can read/create
+-- Groups: any member can update (join/leave/edit name)
+CREATE POLICY "Groups updatable by any member" ON groups
+  FOR UPDATE USING (auth.uid() = ANY(member_ids));
+
+-- Settlements: group members can read; involved users can create/update/delete
 CREATE POLICY "Settlements viewable by group members" ON settlements
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM groups WHERE groups.id = settlements.group_id AND auth.uid() = ANY(groups.member_ids))
@@ -104,6 +116,10 @@ CREATE POLICY "Settlements creatable by involved users" ON settlements
   FOR INSERT WITH CHECK (
     auth.uid() = from_user_id OR auth.uid() = to_user_id
   );
+CREATE POLICY "Settlements updatable by involved users" ON settlements
+  FOR UPDATE USING (auth.uid() = from_user_id OR auth.uid() = to_user_id);
+CREATE POLICY "Settlements deletable by involved users" ON settlements
+  FOR DELETE USING (auth.uid() = from_user_id OR auth.uid() = to_user_id);
 
 -- ─────────────────────────────────────
 -- Storage: avatars bucket + RLS
