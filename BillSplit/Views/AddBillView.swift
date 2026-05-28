@@ -149,7 +149,10 @@ struct AddBillView: View {
                         description: description, participantIds: Array(selectedParticipantIds),
                         currency: currency.rawValue, exchangeRate: exchangeRate)
                 }
-                await MainActor.run { dismiss() }
+                await MainActor.run {
+                    NotificationCenter.default.post(name: NSNotification.Name("refreshGroups"), object: nil)
+                    dismiss()
+                }
             } catch {
                 await MainActor.run { errorMessage = error.localizedDescription; isSubmitting = false }
             }

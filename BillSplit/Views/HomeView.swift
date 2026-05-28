@@ -43,7 +43,8 @@ struct HomeView: View {
                 }
             }
             .navigationTitle(loc.navHome)
-            .onAppear {
+            .onAppear { if let uid = authVM.currentUserId { vm.load(userId: uid) } }
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("refreshGroups"))) { _ in
                 if let uid = authVM.currentUserId { vm.load(userId: uid) }
             }
         }
