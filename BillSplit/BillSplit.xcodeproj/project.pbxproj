@@ -352,7 +352,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.billsplit.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zheyiji.billsplit;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -404,8 +404,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "账单共享";
+				INFOPLIST_KEY_CFBundleDisplayName = "BillSplit";
 				INFOPLIST_KEY_NSCameraUsageDescription = "用于拍照识别收据";
+				INFOPLIST_KEY_UILaunchScreen = YES;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择收据照片";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -430,7 +431,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.billsplit.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zheyiji.billsplit;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -488,8 +489,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "账单共享";
+				INFOPLIST_KEY_CFBundleDisplayName = "BillSplit";
 				INFOPLIST_KEY_NSCameraUsageDescription = "用于拍照识别收据";
+				INFOPLIST_KEY_UILaunchScreen = YES;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择收据照片";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
