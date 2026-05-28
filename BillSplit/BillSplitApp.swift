@@ -13,20 +13,16 @@ let supabase = SupabaseClient(
 
 @main
 struct BillSplitApp: App {
-    @StateObject private var authService = AuthService()
     @StateObject private var authVM = AuthViewModel()
 
     var body: some Scene {
         WindowGroup {
             if authVM.isLoading {
-                ProgressView("加载中...")
+                ProgressView("Loading...")
             } else if authVM.isLoggedIn {
-                MainTabView()
-                    .environmentObject(authVM)
+                MainTabView().environmentObject(authVM)
             } else {
-                LoginView()
-                    .environmentObject(authService)
-                    .environmentObject(authVM)
+                LoginView().environmentObject(authVM)
             }
         }
     }

@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject var authService: AuthService
     @EnvironmentObject var authVM: AuthViewModel
     @State private var email = ""
     @State private var password = ""
@@ -118,24 +117,6 @@ struct LoginView: View {
                     Button { quickAuth("test2@billsplit.com", "test123", "Test User 2") } label: {
                         Label("Test 2", systemImage: "person.fill").frame(maxWidth: .infinity).font(.subheadline)
                     }.buttonStyle(.bordered).tint(.green)
-                }
-
-                // Divider
-                HStack {
-                    Rectangle().frame(height: 1).foregroundColor(.secondary.opacity(0.3))
-                    Text("or").font(.caption).foregroundColor(.secondary)
-                    Rectangle().frame(height: 1).foregroundColor(.secondary.opacity(0.3))
-                }
-
-                // Apple Sign In
-                Button { authService.startSignInWithAppleFlow() } label: {
-                    HStack {
-                        Image(systemName: "apple.logo").resizable().frame(width: 18, height: 22)
-                        Text("Continue with Apple").fontWeight(.semibold)
-                    }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity).frame(height: 48)
-                    .background(.black).cornerRadius(12)
                 }
 
                 Spacer()
