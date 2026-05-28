@@ -70,7 +70,6 @@ struct HomeView: View {
     }
 
     private var spendingMood: String {
-        let loc = LocaleManager.shared
         let total = vm.totalPaid
         if total == 0 { return "" }
         let recentBills = vm.allBills.prefix(7)

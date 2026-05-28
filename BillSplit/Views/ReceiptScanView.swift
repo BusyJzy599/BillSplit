@@ -49,7 +49,7 @@ struct ReceiptScanView: View {
         }
         .fullScreenCover(isPresented: $showCamera) {
             ZStack {
-                CameraView(image: $capturedImage, onCapture: { state = .scanning }).ignoresSafeArea()
+                CameraView(image: $capturedImage, onCapture: { state = .scanning }, onCancel: { state = .idle; showCamera = false }).ignoresSafeArea()
                 if state == .scanning {
                     Color.black.opacity(0.7).ignoresSafeArea()
                     VStack(spacing: 16) {
@@ -64,7 +64,7 @@ struct ReceiptScanView: View {
             }
         }
         .sheet(isPresented: $showPhotoPicker) {
-            PhotoPicker(image: $capturedImage, onPick: { state = .scanning })
+            PhotoPicker(image: $capturedImage, onPick: { state = .scanning }, onCancel: { state = .idle; showPhotoPicker = false })
         }
     }
 
@@ -293,7 +293,7 @@ struct ReceiptScanView: View {
 
 // MARK: - Camera / PhotoPicker (unchanged)
 struct CameraView: UIViewControllerRepresentable {
-    @Binding var image: UIImage?; let onCapture: () -> Void
+    @Binding var image: UIImage?; let onCapture: () -> Void; let onCancel: () -> Void
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let p = UIImagePickerController(); p.sourceType = .camera; p.delegate = context.coordinator; return p
     }
@@ -304,12 +304,12 @@ struct CameraView: UIViewControllerRepresentable {
         func imagePickerController(_ pk: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let img = info[.originalImage] as? UIImage { p.image = img }; p.onCapture()
         }
-        func imagePickerControllerDidCancel(_ pk: UIImagePickerController) { p.onCapture() }
+        func imagePickerControllerDidCancel(_ pk: UIImagePickerController) { p.onCancel() }
     }
 }
 
 struct PhotoPicker: UIViewControllerRepresentable {
-    @Binding var image: UIImage?; let onPick: () -> Void
+    @Binding var image: UIImage?; let onPick: () -> Void; let onCancel: () -> Void
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var c = PHPickerConfiguration(); c.filter = .images; c.selectionLimit = 1
         let p = PHPickerViewController(configuration: c); p.delegate = context.coordinator; return p
@@ -319,7 +319,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
     class Coordinator: NSObject, PHPickerViewControllerDelegate {
         let p: PhotoPicker; init(_ p: PhotoPicker) { self.p = p }
         func picker(_ pk: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            guard let r = results.first else { pk.dismiss(animated: true); return }
+            guard let r = results.first else { pk.dismiss(animated: true); p.onCancel(); return }
             r.itemProvider.loadObject(ofClass: UIImage.self) { img, _ in
                 DispatchQueue.main.async { self.p.image = img as? UIImage; pk.dismiss(animated: true); self.p.onPick() }
             }
