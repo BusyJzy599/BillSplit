@@ -92,16 +92,15 @@ struct AddBillView: View {
                 }
 
                 Section(loc.locale == .zh ? "日期" : "Date") {
-                    DatePicker("", selection: $billDate, displayedComponents: .date)
-                        .datePickerStyle(.compact)
-                        .labelsHidden()
+                    DatePicker("", selection: $billDate, in: ...Date(), displayedComponents: .date)
+                        .datePickerStyle(.compact).labelsHidden()
                 }
 
                 Section(loc.sectionCategory) {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 4), spacing: 10) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 70), spacing: 6)], spacing: 10) {
                         ForEach(BillCategory.allCases, id: \.self) { cat in
                             VStack(spacing: 4) {
-                                Text(cat.icon).font(.title2)
+                                Text(cat.icon).font(.system(size: 22))
                                     .frame(width: 44, height: 44)
                                     .background(selectedCategory == cat ? Color.accentColor.opacity(0.15) : Color(.systemGray6))
                                     .cornerRadius(10)

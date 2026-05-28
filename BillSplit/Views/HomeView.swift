@@ -99,25 +99,22 @@ struct HomeView: View {
     // MARK: - Summary
 
     private var summarySection: some View {
-        HStack(spacing: 12) {
-            statCard(value: CurrencySettings.shared.formatted(vm.totalPaid), label: loc.totalSpent, icon: "dollarsign.circle.fill", color: .orange, emoji: "💸")
-            statCard(value: "\(vm.totalBills)", label: loc.billCount, icon: "doc.text.fill", color: .blue, emoji: "📋")
-            statCard(value: "\(vm.totalGroups)", label: loc.groupCount, icon: "person.3.fill", color: .green, emoji: "👥")
+        HStack(spacing: 10) {
+            statCard(value: CurrencySettings.shared.formatted(vm.totalPaid), label: loc.totalSpent, emoji: "💸")
+            statCard(value: "\(vm.totalBills)", label: loc.billCount, emoji: "📋")
+            statCard(value: "\(vm.totalGroups)", label: loc.groupCount, emoji: "👥")
         }
     }
 
-    private func statCard(value: String, label: String, icon: String, color: Color, emoji: String = "") -> some View {
-        VStack(spacing: 6) {
-            if !emoji.isEmpty {
-                Text(emoji).font(.title3)
-            } else {
-                Image(systemName: icon).font(.title3).foregroundStyle(color)
-            }
-            Text(value).font(.headline).fontWeight(.bold).lineLimit(1).minimumScaleFactor(0.7)
-            Text(label).font(.caption2).foregroundColor(.secondary)
+    private func statCard(value: String, label: String, emoji: String = "") -> some View {
+        VStack(spacing: 4) {
+            Text(emoji).font(.system(size: 20)).frame(height: 24)
+            Text(value).font(.system(.headline, design: .rounded)).fontWeight(.bold)
+                .lineLimit(1).minimumScaleFactor(0.5)
+            Text(label).font(.system(size: 10)).foregroundColor(.secondary).lineLimit(1)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
+        .padding(.vertical, 12)
         .background(RoundedRectangle(cornerRadius: 14).fill(Color(.systemBackground)).shadow(color: .black.opacity(0.04), radius: 4))
     }
 
@@ -179,18 +176,23 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 10) {
             Label(loc.categoryBreakdown, systemImage: "chart.pie.fill")
                 .font(.subheadline).fontWeight(.medium)
-            HStack(spacing: 16) {
-                PieChartView(data: vm.categoryBreakdown).frame(width: 120, height: 120)
-                VStack(alignment: .leading, spacing: 6) {
-                    ForEach(vm.categoryBreakdown.prefix(4), id: \.name) { item in
-                        HStack(spacing: 6) {
-                            Circle().fill(pieColor(item.name)).frame(width: 6, height: 6)
-                            Text(item.name).font(.caption).foregroundColor(.secondary)
-                            Text(CurrencySettings.shared.formatted(item.amount)).font(.caption).fontWeight(.medium)
+            GeometryReader { geo in
+                let pieSize = min(geo.size.width * 0.35, 140)
+                HStack(spacing: 16) {
+                    PieChartView(data: vm.categoryBreakdown).frame(width: pieSize, height: pieSize)
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(vm.categoryBreakdown.prefix(4), id: \.name) { item in
+                            HStack(spacing: 6) {
+                                Circle().fill(pieColor(item.name)).frame(width: 6, height: 6)
+                                Text(item.name).font(.caption).foregroundColor(.secondary).lineLimit(1)
+                                Text(CurrencySettings.shared.formatted(item.amount)).font(.caption).fontWeight(.medium).lineLimit(1)
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
+            .frame(height: min(UIScreen.main.bounds.width * 0.35, 140))
         }
         .padding(16)
         .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemBackground)).shadow(color: .black.opacity(0.04), radius: 4))

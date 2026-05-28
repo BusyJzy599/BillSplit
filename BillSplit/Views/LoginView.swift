@@ -121,9 +121,9 @@ struct LoginView: View {
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ))
-                                .frame(width: 90, height: 90)
+                                .frame(width: 72, height: 72)
                             Image(systemName: "dollarsign.circle.fill")
-                                .resizable().frame(width: 50, height: 50)
+                                .resizable().frame(width: 40, height: 40)
                                 .foregroundColor(.white)
                         }
                         .onTapGesture(count: 3) { showTestAccounts.toggle() }
@@ -135,8 +135,8 @@ struct LoginView: View {
                                 .font(.subheadline).foregroundColor(.secondary)
                         }
                     }
-                    .padding(.top, 60)
-                    .padding(.bottom, 32)
+                    .padding(.top, 40)
+                    .padding(.bottom, 24)
 
                     // Form card
                     VStack(spacing: 16) {
