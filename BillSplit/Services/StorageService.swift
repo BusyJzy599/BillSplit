@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 import Supabase
 
 class StorageService {
@@ -13,11 +13,11 @@ class StorageService {
         let filePath = "\(userId)/avatar.jpg"
         try await supabase.storage
             .from(bucket)
-            .upload(path: filePath, data: imageData, options: .init(upsert: true))
+            .upload(filePath, data: imageData, options: .init(upsert: true))
 
         return try supabase.storage
             .from(bucket)
-            .getPublicURL(path: filePath)
+            .getPublicURL(filePath)
             .absoluteString
     }
 
