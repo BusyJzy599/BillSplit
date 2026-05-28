@@ -144,6 +144,8 @@ struct ReceiptScanView: View {
                 }
             }
 
+            if let err = errorMessage { Section { Text(err).foregroundColor(.red).font(.caption) } }
+
             if isSubmitting {
                 HStack { Spacer(); ProgressView("Creating bills..."); Spacer() }
             } else {
