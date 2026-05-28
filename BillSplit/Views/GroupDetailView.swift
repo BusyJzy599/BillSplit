@@ -284,7 +284,7 @@ struct AlertModifiers: ViewModifier {
             .alert(loc.deleteGroup, isPresented: $showDeleteGroupAlert) {
                 Button(loc.cancel, role: .cancel) {}
                 Button(loc.delete, role: .destructive) { confirmDeleteGroup() }
-            } message: { Text("Delete \"\(vm.group.name)\"? This cannot be undone.") }
+            } message: { Text(loc.deleteBillMsg(vm.group.name)) }
             .alert(loc.cannotLeave, isPresented: $showLeaveAlert) {
                 Button(loc.cancel, role: .cancel) {}
             } message: { Text(loc.cannotLeaveMsg) }
