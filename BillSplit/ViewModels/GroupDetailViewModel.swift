@@ -76,6 +76,54 @@ class GroupDetailViewModel: ObservableObject {
         debts.contains { $0.fromUserId == userId || $0.toUserId == userId }
     }
 
+    // MARK: - Member balances
+
+    func memberBalance(_ userId: String) -> Double {
+        var net: Double = 0
+        for bill in bills {
+            if bill.payerId == userId {
+                net += bill.amount
+                let share = bill.amount / Double(bill.participantIds.count)
+                net -= share * Double(bill.participantIds.count)
+            } else if bill.participantIds.contains(userId) {
+                let share = bill.amount / Double(bill.participantIds.count)
+                net -= share
+            }
+        }
+        for s in settlements where s.status == .paid {
+            if s.fromUserId == userId { net -= s.amount }
+            if s.toUserId == userId { net += s.amount }
+        }
+        return net
+    }
+
+    func balanceText(_ userId: String) -> String {
+        let b = memberBalance(userId)
+        if abs(b) < 0.01 { return "Settled" }
+        return b > 0 ? "owed +\(CurrencySettings.shared.formatted(abs(b)))" : "owes \(CurrencySettings.shared.formatted(abs(b)))"
+    }
+
+    var totalSpent: Double { bills.reduce(0) { $0 + $1.amount } }
+
+    // MARK: - Bill icons
+
+    func billIcon(_ bill: Bill) -> String {
+        let d = bill.description.lowercased()
+        if d.contains("dinner") || d.contains("lunch") || d.contains("food") || d.contains("餐") || d.contains("饭") || d.contains("吃") { return "🍽️" }
+        if d.contains("taxi") || d.contains("bus") || d.contains("uber") || d.contains("交通") || d.contains("车") { return "🚗" }
+        if d.contains("drink") || d.contains("beer") || d.contains("coffee") || d.contains("酒") || d.contains("饮料") { return "🍺" }
+        if d.contains("hotel") || d.contains("rent") || d.contains("住") || d.contains("房") { return "🏠" }
+        if d.contains("shop") || d.contains("buy") || d.contains("购物") || d.contains("买") { return "🛍️" }
+        if d.contains("movie") || d.contains("game") || d.contains("娱") || d.contains("玩") { return "🎮" }
+        if d.contains("flight") || d.contains("train") || d.contains("机票") || d.contains("火车") { return "✈️" }
+        return "💰"
+    }
+
+    func billColor(_ bill: Bill) -> Color {
+        let icons: [String: Color] = ["🍽️": .orange, "🚗": .blue, "🍺": .yellow, "🏠": .brown, "🛍️": .pink, "🎮": .purple, "✈️": .cyan, "💰": .green]
+        return icons[billIcon(bill)] ?? .gray
+    }
+
     func subscribeRealtime() {
         guard let groupId = group.id else { return }
         RealtimeService.shared.subscribeBills(groupId: groupId) { [weak self] in

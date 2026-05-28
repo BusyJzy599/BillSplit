@@ -48,6 +48,7 @@
 		F9AE549B0F7888BEE388CBB5 /* AddBillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5E279B6553B7BE68B162D1 /* AddBillView.swift */; };
 		FBA9FC6CFACD609253138BA8 /* SettlementRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E6F01F98CFC267698D99D6 /* SettlementRow.swift */; };
 		2DA8A9A8D92201FF502B496D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */; };
+		C51C64309D108D7309F598D8 /* ToastModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0382F895F607D9A273E00D /* ToastModifier.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -92,6 +93,7 @@
 		E4465A1C74FC6B56F24E61B9 /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0 /* ImageCompressor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCompressor.swift; sourceTree = "<group>"; };
 		E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		CD0382F895F607D9A273E00D /* ToastModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastModifier.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +142,7 @@
 			children = (
 				2AAEEFE21002E52EC17E1E51 /* DebtCalculator.swift */,
 				D1B47319A536635F9C9E0191 /* Currency.swift */,
+				CD0382F895F607D9A273E00D /* ToastModifier.swift */,
 				E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0 /* ImageCompressor.swift */,
 				05DA0DEE28D9F58AB3B0EEBE /* LocaleManager.swift */,
 			);
@@ -334,6 +337,7 @@
 				C2D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7 /* RealtimeService.swift in Sources */,
 				D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8 /* StorageService.swift in Sources */,
 				E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8B9 /* ImageCompressor.swift in Sources */,
+				C51C64309D108D7309F598D8 /* ToastModifier.swift in Sources */,
 				2E0CEE478759F5AAB5A1131D /* LocaleManager.swift in Sources */,
 				279929E77E04687836DE1C65 /* Currency.swift in Sources */,
 				BAB698ABFCD4445075211582 /* HomeView.swift in Sources */,
