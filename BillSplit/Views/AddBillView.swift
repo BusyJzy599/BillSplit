@@ -16,6 +16,7 @@ struct AddBillView: View {
     @State private var selectedParticipantIds: Set<String>
     @State private var currency: Currency = CurrencySettings.shared.current
     @State private var exchangeRate: Double = Currency.exchangeRate
+    @FocusState private var isAmountFocused: Bool
 
     init(groupId: Int, memberIds: [String], userNames: [String: String], currentUserId: String, editBill: Bill? = nil) {
         self.groupId = groupId
@@ -47,6 +48,7 @@ struct AddBillView: View {
                     TextField("0.00", text: $amountText)
                         .keyboardType(.decimalPad)
                         .font(.title2)
+                        .focused($isAmountFocused)
                 }
 
                 Section("币种") {
@@ -116,7 +118,10 @@ struct AddBillView: View {
             .navigationTitle(editBill != nil ? "编辑账单" : "新建账单")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .keyboard) {
+                    Button("Done") { isAmountFocused = false }
+                }
             }
         }
     }

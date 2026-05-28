@@ -43,9 +43,9 @@ struct GroupListView: View {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(vm.groups) { group in
-                                ZStack {
-                                    NavigationLink(destination: GroupDetailView(group: group)) { EmptyView() }.opacity(0)
-                                    GroupCard(group: group, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "")
+                                GroupCard(group: group, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "")
+                                .overlay {
+                                    NavigationLink(destination: GroupDetailView(group: group)) { Color.clear }
                                 }
                                 .swipeActions(edge: .trailing) {
                                     Button(role: .destructive) {
