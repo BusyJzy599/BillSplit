@@ -71,7 +71,9 @@ struct GroupDetailView: View {
                     Spacer()
                     Text(CurrencySettings.shared.formatted(debt.amount)).font(.subheadline).fontWeight(.semibold)
                     if debt.fromUserId == (authVM.currentUserId ?? "") {
-                        Button("Pay") { settle(debt) }.buttonStyle(.borderedProminent).controlSize(.small).foregroundColor(.white)
+                        Button { UIImpactFeedbackGenerator(style: .medium).impactOccurred(); settle(debt) }
+                        label: { Text("Pay").foregroundColor(.white) }
+                        .buttonStyle(.borderedProminent).controlSize(.small)
                     }
                 }
             }
@@ -168,11 +170,16 @@ struct GroupDetailView: View {
                 Spacer()
                 Text(CurrencySettings.shared.formatted(bill.amount)).font(.headline).foregroundColor(.accentColor)
             }
-            HStack {
-                Button { editingBill = bill } label: { Label("Edit", systemImage: "pencil").font(.caption) }.buttonStyle(.borderless).foregroundColor(.orange)
-                Spacer()
-                Button(role: .destructive) { deletingBill = bill; showDeleteConfirm = true } label: { Label("Delete", systemImage: "trash").font(.caption) }.buttonStyle(.borderless)
-            }
+        }
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                deletingBill = bill; showDeleteConfirm = true
+            } label: { Label("Delete", systemImage: "trash") }
+            Button {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                editingBill = bill
+            } label: { Label("Edit", systemImage: "pencil") }.tint(.accentColor)
         }
     }
 
