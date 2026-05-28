@@ -103,8 +103,23 @@ struct ReceiptScanView: View {
     var confirmingView: some View {
         Form {
             Section {
-                HStack { Text("Items").font(.headline); Spacer(); Text(String(format: "$%.2f", selectedTotal)).font(.headline).foregroundColor(.accentColor) }
-                Text("\(selectedIndices.count)/\(items.count) selected · Tap to toggle").font(.caption).foregroundColor(.secondary)
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Items").font(.headline)
+                        Text("Receipt in \(CurrencySettings.shared.current.rawValue.uppercased()) · \(memberIds.count) people")
+                            .font(.caption).foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(String(format: "\(CurrencySettings.shared.current.symbol)%.2f", selectedTotal)).font(.headline).foregroundColor(.accentColor)
+                        Text("\(selectedIndices.count)/\(items.count) selected").font(.caption).foregroundColor(.secondary)
+                    }
+                }
+                if selectedTotal > 0 && !selectedItems.filter({ $0.isShared }).isEmpty {
+                    let perPerson = selectedTotal / Double(max(memberIds.count, 1))
+                    Text("Shared: \(CurrencySettings.shared.current.symbol)\(String(format: "%.2f", perPerson)) / person")
+                        .font(.caption2).foregroundColor(.accentColor)
+                }
             }
 
             Section {
