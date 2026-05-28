@@ -143,6 +143,7 @@ struct AddBillView: View {
                         .disabled(isSubmitting || amountValue == nil || description.trimmingCharacters(in: .whitespaces).isEmpty || selectedParticipantIds.isEmpty)
                 }
             }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle(editBill != nil ? loc.editBill : loc.newBill)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

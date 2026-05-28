@@ -1,13 +1,12 @@
 import SwiftUI
 import Supabase
 
-// MARK: - Supabase Client (configure with your Supabase project)
+// MARK: - Supabase Config
 
-// Replace with your Supabase URL and anon key from https://supabase.com/dashboard
-let supabase = SupabaseClient(
-    supabaseURL: URL(string: "https://prmjucdsuejtdxxyucxo.supabase.co")!,
-    supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBybWp1Y2RzdWVqdGR4eHl1Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NjM0MjUsImV4cCI6MjA5NTUzOTQyNX0.UgcwvOxXaUoOPyRwnIjnZz8_vkmwfLsZX25_nozhnFw"
-)
+let supabaseURL = URL(string: "https://prmjucdsuejtdxxyucxo.supabase.co")!
+let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBybWp1Y2RzdWVqdGR4eHl1Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NjM0MjUsImV4cCI6MjA5NTUzOTQyNX0.UgcwvOxXaUoOPyRwnIjnZz8_vkmwfLsZX25_nozhnFw"
+
+let supabase = SupabaseClient(supabaseURL: supabaseURL, supabaseKey: supabaseAnonKey)
 
 // MARK: - App
 

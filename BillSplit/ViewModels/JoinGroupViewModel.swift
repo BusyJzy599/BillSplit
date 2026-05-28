@@ -8,7 +8,7 @@ class JoinGroupViewModel: ObservableObject {
 
     func join(userId: String) {
         guard inviteCode.count == 6 else {
-            errorMessage = "请输入6位邀请码"
+            errorMessage = LocaleManager.shared.locale == .zh ? "请输入6位邀请码" : "Please enter a 6-digit code"
             return
         }
         isLoading = true

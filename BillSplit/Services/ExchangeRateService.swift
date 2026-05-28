@@ -24,11 +24,11 @@ class ExchangeRateService {
         }
 
         do {
-            let url = URL(string: "https://prmjucdsuejtdxxyucxo.supabase.co/functions/v1/get-exchange-rate")!
+            let url = supabaseURL.appendingPathComponent("functions/v1/get-exchange-rate")
             var req = URLRequest(url: url)
             req.httpMethod = "POST"
             req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            req.setValue("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBybWp1Y2RzdWVqdGR4eHl1Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NjM0MjUsImV4cCI6MjA5NTUzOTQyNX0.UgcwvOxXaUoOPyRwnIjnZz8_vkmwfLsZX25_nozhnFw", forHTTPHeaderField: "Authorization")
+            req.setValue("Bearer \(supabaseAnonKey)", forHTTPHeaderField: "Authorization")
 
             let (data, _) = try await URLSession.shared.data(for: req)
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]

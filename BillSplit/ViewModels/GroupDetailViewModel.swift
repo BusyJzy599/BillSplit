@@ -8,12 +8,14 @@ class GroupDetailViewModel: ObservableObject {
     @Published var userNames: [String: String] = [:]
     @Published var userAvatars: [String: String] = [:]
     @Published var debts: [DebtEntry] = []
+    @Published var isReloading = false
 
     init(group: BillGroup) { self.group = group }
 
     /// Async reload — awaits completion before returning
     func reload() async {
         guard let groupId = group.id else { return }
+        await MainActor.run { isReloading = true }
         do {
             var g = try await GroupService.shared.getGroup(id: groupId)
             g.memberIds = Array(Set(g.memberIds))
@@ -24,8 +26,12 @@ class GroupDetailViewModel: ObservableObject {
                 self.bills = bills
                 self.settlements = settlements
                 recalcDebts()
+                isReloading = false
             }
-        } catch { print("Reload failed: \(error)") }
+        } catch {
+            await MainActor.run { isReloading = false }
+            print("Reload failed: \(error)")
+        }
     }
 
     func loadData() {

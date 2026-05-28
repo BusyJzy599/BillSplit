@@ -14,12 +14,11 @@ class AIService {
     var isConfigured: Bool { true }
 
     func extractItems(from rawText: String) async throws -> [AIExtractedItem] {
-        let url = URL(string: "https://prmjucdsuejtdxxyucxo.supabase.co/functions/v1/ai-parse-receipt")!
+        let url = supabaseURL.appendingPathComponent("functions/v1/ai-parse-receipt")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        // Use anon key for Edge Function auth
-        request.setValue("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBybWp1Y2RzdWVqdGR4eHl1Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NjM0MjUsImV4cCI6MjA5NTUzOTQyNX0.UgcwvOxXaUoOPyRwnIjnZz8_vkmwfLsZX25_nozhnFw", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(supabaseAnonKey)", forHTTPHeaderField: "Authorization")
         request.httpBody = try JSONSerialization.data(withJSONObject: ["rawText": rawText])
 
         let (data, response) = try await URLSession.shared.data(for: request)

@@ -12,6 +12,7 @@ struct GroupDetailView: View {
     @State private var showDeleteConfirm = false
     @State private var showDeleteGroupAlert = false
     @State private var showLeaveAlert = false
+    @State private var showLeaveConfirmAlert = false
     @State private var toast: Toast?
     @State private var settlingIds = Set<UUID>()
     @State private var showAllSettled = false
@@ -26,7 +27,7 @@ struct GroupDetailView: View {
             .navigationTitle(vm.group.name)
             .toolbar { toolbarContent }
             .modifier(SheetModifiers(vm: vm, authVM: authVM, showAddBill: $showAddBill, editingBill: $editingBill, showReceiptScan: $showReceiptScan))
-            .modifier(AlertModifiers(loc: loc, vm: vm, authVM: authVM, showDeleteConfirm: $showDeleteConfirm, showDeleteGroupAlert: $showDeleteGroupAlert, showLeaveAlert: $showLeaveAlert, deletingBill: $deletingBill, confirmDeleteBill: confirmDeleteBill, confirmDeleteGroup: confirmDeleteGroup))
+            .modifier(AlertModifiers(loc: loc, vm: vm, authVM: authVM, showDeleteConfirm: $showDeleteConfirm, showDeleteGroupAlert: $showDeleteGroupAlert, showLeaveConfirmAlert: $showLeaveConfirmAlert, showLeaveAlert: $showLeaveAlert, deletingBill: $deletingBill, confirmDeleteBill: confirmDeleteBill, confirmDeleteGroup: confirmDeleteGroup))
             .onChange(of: showAddBill) { _, v in if !v { Task { await vm.reload() } } }
             .onChange(of: showReceiptScan) { _, v in if !v { Task { await vm.reload() } } }
             .onChange(of: editingBill) { _, v in if v == nil { Task { await vm.reload() } } }
@@ -48,6 +49,20 @@ struct GroupDetailView: View {
                 billsSection
             }
             .listStyle(.insetGrouped).scrollContentBackground(.hidden)
+            .refreshable { await vm.reload() }
+            .overlay(alignment: .top) {
+                if vm.isReloading {
+                    HStack(spacing: 6) {
+                        ProgressView().scaleEffect(0.7)
+                        Text(loc.loading).font(.caption).foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal, 12).padding(.vertical, 6)
+                    .background(.ultraThinMaterial).cornerRadius(12)
+                    .padding(.top, 8)
+                    .transition(.opacity)
+                }
+            }
+            .animation(.easeInOut(duration: 0.2), value: vm.isReloading)
         }
     }
 
@@ -250,8 +265,9 @@ struct GroupDetailView: View {
                     Button(role: .destructive) { showDeleteGroupAlert = true } label: { Label(loc.deleteGroup, systemImage: "trash") }
                 } else {
                     Button(role: .destructive) {
-                        if vm.canLeave(userId: authVM.currentUserId ?? "") { showLeaveAlert = true }
-                        else { vm.leaveGroup(userId: authVM.currentUserId ?? "") }
+                        let uid = authVM.currentUserId ?? ""
+                        if vm.canLeave(userId: uid) { showLeaveAlert = true }
+                        else { showLeaveConfirmAlert = true }
                     } label: { Label(loc.leaveGroup, systemImage: "rectangle.portrait.and.arrow.right") }
                 }
             } label: { Image(systemName: "gearshape") }
@@ -325,7 +341,7 @@ struct SheetModifiers: ViewModifier {
 struct AlertModifiers: ViewModifier {
     let loc: LocaleManager; let vm: GroupDetailViewModel; let authVM: AuthViewModel
     @Binding var showDeleteConfirm: Bool; @Binding var showDeleteGroupAlert: Bool
-    @Binding var showLeaveAlert: Bool; @Binding var deletingBill: Bill?
+    @Binding var showLeaveConfirmAlert: Bool; @Binding var showLeaveAlert: Bool; @Binding var deletingBill: Bill?
     let confirmDeleteBill: () -> Void; let confirmDeleteGroup: () -> Void
 
     func body(content: Content) -> some View {
@@ -341,5 +357,9 @@ struct AlertModifiers: ViewModifier {
             .alert(loc.cannotLeave, isPresented: $showLeaveAlert) {
                 Button(loc.cancel, role: .cancel) {}
             } message: { Text(loc.cannotLeaveMsg) }
+            .alert(loc.leaveGroup + "?", isPresented: $showLeaveConfirmAlert) {
+                Button(loc.cancel, role: .cancel) {}
+                Button(loc.leaveGroup, role: .destructive) { vm.leaveGroup(userId: authVM.currentUserId ?? "") }
+            } message: { Text(loc.locale == .zh ? "你将退出此账单组，但可以重新加入。" : "You will leave this group. You can rejoin later.") }
     }
 }
