@@ -1,6 +1,6 @@
 import Foundation
 
-struct Bill: Codable, Identifiable {
+struct Bill: Codable, Identifiable, Equatable {
     var id: Int?
     var groupId: Int
     var payerId: String

@@ -83,6 +83,16 @@ struct LoginView: View {
                 }
                 .font(.subheadline).foregroundColor(.secondary)
 
+                // Test accounts
+                HStack(spacing: 12) {
+                    Button { authVM.signIn(email: "test1@billsplit.com", password: "test123") } label: {
+                        Label("Test 1", systemImage: "person.fill").frame(maxWidth: .infinity).font(.subheadline)
+                    }.buttonStyle(.bordered).tint(.blue)
+                    Button { authVM.signIn(email: "test2@billsplit.com", password: "test123") } label: {
+                        Label("Test 2", systemImage: "person.fill").frame(maxWidth: .infinity).font(.subheadline)
+                    }.buttonStyle(.bordered).tint(.green)
+                }
+
                 // Divider
                 HStack {
                     Rectangle().frame(height: 1).foregroundColor(.secondary.opacity(0.3))
