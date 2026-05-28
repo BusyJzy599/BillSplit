@@ -15,7 +15,7 @@ struct AddBillView: View {
     @State private var selectedPayerId: String
     @State private var selectedParticipantIds: Set<String>
     @State private var currency: Currency = CurrencySettings.shared.current
-    @State private var exchangeRate: Double = Currency.exchangeRate
+    @State private var exchangeRate: Double = Currency.rateUSDToCNY
     @FocusState private var isAmountFocused: Bool
 
     init(groupId: Int, memberIds: [String], userNames: [String: String], currentUserId: String, editBill: Bill? = nil) {
@@ -59,7 +59,7 @@ struct AddBillView: View {
                     }
                     .pickerStyle(.segmented)
                     .onChange(of: currency) { _, _ in
-                        exchangeRate = Currency.exchangeRate
+                        exchangeRate = Currency.rateUSDToCNY
                     }
 
                     HStack {

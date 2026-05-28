@@ -51,19 +51,30 @@ struct GroupDetailView: View {
                         }.frame(maxWidth: .infinity).padding(.vertical, 16)
                     }
                     ForEach(vm.bills) { bill in
-                        HStack(spacing: 10) {
-                            ZStack { Circle().fill(vm.billColor(bill).opacity(0.15)).frame(width: 36, height: 36); Text(vm.billIcon(bill)).font(.system(size: 18)) }
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(bill.description).font(.subheadline).fontWeight(.medium)
-                                HStack(spacing: 4) {
-                                    Text("Paid by \(vm.userNames[bill.payerId] ?? "...")").font(.caption).foregroundColor(.secondary)
-                                    if bill.currency != CurrencySettings.shared.current.rawValue {
-                                        Text("· \(bill.displayOriginal)").font(.caption2).foregroundColor(.secondary)
+                        VStack(spacing: 6) {
+                            HStack(spacing: 10) {
+                                ZStack { Circle().fill(vm.billColor(bill).opacity(0.15)).frame(width: 36, height: 36); Text(vm.billIcon(bill)).font(.system(size: 18)) }
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(bill.description).font(.subheadline).fontWeight(.medium)
+                                    HStack(spacing: 4) {
+                                        Text("Paid by \(vm.userNames[bill.payerId] ?? "...")").font(.caption).foregroundColor(.secondary)
+                                        if bill.currency != CurrencySettings.shared.current.rawValue {
+                                            Text("· \(bill.displayOriginal)").font(.caption2).foregroundColor(.secondary)
+                                        }
                                     }
                                 }
+                                Spacer()
+                                Text(CurrencySettings.shared.formatted(bill.amount)).font(.headline).foregroundColor(.accentColor)
                             }
-                            Spacer()
-                            Text(CurrencySettings.shared.formatted(bill.amount)).font(.headline).foregroundColor(.accentColor)
+                            HStack(spacing: 0) {
+                                Button { editingBill = bill } label: {
+                                    Label(loc.edit, systemImage: "pencil").font(.caption)
+                                }.buttonStyle(.borderless).foregroundColor(.orange)
+                                Spacer()
+                                Button(role: .destructive) { deletingBill = bill; showDeleteConfirm = true } label: {
+                                    Label(loc.delete, systemImage: "trash").font(.caption)
+                                }.buttonStyle(.borderless)
+                            }
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
@@ -73,11 +84,6 @@ struct GroupDetailView: View {
                             Button {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { editingBill = bill }
                             } label: { Label(loc.edit, systemImage: "pencil") }.tint(.orange)
-                        }
-                        .contextMenu {
-                            Button { editingBill = bill } label: { Label(loc.edit, systemImage: "pencil") }
-                            Button(role: .destructive) { deletingBill = bill; showDeleteConfirm = true }
-                                label: { Label(loc.delete, systemImage: "trash") }
                         }
                     }
                 } header: { if !vm.bills.isEmpty { Text(loc.billRecords).font(.subheadline) } }

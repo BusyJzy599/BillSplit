@@ -4,35 +4,17 @@ enum Currency: String, CaseIterable {
     case usd
     case cny
 
-    var symbol: String {
-        switch self {
-        case .usd: return "$"
-        case .cny: return "¥"
-        }
-    }
+    var symbol: String { self == .usd ? "$" : "¥" }
+    var name: String { self == .usd ? "USD" : "CNY" }
 
-    var name: String {
-        switch self {
-        case .usd: return "美元 (USD)"
-        case .cny: return "人民币 (CNY)"
-        }
-    }
+    static let rateUSDToCNY: Double = 7.2
 
-    var toUSD: Double {
-        switch self {
-        case .usd: return 1.0
-        case .cny: return 0.14   // 1 CNY ≈ 0.14 USD
-        }
-    }
-
-    static let exchangeRate: Double = 7.2  // 1 USD = 7.2 CNY (approx)
-
+    /// Convert amount FROM this currency TO target currency
     func convert(_ amount: Double, to target: Currency) -> Double {
-        let inUSD = amount * self.toUSD
-        switch target {
-        case .usd: return inUSD
-        case .cny: return inUSD * Currency.exchangeRate
-        }
+        if self == target { return amount }
+        if self == .usd && target == .cny { return amount * Currency.rateUSDToCNY }
+        if self == .cny && target == .usd { return amount / Currency.rateUSDToCNY }
+        return amount
     }
 }
 
@@ -41,9 +23,7 @@ class CurrencySettings: ObservableObject {
 
     @AppStorage("selectedCurrency") var selectedCurrency: String = Currency.usd.rawValue
 
-    var current: Currency {
-        Currency(rawValue: selectedCurrency) ?? .usd
-    }
+    var current: Currency { Currency(rawValue: selectedCurrency) ?? .usd }
 
     func formatted(_ amountInCNY: Double) -> String {
         let converted = Currency.cny.convert(amountInCNY, to: current)
