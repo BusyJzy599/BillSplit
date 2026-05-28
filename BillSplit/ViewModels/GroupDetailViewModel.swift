@@ -108,8 +108,8 @@ class GroupDetailViewModel: ObservableObject {
             }
         }
         for s in settlements where s.status == .paid {
-            if s.fromUserId == userId { net -= s.amount }
-            if s.toUserId == userId { net += s.amount }
+            if s.fromUserId == userId { net += s.amount }
+            if s.toUserId == userId { net -= s.amount }
         }
         return net
     }

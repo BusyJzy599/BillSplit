@@ -112,13 +112,25 @@ struct GroupDetailView: View {
         SettlementRow(debt: debt, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "", onMarkPaid: { settle(debt) })
     }
 
-    func billEntry(_ bill: Bill) -> some View {
+    @ViewBuilder func billEntry(_ bill: Bill) -> some View {
+        let uid = authVM.currentUserId ?? ""
+        let isMyBill = bill.payerId == uid
+        let isParticipant = bill.participantIds.contains(uid)
+        let myShare = bill.amount / Double(max(bill.participantIds.count, 1))
+
         VStack(spacing: 6) {
             HStack(spacing: 10) {
                 ZStack { Circle().fill(vm.billColor(bill).opacity(0.15)).frame(width: 36, height: 36); Text(vm.billIcon(bill)).font(.system(size: 18)) }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(bill.description).font(.subheadline).fontWeight(.medium)
-                    Text("Paid by \(vm.userNames[bill.payerId] ?? "...")").font(.caption).foregroundColor(.secondary)
+                    HStack(spacing: 4) {
+                        Text(isMyBill ? "You paid" : "\(vm.userNames[bill.payerId] ?? "...") paid")
+                            .font(.caption).foregroundColor(isMyBill ? .blue : .secondary)
+                        if isParticipant && !isMyBill {
+                            Text("· Your share: \(CurrencySettings.shared.formatted(myShare))")
+                                .font(.caption2).foregroundColor(.orange)
+                        }
+                    }
                 }
                 Spacer()
                 Text(CurrencySettings.shared.formatted(bill.amount)).font(.headline).foregroundColor(.accentColor)
@@ -128,12 +140,6 @@ struct GroupDetailView: View {
                 Spacer()
                 Button(role: .destructive) { deletingBill = bill; showDeleteConfirm = true } label: { Label("Delete", systemImage: "trash").font(.caption) }.buttonStyle(.borderless)
             }
-        }
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            Button(role: .destructive) { deletingBill = bill; DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { showDeleteConfirm = true } }
-                label: { Label("Delete", systemImage: "trash") }
-            Button { DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { editingBill = bill } }
-                label: { Label("Edit", systemImage: "pencil") }.tint(.orange)
         }
     }
 

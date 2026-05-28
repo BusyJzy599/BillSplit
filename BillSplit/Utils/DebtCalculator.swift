@@ -21,8 +21,8 @@ class DebtCalculator {
         }
 
         for s in settlements where s.status == .paid {
-            net[s.fromUserId, default: 0] -= s.amount
-            net[s.toUserId, default: 0] += s.amount
+            net[s.fromUserId, default: 0] += s.amount  // debtor pays → net improves
+            net[s.toUserId, default: 0] -= s.amount    // creditor receives → net decreases
         }
 
         let creditors = net.filter { $0.value > 0.01 }.sorted { $0.value > $1.value }
