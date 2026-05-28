@@ -44,10 +44,10 @@ struct GroupListView: View {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(vm.groups) { group in
-                                GroupCard(group: group, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "")
-                                .overlay {
-                                    NavigationLink(destination: GroupDetailView(group: group)) { Color.clear }
+                                NavigationLink(destination: GroupDetailView(group: group)) {
+                                    GroupCard(group: group, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "")
                                 }
+                                .buttonStyle(.plain)
                                 .swipeActions(edge: .trailing) {
                                     Button(role: .destructive) {
                                         deletingGroup = group
