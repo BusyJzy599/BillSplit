@@ -15,6 +15,9 @@ struct ReceiptScanView: View {
     @State private var items: [ReceiptItem] = []
     @State private var payerId: String
     @State private var isSubmitting = false
+    @State private var editingItem: ReceiptItem?
+    @State private var editItemDesc = ""
+    @State private var editItemAmt = ""
 
     init(groupId: Int, memberIds: [String], userNames: [String: String], currentUserId: String) {
         self.groupId = groupId; self.memberIds = memberIds; self.userNames = userNames; self.currentUserId = currentUserId
@@ -93,24 +96,42 @@ struct ReceiptScanView: View {
 
     // MARK: - Confirming
 
+    var totalAmount: Double { items.reduce(0) { $0 + ($1.amount ?? 0) } }
+
     var confirmingView: some View {
         Form {
-            Section("Items (tap to toggle shared)") {
-                let sharedItems = items.filter { $0.isShared }
-                let personalItems = items.filter { !$0.isShared }
-
-                if !sharedItems.isEmpty {
-                    ForEach(sharedItems) { item in itemRow(item) }
-                }
-                if !personalItems.isEmpty {
-                    Section("Personal Items") { ForEach(personalItems) { item in itemRow(item) } }
-                }
-                if items.isEmpty { Text("No items found").foregroundColor(.secondary) }
+            Section {
+                HStack { Text("Items").font(.headline); Spacer(); Text(String(format: "$%.2f", totalAmount)).font(.headline).foregroundColor(.accentColor) }
+                Text("\(items.count) items · Tap edit / swipe delete").font(.caption).foregroundColor(.secondary)
             }
 
-            Section("Payer") {
-                Picker("Payer", selection: $payerId) {
-                    ForEach(memberIds, id: \.self) { id in Text(userNames[id] ?? "...").tag(id) }
+            Section {
+            ForEach(items) { item in
+                HStack {
+                    Image(systemName: item.isShared ? "person.2.fill" : "person.fill")
+                        .foregroundColor(item.isShared ? .blue : .secondary).frame(width: 24)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(item.description.isEmpty ? "Unnamed" : item.description).font(.subheadline)
+                        if let amt = item.amount, amt > 0 {
+                            Text(String(format: "$%.2f", amt)).font(.caption).foregroundColor(.secondary)
+                        }
+                    }
+                    Spacer()
+                    Button {
+                        editingItem = item; editItemDesc = item.description
+                        editItemAmt = item.amount.map { String(format: "%.2f", $0) } ?? ""
+                    } label: { Image(systemName: "pencil").font(.caption).foregroundColor(.secondary) }
+                }
+            }.onDelete { idx in items.remove(atOffsets: idx) }
+            }
+
+            Section {
+                HStack {
+                    Text("Paid by").font(.subheadline)
+                    Spacer()
+                    Picker("", selection: $payerId) {
+                        ForEach(memberIds, id: \.self) { id in Text(userNames[id] ?? "...").tag(id) }
+                    }
                 }
             }
 
@@ -118,34 +139,33 @@ struct ReceiptScanView: View {
                 HStack { Spacer(); ProgressView("Creating bills..."); Spacer() }
             } else {
                 Section {
-                    Button("Generate Bills (\(items.count) items)") { submitBills() }.disabled(items.isEmpty)
+                    Button("Generate \(items.count) Bills ($\(String(format: "%.2f", totalAmount)))") { submitBills() }
+                        .disabled(items.isEmpty).frame(maxWidth: .infinity)
                 }
             }
 
-            Section { Button("Rescan") { state = .idle; items = []; errorMessage = nil } }
+            Section { Button("Rescan") { state = .idle; items = []; errorMessage = nil }.foregroundColor(.secondary) }
         }
-    }
-
-    @ViewBuilder
-    func itemRow(_ item: ReceiptItem) -> some View {
-        HStack {
-            Button {
-                if let idx = items.firstIndex(where: { $0.id == item.id }) {
-                    var updated = items[idx]; updated.isShared.toggle(); items[idx] = updated
+        .sheet(item: $editingItem) { _ in
+            NavigationStack {
+                Form {
+                    TextField("Name", text: $editItemDesc)
+                    TextField("Amount", text: $editItemAmt).keyboardType(.decimalPad)
                 }
-            } label: {
-                Image(systemName: item.isShared ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(item.isShared ? .accentColor : .secondary)
-            }.buttonStyle(.plain)
-            VStack(alignment: .leading) {
-                Text(item.description.isEmpty ? "Unnamed" : item.description).font(.subheadline)
-                if let amt = item.amount { Text(String(format: "$%.2f", amt)).font(.caption).foregroundColor(.secondary) }
-            }
-            Spacer()
-            if !item.isShared, let uid = item.assignedToUserId { Text(userNames[uid] ?? "").font(.caption).foregroundColor(.accentColor) }
-            Button {
-                items.removeAll { $0.id == item.id }
-            } label: { Image(systemName: "trash").foregroundColor(.red).font(.caption) }
+                .navigationTitle("Edit Item").navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { editingItem = nil } }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") {
+                            if let idx = items.firstIndex(where: { $0.id == editingItem?.id }) {
+                                items[idx].description = editItemDesc
+                                items[idx].amount = Double(editItemAmt)
+                            }
+                            editingItem = nil
+                        }
+                    }
+                }
+            }.presentationDetents([.height(250)])
         }
     }
 
