@@ -2,11 +2,12 @@ import SwiftUI
 
 struct InviteCodeCard: View {
     let code: String
+    @StateObject private var loc = LocaleManager.shared
 
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("邀请码")
+                Text(loc.inviteCode)
                     .font(.caption)
                     .foregroundColor(.secondary)
                 Text(code)
@@ -18,7 +19,7 @@ struct InviteCodeCard: View {
             Button {
                 UIPasteboard.general.string = code
             } label: {
-                Label("复制", systemImage: "doc.on.doc")
+                Label(loc.copy, systemImage: "doc.on.doc")
                     .font(.subheadline)
             }
             .buttonStyle(.bordered)

@@ -3,6 +3,7 @@ import SwiftUI
 struct GroupDetailView: View {
     @EnvironmentObject var authVM: AuthViewModel
     @StateObject var vm: GroupDetailViewModel
+    @StateObject private var loc = LocaleManager.shared
     @State private var showAddBill = false
     @State private var showReceiptScan = false
     @State private var showLeaveAlert = false
@@ -17,28 +18,23 @@ struct GroupDetailView: View {
     var body: some View {
         ZStack {
             Color(.systemGroupedBackground).ignoresSafeArea()
-
             ScrollView {
                 VStack(spacing: 16) {
                     InviteCodeCard(code: vm.group.inviteCode)
 
-                    // Members
                     GlassCard {
                         VStack(alignment: .leading, spacing: 12) {
-                            Label("成员 (\(vm.group.memberIds.count))", systemImage: "person.2.fill")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                            Label("\(loc.members) (\(vm.group.memberIds.count))", systemImage: "person.2.fill")
+                                .font(.subheadline).foregroundColor(.secondary)
                             ForEach(vm.group.memberIds, id: \.self) { id in
                                 HStack(spacing: 10) {
                                     AvatarView(avatarUrl: vm.userAvatars[id], displayName: vm.userNames[id] ?? "", size: 36)
-                                    Text(vm.userNames[id] ?? "...")
-                                        .font(.subheadline)
+                                    Text(vm.userNames[id] ?? "...").font(.subheadline)
                                     Spacer()
                                     if id == vm.group.creatorId {
-                                        Text("创建者")
+                                        Text(loc.creator)
                                             .font(.caption2)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 3)
+                                            .padding(.horizontal, 8).padding(.vertical, 3)
                                             .background(.tint.opacity(0.1))
                                             .foregroundColor(.accentColor)
                                             .cornerRadius(6)
@@ -52,13 +48,10 @@ struct GroupDetailView: View {
                     if !vm.debts.isEmpty {
                         GlassCard {
                             VStack(alignment: .leading, spacing: 12) {
-                                Label("待结算", systemImage: "arrow.left.arrow.right")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                Label(loc.toSettle, systemImage: "arrow.left.arrow.right")
+                                    .font(.subheadline).foregroundColor(.secondary)
                                 ForEach(vm.debts) { debt in
-                                    SettlementRow(debt: debt, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "", onMarkPaid: {
-                                        markPaid(debt: debt)
-                                    })
+                                    SettlementRow(debt: debt, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "", onMarkPaid: { markPaid(debt: debt) })
                                     if debt.id != vm.debts.last?.id { Divider() }
                                 }
                             }
@@ -67,48 +60,37 @@ struct GroupDetailView: View {
 
                     GlassCard {
                         VStack(alignment: .leading, spacing: 12) {
-                            Label("账单记录", systemImage: "doc.text.fill")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                            Label(loc.billRecords, systemImage: "doc.text.fill")
+                                .font(.subheadline).foregroundColor(.secondary)
                             if vm.bills.isEmpty {
                                 VStack(spacing: 8) {
-                                    Image(systemName: "tray")
-                                        .font(.title2)
-                                        .foregroundColor(.secondary)
-                                    Text("还没有账单")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                                    Image(systemName: "tray").font(.title2).foregroundColor(.secondary)
+                                    Text(loc.noBills).font(.subheadline).foregroundColor(.secondary)
+                                    Text(loc.noBillsHint).font(.caption).foregroundColor(.secondary)
                                 }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 20)
+                                .frame(maxWidth: .infinity).padding(.vertical, 20)
                             }
                             ForEach(vm.bills) { bill in
                                 VStack(alignment: .leading, spacing: 6) {
                                     HStack {
                                         AvatarView(avatarUrl: vm.userAvatars[bill.payerId], displayName: vm.userNames[bill.payerId] ?? "", size: 24)
                                         VStack(alignment: .leading, spacing: 2) {
-                                            Text(bill.description)
-                                                .font(.subheadline)
-                                                .fontWeight(.medium)
+                                            Text(bill.description).font(.subheadline).fontWeight(.medium)
                                             if bill.currency != CurrencySettings.shared.current.rawValue {
-                                                Text("原: \(bill.displayOriginal) · 汇率 \(String(format: "%.2f", bill.exchangeRate))")
-                                                    .font(.caption2)
-                                                    .foregroundColor(.secondary)
+                                                Text("\(bill.displayOriginal) · rate \(String(format: "%.2f", bill.exchangeRate))")
+                                                    .font(.caption2).foregroundColor(.secondary)
                                             }
                                         }
                                         Spacer()
                                         Text(CurrencySettings.shared.formatted(bill.amount))
-                                            .font(.headline)
-                                            .foregroundColor(.accentColor)
+                                            .font(.headline).foregroundColor(.accentColor)
                                     }
                                     HStack {
-                                        Text("付款: \(vm.userNames[bill.payerId] ?? "...")")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
+                                        Text("\(loc.pay) \(vm.userNames[bill.payerId] ?? "...")")
+                                            .font(.caption).foregroundColor(.secondary)
                                         Spacer()
                                         Text(bill.createdAt, style: .date)
-                                            .font(.caption2)
-                                            .foregroundColor(.secondary)
+                                            .font(.caption2).foregroundColor(.secondary)
                                     }
                                 }
                                 .padding(.vertical, 4)
@@ -116,16 +98,11 @@ struct GroupDetailView: View {
                                 .onTapGesture { editingBill = bill }
                                 .swipeActions(edge: .trailing) {
                                     Button(role: .destructive) {
-                                        deletingBill = bill
-                                        showDeleteConfirm = true
-                                    } label: {
-                                        Label("删除", systemImage: "trash")
-                                    }
+                                        deletingBill = bill; showDeleteConfirm = true
+                                    } label: { Label(loc.delete, systemImage: "trash") }
                                     Button {
                                         editingBill = bill
-                                    } label: {
-                                        Label("编辑", systemImage: "pencil")
-                                    }
+                                    } label: { Label(loc.edit, systemImage: "pencil") }
                                     .tint(.orange)
                                 }
                                 if bill.id != vm.bills.last?.id { Divider() }
@@ -138,26 +115,20 @@ struct GroupDetailView: View {
                             Button(role: .destructive) {
                                 vm.deleteGroup(userId: authVM.currentUserId ?? "")
                             } label: {
-                                Label("删除账单组", systemImage: "trash")
-                                    .frame(maxWidth: .infinity)
+                                Label(loc.deleteGroup, systemImage: "trash").frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.bordered)
                         } else {
                             Button(role: .destructive) {
-                                if vm.canLeave(userId: authVM.currentUserId ?? "") {
-                                    showLeaveAlert = true
-                                } else {
-                                    vm.leaveGroup(userId: authVM.currentUserId ?? "")
-                                }
+                                if vm.canLeave(userId: authVM.currentUserId ?? "") { showLeaveAlert = true }
+                                else { vm.leaveGroup(userId: authVM.currentUserId ?? "") }
                             } label: {
-                                Label("退出账单组", systemImage: "rectangle.portrait.and.arrow.right")
-                                    .frame(maxWidth: .infinity)
+                                Label(loc.leaveGroup, systemImage: "rectangle.portrait.and.arrow.right").frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.bordered)
                         }
                     }
-                    .padding(.top, 8)
-                    .padding(.bottom, 32)
+                    .padding(.top, 8).padding(.bottom, 32)
                 }
                 .padding(16)
             }
@@ -166,15 +137,9 @@ struct GroupDetailView: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             Menu {
-                Button { showAddBill = true } label: {
-                    Label("手动输入", systemImage: "keyboard")
-                }
-                Button { showReceiptScan = true } label: {
-                    Label("拍照识别", systemImage: "doc.text.viewfinder")
-                }
-            } label: {
-                Image(systemName: "plus")
-            }
+                Button { showAddBill = true } label: { Label(loc.manualInput, systemImage: "keyboard") }
+                Button { showReceiptScan = true } label: { Label(loc.scanReceipt, systemImage: "doc.text.viewfinder") }
+            } label: { Image(systemName: "plus") }
         }
         .sheet(isPresented: $showAddBill) {
             AddBillView(groupId: vm.group.id ?? 0, memberIds: vm.group.memberIds, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "")
@@ -185,30 +150,19 @@ struct GroupDetailView: View {
         .sheet(isPresented: $showReceiptScan) {
             ReceiptScanView(groupId: vm.group.id ?? 0, memberIds: vm.group.memberIds, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "")
         }
-        .alert("删除账单", isPresented: $showDeleteConfirm) {
-            Button("取消", role: .cancel) {}
-            Button("删除", role: .destructive) {
+        .alert(loc.deleteBillTitle, isPresented: $showDeleteConfirm) {
+            Button(loc.cancel, role: .cancel) {}
+            Button(loc.delete, role: .destructive) {
                 if let bill = deletingBill, let billId = bill.id {
-                    Task {
-                        try? await BillService.shared.deleteBill(billId)
-                        vm.loadData()
-                    }
+                    Task { try? await BillService.shared.deleteBill(billId); vm.loadData() }
                 }
             }
-        } message: {
-            Text("确定要删除「\(deletingBill?.description ?? "")」吗？该操作不可撤销。")
-        }
-        .alert("有未结清欠款", isPresented: $showLeaveAlert) {
-            Button("取消", role: .cancel) {}
-        } message: {
-            Text("请先结清所有欠款后再退出账单组")
-        }
-        .onChange(of: showAddBill) { _, newValue in
-            if !newValue { vm.loadData() }
-        }
-        .onChange(of: showReceiptScan) { _, newValue in
-            if !newValue { vm.loadData() }
-        }
+        } message: { Text(loc.deleteBillMsg(deletingBill?.description ?? "")) }
+        .alert(loc.cannotLeave, isPresented: $showLeaveAlert) {
+            Button(loc.cancel, role: .cancel) {}
+        } message: { Text(loc.cannotLeaveMsg) }
+        .onChange(of: showAddBill) { _, newValue in if !newValue { vm.loadData() } }
+        .onChange(of: showReceiptScan) { _, newValue in if !newValue { vm.loadData() } }
         .onAppear { vm.loadData() }
         .onDisappear { vm.unsubscribeRealtime() }
     }
@@ -217,9 +171,7 @@ struct GroupDetailView: View {
         guard let groupId = vm.group.id else { return }
         Task {
             try? await SettlementService.shared.createSettlement(
-                groupId: groupId, fromUserId: debt.fromUserId,
-                toUserId: debt.toUserId, amount: debt.amount
-            )
+                groupId: groupId, fromUserId: debt.fromUserId, toUserId: debt.toUserId, amount: debt.amount)
             vm.loadData()
         }
     }

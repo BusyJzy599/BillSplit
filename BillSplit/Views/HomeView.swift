@@ -3,6 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var authVM: AuthViewModel
     @StateObject private var vm = HomeViewModel()
+    @StateObject private var loc = LocaleManager.shared
 
     var body: some View {
         NavigationStack {
@@ -10,7 +11,7 @@ struct HomeView: View {
                 Color(.systemGroupedBackground).ignoresSafeArea()
 
                 if vm.isLoading {
-                    ProgressView("加载中...")
+                    ProgressView(loc.loading)
                 } else {
                     ScrollView {
                         VStack(spacing: 16) {
@@ -35,7 +36,7 @@ struct HomeView: View {
                     }
                 }
             }
-            .navigationTitle("账单概览")
+            .navigationTitle(loc.navHome)
             .onAppear {
                 if let uid = authVM.currentUserId {
                     vm.load(userId: uid)
@@ -52,9 +53,9 @@ struct HomeView: View {
             GridItem(.flexible()),
             GridItem(.flexible())
         ], spacing: 12) {
-            SummaryCard(title: "总支出", value: CurrencySettings.shared.formatted(vm.totalPaid), icon: "yensign.circle.fill", color: .orange)
-            SummaryCard(title: "账单数", value: "\(vm.totalBills)", icon: "doc.text.fill", color: .blue)
-            SummaryCard(title: "账单组", value: "\(vm.totalGroups)", icon: "person.3.fill", color: .green)
+            SummaryCard(title: loc.totalSpent, value: CurrencySettings.shared.formatted(vm.totalPaid), icon: "yensign.circle.fill", color: .orange)
+            SummaryCard(title: loc.billCount, value: "\(vm.totalBills)", icon: "doc.text.fill", color: .blue)
+            SummaryCard(title: loc.groupCount, value: "\(vm.totalGroups)", icon: "person.3.fill", color: .green)
         }
     }
 
@@ -62,7 +63,7 @@ struct HomeView: View {
 
     private var heatmapCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("消费热力图", systemImage: "calendar")
+            Label(loc.spendingHeatmap, systemImage: "calendar")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
@@ -80,7 +81,7 @@ struct HomeView: View {
 
             // Legend
             HStack(spacing: 6) {
-                Text("少")
+                Text(loc.less)
                     .font(.caption2)
                     .foregroundColor(.secondary)
                 RoundedRectangle(cornerRadius: 2)
@@ -95,7 +96,7 @@ struct HomeView: View {
                 RoundedRectangle(cornerRadius: 2)
                     .fill(.green)
                     .frame(width: 12, height: 12)
-                Text("多")
+                Text(loc.more)
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -112,7 +113,7 @@ struct HomeView: View {
 
     private var pieChartCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("支出分类", systemImage: "chart.pie.fill")
+            Label(loc.categoryBreakdown, systemImage: "chart.pie.fill")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
@@ -149,7 +150,7 @@ struct HomeView: View {
 
     private var categoryList: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("分类明细", systemImage: "list.bullet.rectangle")
+            Label(loc.categoryDetail, systemImage: "list.bullet.rectangle")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
@@ -243,7 +244,7 @@ struct PieChartView: View {
                     .fill(Color(.systemBackground))
                     .frame(width: radius * 0.6, height: radius * 0.6)
                 VStack(spacing: 0) {
-                    Text("总计")
+                    Text("Total")
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
                     Text(CurrencySettings.shared.formatted(total))

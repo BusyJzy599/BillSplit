@@ -3,6 +3,7 @@ import Supabase
 
 struct ProfileView: View {
     @EnvironmentObject var authVM: AuthViewModel
+    @StateObject private var loc = LocaleManager.shared
     @State private var displayName: String = ""
     @State private var avatarUrl: String?
     @State private var showEditProfile = false
@@ -15,29 +16,23 @@ struct ProfileView: View {
                     Section {
                         HStack(spacing: 12) {
                             AvatarView(avatarUrl: avatarUrl, displayName: displayName, size: 60)
-
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(displayName.isEmpty ? "用户" : displayName)
+                                Text(displayName.isEmpty ? loc.user : displayName)
                                     .font(.headline)
                                 Text(authVM.currentUserId ?? "")
                                     .font(.system(.caption, design: .monospaced))
                                     .foregroundColor(.secondary)
                             }
-
                             Spacer()
-
-                            Button {
-                                showEditProfile = true
-                            } label: {
-                                Image(systemName: "pencil.circle")
-                                    .font(.title2)
+                            Button { showEditProfile = true } label: {
+                                Image(systemName: "pencil.circle").font(.title2)
                             }
                         }
                         .padding(.vertical, 8)
                     }
 
-                    Section("货币") {
-                        Picker("显示货币", selection: Binding(
+                    Section(loc.displayCurrency) {
+                        Picker(loc.displayCurrency, selection: Binding(
                             get: { CurrencySettings.shared.selectedCurrency },
                             set: { CurrencySettings.shared.selectedCurrency = $0; CurrencySettings.shared.objectWillChange.send() }
                         )) {
@@ -47,17 +42,27 @@ struct ProfileView: View {
                         }
                     }
 
+                    Section(loc.languageLabel) {
+                        Picker(loc.languageLabel, selection: Binding(
+                            get: { loc.appLocale },
+                            set: { loc.appLocale = $0; loc.objectWillChange.send() }
+                        )) {
+                            Text("English").tag("en")
+                            Text("中文").tag("zh")
+                        }
+                    }
+
                     Section {
                         Button(role: .destructive) {
                             authVM.signOut()
                         } label: {
-                            Label("退出登录", systemImage: "rectangle.portrait.and.arrow.right")
+                            Label(loc.signOut, systemImage: "rectangle.portrait.and.arrow.right")
                         }
                     }
                 }
                 .scrollContentBackground(.hidden)
             }
-            .navigationTitle("个人中心")
+            .navigationTitle(loc.navProfile)
             .sheet(isPresented: $showEditProfile) {
                 EditProfileView(displayName: displayName, avatarUrl: avatarUrl)
             }
@@ -76,9 +81,7 @@ struct ProfileView: View {
                         self.avatarUrl = user.avatarUrl
                     }
                 }
-            } catch {
-                print("Load profile failed: \(error)")
-            }
+            } catch { print("Load profile failed: \(error)") }
         }
     }
 }

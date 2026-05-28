@@ -6,6 +6,7 @@ struct SettlementRow: View {
     let userAvatars: [String: String]
     let currentUserId: String
     let onMarkPaid: () -> Void
+    @StateObject private var loc = LocaleManager.shared
 
     var body: some View {
         HStack {
@@ -17,10 +18,10 @@ struct SettlementRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 if isPayer {
-                    Text("你 → \(userNames[debt.toUserId] ?? "...")")
+                    Text("\(loc.you) → \(userNames[debt.toUserId] ?? "...")")
                         .font(.subheadline)
                 } else {
-                    Text("\(userNames[debt.fromUserId] ?? "...") → 你")
+                    Text("\(userNames[debt.fromUserId] ?? "...") → \(loc.you)")
                         .font(.subheadline)
                 }
                 Text(CurrencySettings.shared.formatted(debt.amount))
@@ -31,7 +32,7 @@ struct SettlementRow: View {
             Spacer()
 
             if isPayer {
-                Button("标记已还") { onMarkPaid() }
+                Button(loc.markPaid) { onMarkPaid() }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
             }
