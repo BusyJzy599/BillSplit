@@ -12,7 +12,7 @@ struct GroupListView: View {
                 LazyVStack(spacing: 12) {
                     ForEach(vm.groups) { group in
                         NavigationLink(destination: GroupDetailView(group: group)) {
-                            GroupCard(group: group, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "")
+                            GroupCard(group: group, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "")
                         }
                         .buttonStyle(.plain)
                     }
@@ -58,12 +58,14 @@ struct GroupListView: View {
 struct GroupCard: View {
     let group: BillGroup
     let userNames: [String: String]
+    let userAvatars: [String: String]
     let currentUserId: String
 
     var body: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
+                    AvatarView(avatarUrl: userAvatars[group.creatorId], displayName: userNames[group.creatorId] ?? "", size: 24)
                     Text(group.name)
                         .font(.headline)
                     Spacer()

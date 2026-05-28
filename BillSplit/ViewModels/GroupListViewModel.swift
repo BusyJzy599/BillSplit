@@ -4,6 +4,7 @@ import Supabase
 class GroupListViewModel: ObservableObject {
     @Published var groups: [BillGroup] = []
     @Published var userNames: [String: String] = [:]
+    @Published var userAvatars: [String: String] = [:]
 
     func loadGroups(userId: String) {
         Task {
@@ -23,7 +24,10 @@ class GroupListViewModel: ObservableObject {
             do {
                 let users: [AppUser] = try await supabase.from("users").select().eq("id", value: id).execute().value
                 if let user = users.first {
-                    await MainActor.run { self.userNames[id] = user.displayName }
+                    await MainActor.run {
+                        self.userNames[id] = user.displayName
+                        self.userAvatars[id] = user.avatarUrl
+                    }
                 }
             } catch {
                 print("Fetch user failed: \(error)")

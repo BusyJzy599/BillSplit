@@ -24,8 +24,11 @@ struct GroupDetailView: View {
                             .foregroundColor(.secondary)
                         ForEach(vm.group.memberIds, id: \.self) { id in
                             HStack {
-                                Image(systemName: "person.circle.fill")
-                                    .foregroundColor(id == vm.group.creatorId ? .accentColor : .secondary)
+                                AvatarView(
+                                    avatarUrl: vm.userAvatars[id],
+                                    displayName: vm.userNames[id] ?? "",
+                                    size: 32
+                                )
                                 Text(vm.userNames[id] ?? "...")
                                 if id == vm.group.creatorId { Text("创建者").font(.caption2).foregroundColor(.secondary) }
                             }
@@ -41,7 +44,7 @@ struct GroupDetailView: View {
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                             ForEach(vm.debts) { debt in
-                                SettlementRow(debt: debt, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "", onMarkPaid: {
+                                SettlementRow(debt: debt, userNames: vm.userNames, userAvatars: vm.userAvatars, currentUserId: authVM.currentUserId ?? "", onMarkPaid: {
                                     markPaid(debt: debt)
                                 })
                             }
@@ -143,6 +146,7 @@ struct GroupDetailView: View {
             Text("请先结清所有欠款后再退出账单组")
         }
         .onAppear { vm.loadData() }
+        .onDisappear { vm.unsubscribeRealtime() }
     }
 
     private func markPaid(debt: DebtEntry) {

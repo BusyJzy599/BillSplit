@@ -6,6 +6,7 @@ class GroupDetailViewModel: ObservableObject {
     @Published var bills: [Bill] = []
     @Published var settlements: [Settlement] = []
     @Published var userNames: [String: String] = [:]
+    @Published var userAvatars: [String: String] = [:]
     @Published var debts: [DebtEntry] = []
 
     init(group: BillGroup) { self.group = group }
@@ -28,6 +29,8 @@ class GroupDetailViewModel: ObservableObject {
                 await MainActor.run { self.settlements = settlements }
 
                 await MainActor.run { recalcDebts() }
+
+                subscribeRealtime()
             } catch {
                 print("Load data failed: \(error)")
             }
@@ -43,7 +46,10 @@ class GroupDetailViewModel: ObservableObject {
             do {
                 let users: [AppUser] = try await supabase.from("users").select().eq("id", value: id).execute().value
                 if let user = users.first {
-                    await MainActor.run { self.userNames[id] = user.displayName }
+                    await MainActor.run {
+                        self.userNames[id] = user.displayName
+                        self.userAvatars[id] = user.avatarUrl
+                    }
                 }
             } catch {
                 print("Fetch user failed: \(error)")
@@ -67,5 +73,37 @@ class GroupDetailViewModel: ObservableObject {
 
     func canLeave(userId: String) -> Bool {
         debts.contains { $0.fromUserId == userId || $0.toUserId == userId }
+    }
+
+    func subscribeRealtime() {
+        guard let groupId = group.id else { return }
+        RealtimeService.shared.subscribeBills(groupId: groupId) { [weak self] in
+            self?.refreshData()
+        }
+        RealtimeService.shared.subscribeSettlements(groupId: groupId) { [weak self] in
+            self?.refreshData()
+        }
+    }
+
+    func unsubscribeRealtime() {
+        guard let groupId = group.id else { return }
+        RealtimeService.shared.unsubscribe(groupId: groupId)
+    }
+
+    private func refreshData() {
+        guard let groupId = group.id else { return }
+        Task {
+            do {
+                let bills = try await BillService.shared.getBills(for: groupId)
+                let settlements = try await SettlementService.shared.getSettlements(for: groupId)
+                await MainActor.run {
+                    self.bills = bills
+                    self.settlements = settlements
+                    recalcDebts()
+                }
+            } catch {
+                print("Refresh failed: \(error)")
+            }
+        }
     }
 }

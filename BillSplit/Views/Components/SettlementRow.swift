@@ -3,14 +3,17 @@ import SwiftUI
 struct SettlementRow: View {
     let debt: DebtEntry
     let userNames: [String: String]
+    let userAvatars: [String: String]
     let currentUserId: String
     let onMarkPaid: () -> Void
 
     var body: some View {
         HStack {
-            Image(systemName: isPayer ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                .foregroundColor(isPayer ? .red : .green)
-                .font(.title3)
+            AvatarView(
+                avatarUrl: isPayer ? userAvatars[debt.toUserId] : userAvatars[debt.fromUserId],
+                displayName: isPayer ? (userNames[debt.toUserId] ?? "") : (userNames[debt.fromUserId] ?? ""),
+                size: 36
+            )
 
             VStack(alignment: .leading, spacing: 2) {
                 if isPayer {

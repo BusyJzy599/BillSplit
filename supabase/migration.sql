@@ -102,3 +102,22 @@ CREATE POLICY "Settlements creatable by involved users" ON settlements
   FOR INSERT WITH CHECK (
     auth.uid() = from_user_id OR auth.uid() = to_user_id
   );
+
+-- ─────────────────────────────────────
+-- Storage: avatars bucket + RLS
+-- Create bucket first: run in SQL Editor or via Dashboard
+-- INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true)
+-- ON CONFLICT (id) DO NOTHING;
+
+-- Storage RLS: public read for avatars bucket
+CREATE POLICY IF NOT EXISTS "Avatars are publicly viewable" ON storage.objects
+  FOR SELECT USING (bucket_id = 'avatars');
+
+CREATE POLICY IF NOT EXISTS "Users can upload avatar" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+
+CREATE POLICY IF NOT EXISTS "Users can update own avatar" ON storage.objects
+  FOR UPDATE USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY IF NOT EXISTS "Users can delete own avatar" ON storage.objects
+  FOR DELETE USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
