@@ -84,22 +84,24 @@ struct EditProfileView: View {
         isUploading = true
 
         Task {
-            _ = try? await supabase.from("users")
-                .update(["display_name": displayName])
-                .eq("id", value: userId)
-                .execute()
-
-            if let image = selectedImage,
-               let url = try? await StorageService.shared.uploadAvatar(userId: userId, image: image) {
-                _ = try? await supabase.from("users")
-                    .update(["avatar_url": url])
+            do {
+                try await supabase.from("users")
+                    .update(["display_name": displayName])
                     .eq("id", value: userId)
                     .execute()
-            }
 
-            await MainActor.run {
-                isUploading = false
-                dismiss()
+                if let image = selectedImage {
+                    let url = try await StorageService.shared.uploadAvatar(userId: userId, image: image)
+                    try await supabase.from("users")
+                        .update(["avatar_url": url])
+                        .eq("id", value: userId)
+                        .execute()
+                }
+
+                await MainActor.run { dismiss() }
+            } catch {
+                await MainActor.run { isUploading = false }
+                print("Save profile failed: \(error)")
             }
         }
     }
