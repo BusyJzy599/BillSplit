@@ -242,6 +242,7 @@
 				3A93A35EE42EF0972019A53B /* Sources */,
 				26CFDB7BBCAE0ADEFD902AB3 /* Resources */,
 				C297AA5EA0AEBF8CE0F275FD /* Frameworks */,
+				AC8AEBB91570C8D544497984 /* Compile Icons */,
 			);
 			buildRules = (
 			);
@@ -352,6 +353,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AC8AEBB91570C8D544497984 /* Compile Icons */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Compile App Icon";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ACT=\"$SRCROOT/Assets.xcassets\"\nif [ -d \"$ACT\" ]; then\n  xcrun actool \"$ACT\" --compile \"$BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME\" --platform $PLATFORM_NAME --minimum-deployment-target 17.0 --app-icon AppIcon --output-partial-info-plist /tmp/actool_partial.plist\n  echo \"AppIcon compiled\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 		2C6B9F657EC5B8ABA3CC519D /* Debug */ = {
