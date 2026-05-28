@@ -47,7 +47,7 @@ struct ProfileView: View {
                     Section(loc.languageLabel) {
                         Picker(loc.languageLabel, selection: Binding(
                             get: { loc.appLocale },
-                            set: { loc.appLocale = $0; loc.objectWillChange.send() }
+                            set: { loc.appLocale = $0; loc.objectWillChange.send(); NotificationCenter.default.post(name: NSNotification.Name("localeChanged"), object: nil) }
                         )) {
                             Text("English").tag("en")
                             Text("中文").tag("zh")

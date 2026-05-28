@@ -50,6 +50,7 @@
 		2DA8A9A8D92201FF502B496D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */; };
 		C51C64309D108D7309F598D8 /* ToastModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0382F895F607D9A273E00D /* ToastModifier.swift */; };
 		D65B0F1BB2C9B386C7DAE8AA /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A995EE1EBA868446D16B0D /* AIService.swift */; };
+		235C8D958475FD77DF6B85FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5117702DA743E173D8A89419 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */

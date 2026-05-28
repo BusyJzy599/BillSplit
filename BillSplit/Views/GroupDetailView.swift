@@ -31,6 +31,8 @@ struct GroupDetailView: View {
             .onChange(of: showReceiptScan) { _, v in if !v { Task { await vm.reload() } } }
             .onChange(of: editingBill) { _, v in if v == nil { Task { await vm.reload() } } }
             .onAppear { vm.loadData() }
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("currencyChanged"))) { _ in vm.objectWillChange.send() }
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("localeChanged"))) { _ in vm.objectWillChange.send() }
             .onDisappear { vm.unsubscribeRealtime() }
     }
 
