@@ -119,7 +119,7 @@ struct ReceiptScanView: View {
                 }
                 if selectedTotal > 0 && !selectedItems.filter({ $0.isShared }).isEmpty {
                     let perPerson = selectedTotal / Double(max(memberIds.count, 1))
-                    Text("Shared: \(CurrencySettings.shared.current.symbol)\(String(format: "%.2f", perPerson))\(loc.perPerson)")
+                    Text("\(loc.sharedPrefix) \(CurrencySettings.shared.current.symbol)\(String(format: "%.2f", perPerson))\(loc.perPerson)")
                         .font(.caption2).foregroundColor(.accentColor)
                 }
             }
@@ -161,7 +161,7 @@ struct ReceiptScanView: View {
                 }
             }
 
-            Section(loc.locale == .zh ? "分类" : "Category") {
+            Section(loc.sectionCategory) {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 4), spacing: 10) {
                     ForEach(BillCategory.allCases, id: \.self) { cat in
                         VStack(spacing: 4) {
@@ -250,10 +250,10 @@ struct ReceiptScanView: View {
                 await MainActor.run {
                     items = rawItems
                     state = rawItems.isEmpty ? .idle : .confirming
-                    if rawItems.isEmpty { errorMessage = "No text found. Try a clearer photo." }
+                    if rawItems.isEmpty { errorMessage = loc.noTextFoundMsg }
                 }
             } catch {
-                await MainActor.run { errorMessage = "Scan failed: \(error.localizedDescription)"; state = .idle }
+                await MainActor.run { errorMessage = "\(loc.scanFailedPrefix) \(error.localizedDescription)"; state = .idle }
             }
         }
     }

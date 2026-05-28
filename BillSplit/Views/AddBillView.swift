@@ -89,7 +89,7 @@ struct AddBillView: View {
                     TextField(loc.descriptionPlaceholder, text: $description)
                 }
 
-                Section(loc.locale == .zh ? "分类" : "Category") {
+                Section(loc.sectionCategory) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 4), spacing: 10) {
                         ForEach(BillCategory.allCases, id: \.self) { cat in
                             VStack(spacing: 4) {

@@ -33,8 +33,8 @@ class DebtCalculator {
         var netCopy = net
 
         while i < creditors.count && j < debtors.count {
-            let owed = creditors[i].value
-            let debt = -debtors[j].value
+            let owed = netCopy[creditors[i].key]!
+            let debt = -netCopy[debtors[j].key]!
             let amount = min(owed, debt)
 
             result.append(DebtEntry(fromUserId: debtors[j].key, toUserId: creditors[i].key, amount: amount))

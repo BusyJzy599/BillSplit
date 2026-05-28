@@ -78,6 +78,17 @@ class LocaleManager: ObservableObject {
     var cannotLeaveMsg: String { txt("Please settle all debts before leaving", "请先结清所有欠款后再退出账单组") }
     var leaveConfirmMsg: String { txt("You will leave this group. You can rejoin later.", "你将退出此账单组，但可以重新加入。") }
     var payButton: String { txt("Pay", "还款") }
+    var confirmPasswordLabel: String { txt("Confirm Password", "确认密码") }
+    var passwordMismatch: String { txt("Passwords don't match", "密码不匹配") }
+    var backToLogin: String { txt("Back to Login", "返回登录") }
+    var checkEmailTitle: String { txt("Check Your Email", "确认你的邮箱") }
+    func checkEmailMsg(_ email: String) -> String {
+        locale == .zh ? "我们已向 \(email) 发送了确认链接，请点击链接完成注册。" : "We sent a confirmation link to \(email). Click the link to finish signing up."
+    }
+    var minCharsHint: String { txt("≥8 chars", "≥8 位") }
+    var sharedPrefix: String { txt("Shared:", "均分:") }
+    var noTextFoundMsg: String { txt("No text found. Try a clearer photo.", "未识别到文字，请拍更清晰的照片") }
+    var scanFailedPrefix: String { txt("Scan failed:", "识别失败:") }
     var deleteBillTitle: String { txt("Delete Bill", "删除账单") }
     func deleteBillMsg(_ desc: String) -> String {
         locale == .zh ? "确定要删除「\(desc)」吗？该操作不可撤销。" : "Delete \"\(desc)\"? This cannot be undone."
@@ -104,6 +115,10 @@ class LocaleManager: ObservableObject {
     var sectionParticipants: String { txt("Participants", "参与人") }
     var sectionCurrency: String { txt("Currency", "币种") }
     var storedAsCNY: String { txt("Stored as CNY", "以人民币存储") }
+    var sectionCategory: String { txt("Category", "分类") }
+    var ratePrefix: String { txt("1 USD = ", "1 美元 = ") }
+    var rateToCNY: String { txt("CNY", "人民币") }
+    var convertedPreview: String { txt("→ CNY:", "→ 人民币:") }
 
     // MARK: - Join
     var navJoin: String { txt("Join Group", "加入账单组") }

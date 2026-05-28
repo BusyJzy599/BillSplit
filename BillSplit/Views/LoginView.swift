@@ -81,11 +81,9 @@ struct LoginView: View {
                         .resizable().frame(width: 50, height: 35).foregroundStyle(.blue)
                 }
                 VStack(spacing: 8) {
-                    Text(loc.locale == .zh ? "确认你的邮箱" : "Check Your Email")
+                    Text(loc.checkEmailTitle)
                         .font(.title2).fontWeight(.bold)
-                    Text(loc.locale == .zh
-                         ? "我们已向 \(authVM.pendingEmail ?? "") 发送了确认链接，请点击链接完成注册。"
-                         : "We sent a confirmation link to \(authVM.pendingEmail ?? ""). Click the link to finish signing up.")
+                    Text(loc.checkEmailMsg(authVM.pendingEmail ?? ""))
                         .font(.subheadline).foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                 }
@@ -96,7 +94,7 @@ struct LoginView: View {
                         authVM.clearConfirmationState()
                     }
                 } label: {
-                    Label(loc.locale == .zh ? "返回登录" : "Back to Login", systemImage: "arrow.left")
+                    Label(loc.backToLogin, systemImage: "arrow.left")
                         .fontWeight(.medium)
                 }
                 .buttonStyle(.bordered).tint(.blue).padding(.top, 12)
@@ -208,7 +206,7 @@ struct LoginView: View {
                                     }
                                     Text(passwordStrength.label).font(.caption2).foregroundColor(passwordStrength.color)
                                     if password.count < 8 {
-                                        Text("· ≥8 chars").font(.caption2).foregroundColor(.secondary)
+                                        Text("· \(loc.minCharsHint)").font(.caption2).foregroundColor(.secondary)
                                     }
                                 }
                                 .padding(.horizontal, 4)
@@ -218,7 +216,7 @@ struct LoginView: View {
                         // Confirm password (sign up only)
                         if isSignUp {
                             VStack(alignment: .leading, spacing: 6) {
-                                Text(loc.locale == .zh ? "确认密码" : "Confirm Password").font(.caption).fontWeight(.medium).foregroundColor(.secondary)
+                                Text(loc.confirmPasswordLabel).font(.caption).fontWeight(.medium).foregroundColor(.secondary)
                                 HStack(spacing: 10) {
                                     Image(systemName: "lock.shield.fill")
                                         .font(.subheadline).foregroundColor(.secondary).frame(width: 20)
@@ -235,7 +233,7 @@ struct LoginView: View {
                                 if !confirmPassword.isEmpty && password != confirmPassword {
                                     HStack(spacing: 4) {
                                         Image(systemName: "xmark.circle.fill").font(.caption2).foregroundColor(.red)
-                                        Text(loc.locale == .zh ? "密码不匹配" : "Passwords don't match").font(.caption2).foregroundColor(.red)
+                                        Text(loc.passwordMismatch).font(.caption2).foregroundColor(.red)
                                     }
                                     .padding(.horizontal, 4)
                                 }
