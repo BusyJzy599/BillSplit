@@ -59,7 +59,7 @@ extension AuthService: ASAuthorizationControllerDelegate {
                 )
                 let user = try await supabase.auth.session.user
                 let name = credential.fullName.map { "\($0.givenName ?? "") \($0.familyName ?? "")".trimmingCharacters(in: .whitespaces) } ?? "用户"
-                try? await saveUserIfNeeded(userId: user.id.uuidString, displayName: name, email: user.email ?? "")
+                try? await saveUserIfNeeded(userId: user.id.uuidString.lowercased(), displayName: name, email: user.email ?? "")
                 await MainActor.run { self.objectWillChange.send() }
             } catch {
                 print("Sign in failed: \(error)")

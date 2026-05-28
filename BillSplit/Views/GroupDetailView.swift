@@ -83,9 +83,16 @@ struct GroupDetailView: View {
                                 VStack(alignment: .leading, spacing: 6) {
                                     HStack {
                                         AvatarView(avatarUrl: vm.userAvatars[bill.payerId], displayName: vm.userNames[bill.payerId] ?? "", size: 24)
-                                        Text(bill.description)
-                                            .font(.subheadline)
-                                            .fontWeight(.medium)
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(bill.description)
+                                                .font(.subheadline)
+                                                .fontWeight(.medium)
+                                            if bill.currency != CurrencySettings.shared.current.rawValue {
+                                                Text("原: \(bill.displayOriginal) · 汇率 \(String(format: "%.2f", bill.exchangeRate))")
+                                                    .font(.caption2)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                        }
                                         Spacer()
                                         Text(CurrencySettings.shared.formatted(bill.amount))
                                             .font(.headline)

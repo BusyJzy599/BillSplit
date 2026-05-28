@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS bills (
   amount DOUBLE PRECISION NOT NULL,
   description TEXT NOT NULL,
   participant_ids UUID[] NOT NULL DEFAULT '{}',
+  currency TEXT NOT NULL DEFAULT 'cny',
+  exchange_rate DOUBLE PRECISION NOT NULL DEFAULT 1.0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
