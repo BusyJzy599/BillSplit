@@ -15,6 +15,10 @@ let supabase = SupabaseClient(
 struct BillSplitApp: App {
     @StateObject private var authVM = AuthViewModel()
 
+    init() {
+        Task { _ = await ExchangeRateService.shared.fetchLatest() }
+    }
+
     var body: some Scene {
         WindowGroup {
             if authVM.isLoading {

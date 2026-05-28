@@ -7,7 +7,11 @@ enum Currency: String, CaseIterable {
     var symbol: String { self == .usd ? "$" : "¥" }
     var name: String { self == .usd ? "USD" : "CNY" }
 
-    static let rateUSDToCNY: Double = 7.2
+    private static var _rateUSDToCNY: Double = ExchangeRateService.shared.currentRate
+    static var rateUSDToCNY: Double {
+        get { _rateUSDToCNY }
+        set { _rateUSDToCNY = newValue }
+    }
 
     /// Convert amount FROM this currency TO target currency
     func convert(_ amount: Double, to target: Currency) -> Double {

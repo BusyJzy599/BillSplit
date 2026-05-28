@@ -51,6 +51,7 @@
 		C51C64309D108D7309F598D8 /* ToastModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0382F895F607D9A273E00D /* ToastModifier.swift */; };
 		D65B0F1BB2C9B386C7DAE8AA /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A995EE1EBA868446D16B0D /* AIService.swift */; };
 		235C8D958475FD77DF6B85FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5117702DA743E173D8A89419 /* Assets.xcassets */; };
+		9F3ECD3C9692F95C9AD8F747 /* ExchangeRateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851C36F33E09CAF12D69F043 /* ExchangeRateService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -98,6 +99,7 @@
 		CD0382F895F607D9A273E00D /* ToastModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastModifier.swift; sourceTree = "<group>"; };
 		F7A995EE1EBA868446D16B0D /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		5117702DA743E173D8A89419 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		851C36F33E09CAF12D69F043 /* ExchangeRateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeRateService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +228,7 @@
 				DE9FF4A2D14453F090CF2A75 /* OCRService.swift */,
 				F7A995EE1EBA868446D16B0D /* AIService.swift */,
 				C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8 /* RealtimeService.swift */,
+				851C36F33E09CAF12D69F043 /* ExchangeRateService.swift */,
 				C70457437BB0F6F6C566D861 /* SettlementService.swift */,
 				D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9 /* StorageService.swift */,
 			);
@@ -342,6 +345,7 @@
 				A01B2C3D4E5F6A7B8C9D0E1F2A3B4C5D /* AvatarView.swift in Sources */,
 				B1C2D3E4F5A6B7C8D9E0F1A2B3C4D5E6 /* EditProfileView.swift in Sources */,
 				C2D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7 /* RealtimeService.swift in Sources */,
+				9F3ECD3C9692F95C9AD8F747 /* ExchangeRateService.swift in Sources */,
 				D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8 /* StorageService.swift in Sources */,
 				E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8B9 /* ImageCompressor.swift in Sources */,
 				C51C64309D108D7309F598D8 /* ToastModifier.swift in Sources */,
