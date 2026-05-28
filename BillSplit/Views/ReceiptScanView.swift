@@ -165,12 +165,17 @@ struct ReceiptScanView: View {
                         if let amt = item.amount { return "\(item.description) $\(amt)" }
                         return item.description
                     }.joined(separator: "\n")
-                    if let extracted = try? await AIService.shared.extractItems(from: rawText), !extracted.isEmpty {
-                        await MainActor.run {
-                            items = extracted.map { ReceiptItem(description: $0.description, amount: $0.amount, isShared: $0.isShared) }
-                            state = .confirming
+                    do {
+                        let extracted = try await AIService.shared.extractItems(from: rawText)
+                        if !extracted.isEmpty {
+                            await MainActor.run {
+                                items = extracted.map { ReceiptItem(description: $0.description, amount: $0.amount, isShared: $0.isShared) }
+                                state = .confirming
+                            }
+                            return
                         }
-                        return
+                    } catch {
+                        print("AI extraction failed, falling back to OCR: \(error)")
                     }
                 }
 
