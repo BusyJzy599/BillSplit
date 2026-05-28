@@ -6,6 +6,12 @@ class RealtimeService {
 
     private var channels: [String: RealtimeChannelV2] = [:]
     private var tasks: [String: Task<Void, Never>] = [:]
+    private var lastRefresh: [String: Date] = [:]
+
+    private func shouldRefresh(_ key: String) -> Bool {
+        if let last = lastRefresh[key], Date().timeIntervalSince(last) < 1.5 { return false }
+        lastRefresh[key] = Date(); return true
+    }
 
     func subscribeBills(groupId: Int, onChange: @escaping () -> Void) {
         let channelId = "bills-\(groupId)"

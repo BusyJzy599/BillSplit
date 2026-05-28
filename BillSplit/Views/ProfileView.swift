@@ -4,6 +4,7 @@ import Supabase
 struct ProfileView: View {
     @EnvironmentObject var authVM: AuthViewModel
     @StateObject private var loc = LocaleManager.shared
+    @AppStorage("selectedCurrency") private var selectedCurrency = Currency.usd.rawValue
     @State private var displayName: String = ""
     @State private var avatarUrl: String?
     @State private var showEditProfile = false
@@ -32,13 +33,14 @@ struct ProfileView: View {
                     }
 
                     Section(loc.displayCurrency) {
-                        Picker(loc.displayCurrency, selection: Binding(
-                            get: { CurrencySettings.shared.selectedCurrency },
-                            set: { CurrencySettings.shared.selectedCurrency = $0; CurrencySettings.shared.objectWillChange.send() }
-                        )) {
+                        Picker(loc.displayCurrency, selection: $selectedCurrency) {
                             ForEach(Currency.allCases, id: \.rawValue) { c in
                                 Text(c.name).tag(c.rawValue)
                             }
+                        }
+                        .onChange(of: selectedCurrency) { _, _ in
+                            CurrencySettings.shared.objectWillChange.send()
+                            NotificationCenter.default.post(name: NSNotification.Name("currencyChanged"), object: nil)
                         }
                     }
 
