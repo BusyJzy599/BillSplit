@@ -176,8 +176,12 @@ struct GroupDetailView: View {
     var addButtonsSection: some View {
         Section {
             HStack(spacing: 12) {
-                Button { showAddBill = true } label: { Label(loc.manual, systemImage: "square.and.pencil").frame(maxWidth: .infinity).foregroundColor(.white) }.buttonStyle(.borderedProminent).tint(.accentColor)
-                Button { showReceiptScan = true } label: { Label(loc.scan, systemImage: "doc.text.viewfinder").frame(maxWidth: .infinity) }.buttonStyle(.bordered).tint(.accentColor)
+                Button { showAddBill = true } label: {
+                    HStack { Spacer(); Label(loc.manual, systemImage: "square.and.pencil"); Spacer() }.foregroundColor(.white)
+                }.buttonStyle(.borderedProminent).tint(.accentColor)
+                Button { showReceiptScan = true } label: {
+                    HStack { Spacer(); Label(loc.scan, systemImage: "doc.text.viewfinder"); Spacer() }
+                }.buttonStyle(.bordered).tint(.accentColor)
             }
         } header: { Text(loc.addBill).font(.subheadline) }
     }
