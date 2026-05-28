@@ -5,7 +5,7 @@ class SettlementService {
     static let shared = SettlementService()
 
     func getSettlements(for groupId: Int) async throws -> [Settlement] {
-        let settlements: [Settlement] = try await supabase.from("settlements").select().eq("groupId", value: groupId).execute().value
+        let settlements: [Settlement] = try await supabase.from("settlements").select().eq("group_id", value: groupId).execute().value
         return settlements
     }
 

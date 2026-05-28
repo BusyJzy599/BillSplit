@@ -5,7 +5,7 @@ class GroupService {
     static let shared = GroupService()
 
     func getGroups(for userId: String) async throws -> [BillGroup] {
-        let groups: [BillGroup] = try await supabase.from("groups").select().contains("memberIds", value: [userId]).order("createdAt", ascending: false).execute().value
+        let groups: [BillGroup] = try await supabase.from("groups").select().contains("member_ids", value: [userId]).order("created_at", ascending: false).execute().value
         return groups
     }
 
@@ -30,7 +30,7 @@ class GroupService {
     }
 
     func joinGroup(inviteCode: String, userId: String) async throws -> BillGroup {
-        let groups: [BillGroup] = try await supabase.from("groups").select().eq("inviteCode", value: inviteCode.uppercased()).execute().value
+        let groups: [BillGroup] = try await supabase.from("groups").select().eq("invite_code", value: inviteCode.uppercased()).execute().value
 
         guard var group = groups.first else {
             throw GroupError.notFound
@@ -41,7 +41,7 @@ class GroupService {
         }
 
         group.memberIds.append(userId)
-        try await supabase.from("groups").update(["memberIds": group.memberIds]).eq("id", value: group.id!).execute()
+        try await supabase.from("groups").update(["member_ids": group.memberIds]).eq("id", value: group.id!).execute()
         return group
     }
 
@@ -52,14 +52,14 @@ class GroupService {
     func leaveGroup(_ groupId: Int, userId: String) async throws {
         let group = try await getGroup(id: groupId)
         let newMemberIds = group.memberIds.filter { $0 != userId }
-        try await supabase.from("groups").update(["memberIds": newMemberIds]).eq("id", value: groupId).execute()
+        try await supabase.from("groups").update(["member_ids": newMemberIds]).eq("id", value: groupId).execute()
     }
 
     private func generateUniqueCode() async throws -> String {
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         for _ in 0..<10 {
             let code = String((0..<6).map { _ in chars.randomElement()! })
-            let existing: [BillGroup] = try await supabase.from("groups").select().eq("inviteCode", value: code).execute().value
+            let existing: [BillGroup] = try await supabase.from("groups").select().eq("invite_code", value: code).execute().value
             if existing.isEmpty { return code }
         }
         throw GroupError.codeGenerationFailed

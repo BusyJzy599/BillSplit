@@ -5,7 +5,7 @@ class BillService {
     static let shared = BillService()
 
     func getBills(for groupId: Int) async throws -> [Bill] {
-        let bills: [Bill] = try await supabase.from("bills").select().eq("groupId", value: groupId).order("createdAt", ascending: false).execute().value
+        let bills: [Bill] = try await supabase.from("bills").select().eq("group_id", value: groupId).order("created_at", ascending: false).execute().value
         return bills
     }
 
