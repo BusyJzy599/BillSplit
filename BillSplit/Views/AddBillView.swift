@@ -7,6 +7,9 @@ struct AddBillView: View {
     let userNames: [String: String]
     let currentUserId: String
 
+    // Edit mode: if editing, pass the bill to edit
+    var editBill: Bill? = nil
+
     @State private var amountText = ""
     @State private var description = ""
     @State private var selectedPayerId: String
@@ -14,13 +17,27 @@ struct AddBillView: View {
     @State private var currency: Currency = CurrencySettings.shared.current
     @State private var exchangeRate: Double = Currency.exchangeRate
 
-    init(groupId: Int, memberIds: [String], userNames: [String: String], currentUserId: String) {
+    init(groupId: Int, memberIds: [String], userNames: [String: String], currentUserId: String, editBill: Bill? = nil) {
         self.groupId = groupId
         self.memberIds = memberIds
         self.userNames = userNames
         self.currentUserId = currentUserId
-        _selectedPayerId = State(initialValue: currentUserId)
-        _selectedParticipantIds = State(initialValue: Set(memberIds))
+        self.editBill = editBill
+
+        // Pre-fill for edit mode
+        if let bill = editBill {
+            _selectedPayerId = State(initialValue: bill.payerId)
+            _selectedParticipantIds = State(initialValue: Set(bill.participantIds))
+            _currency = State(initialValue: Currency(rawValue: bill.currency) ?? .cny)
+            _exchangeRate = State(initialValue: bill.exchangeRate)
+            _description = State(initialValue: bill.description)
+            // Reverse-convert from CNY to input currency amount
+            let original = bill.exchangeRate > 0 ? bill.amount / bill.exchangeRate : bill.amount
+            _amountText = State(initialValue: String(format: "%.2f", original))
+        } else {
+            _selectedPayerId = State(initialValue: currentUserId)
+            _selectedParticipantIds = State(initialValue: Set(memberIds))
+        }
     }
 
     var body: some View {
@@ -90,13 +107,13 @@ struct AddBillView: View {
                 }
 
                 Section {
-                    Button("提交账单") {
+                    Button(editBill != nil ? "更新账单" : "提交账单") {
                         submit()
                     }
                     .disabled(amountValue == nil || description.trimmingCharacters(in: .whitespaces).isEmpty || selectedParticipantIds.isEmpty)
                 }
             }
-            .navigationTitle("新建账单")
+            .navigationTitle(editBill != nil ? "编辑账单" : "新建账单")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() } }
@@ -110,19 +127,29 @@ struct AddBillView: View {
 
     private func submit() {
         guard let inputAmount = amountValue else { return }
-        // Convert to CNY for storage
         let amountInCNY = currency.convert(inputAmount, to: .cny)
 
         Task {
-            try? await BillService.shared.createBill(
-                groupId: groupId,
-                payerId: selectedPayerId,
-                amount: amountInCNY,
-                description: description,
-                participantIds: Array(selectedParticipantIds),
-                currency: currency.rawValue,
-                exchangeRate: exchangeRate
-            )
+            if let bill = editBill, let billId = bill.id {
+                try? await BillService.shared.updateBill(
+                    id: billId,
+                    amount: amountInCNY,
+                    description: description,
+                    participantIds: Array(selectedParticipantIds),
+                    currency: currency.rawValue,
+                    exchangeRate: exchangeRate
+                )
+            } else {
+                try? await BillService.shared.createBill(
+                    groupId: groupId,
+                    payerId: selectedPayerId,
+                    amount: amountInCNY,
+                    description: description,
+                    participantIds: Array(selectedParticipantIds),
+                    currency: currency.rawValue,
+                    exchangeRate: exchangeRate
+                )
+            }
             await MainActor.run { dismiss() }
         }
     }

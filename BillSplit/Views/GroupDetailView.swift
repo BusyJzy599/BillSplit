@@ -6,6 +6,9 @@ struct GroupDetailView: View {
     @State private var showAddBill = false
     @State private var showReceiptScan = false
     @State private var showLeaveAlert = false
+    @State private var editingBill: Bill?
+    @State private var deletingBill: Bill?
+    @State private var showDeleteConfirm = false
 
     init(group: BillGroup) {
         _vm = StateObject(wrappedValue: GroupDetailViewModel(group: group))
@@ -72,7 +75,7 @@ struct GroupDetailView: View {
                                     Image(systemName: "tray")
                                         .font(.title2)
                                         .foregroundColor(.secondary)
-                                    Text("还没有账单，点击右上角 + 添加")
+                                    Text("还没有账单")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                 }
@@ -109,6 +112,22 @@ struct GroupDetailView: View {
                                     }
                                 }
                                 .padding(.vertical, 4)
+                                .contentShape(Rectangle())
+                                .onTapGesture { editingBill = bill }
+                                .swipeActions(edge: .trailing) {
+                                    Button(role: .destructive) {
+                                        deletingBill = bill
+                                        showDeleteConfirm = true
+                                    } label: {
+                                        Label("删除", systemImage: "trash")
+                                    }
+                                    Button {
+                                        editingBill = bill
+                                    } label: {
+                                        Label("编辑", systemImage: "pencil")
+                                    }
+                                    .tint(.orange)
+                                }
                                 if bill.id != vm.bills.last?.id { Divider() }
                             }
                         }
@@ -160,13 +179,35 @@ struct GroupDetailView: View {
         .sheet(isPresented: $showAddBill) {
             AddBillView(groupId: vm.group.id ?? 0, memberIds: vm.group.memberIds, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "")
         }
+        .sheet(item: $editingBill) { bill in
+            AddBillView(groupId: vm.group.id ?? 0, memberIds: vm.group.memberIds, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "", editBill: bill)
+        }
         .sheet(isPresented: $showReceiptScan) {
             ReceiptScanView(groupId: vm.group.id ?? 0, memberIds: vm.group.memberIds, userNames: vm.userNames, currentUserId: authVM.currentUserId ?? "")
+        }
+        .alert("删除账单", isPresented: $showDeleteConfirm) {
+            Button("取消", role: .cancel) {}
+            Button("删除", role: .destructive) {
+                if let bill = deletingBill, let billId = bill.id {
+                    Task {
+                        try? await BillService.shared.deleteBill(billId)
+                        vm.loadData()
+                    }
+                }
+            }
+        } message: {
+            Text("确定要删除「\(deletingBill?.description ?? "")」吗？该操作不可撤销。")
         }
         .alert("有未结清欠款", isPresented: $showLeaveAlert) {
             Button("取消", role: .cancel) {}
         } message: {
             Text("请先结清所有欠款后再退出账单组")
+        }
+        .onChange(of: showAddBill) { _, newValue in
+            if !newValue { vm.loadData() }
+        }
+        .onChange(of: showReceiptScan) { _, newValue in
+            if !newValue { vm.loadData() }
         }
         .onAppear { vm.loadData() }
         .onDisappear { vm.unsubscribeRealtime() }

@@ -24,4 +24,29 @@ class BillService {
         )
         try await supabase.from("bills").insert(bill).execute()
     }
+
+    func updateBill(id: Int, amount: Double, description: String, participantIds: [String],
+                    currency: String, exchangeRate: Double) async throws {
+        struct UpdatePayload: Encodable {
+            let amount: Double
+            let description: String
+            let participant_ids: [String]
+            let currency: String
+            let exchange_rate: Double
+        }
+        try await supabase.from("bills")
+            .update(UpdatePayload(
+                amount: amount,
+                description: description,
+                participant_ids: participantIds,
+                currency: currency,
+                exchange_rate: exchangeRate
+            ))
+            .eq("id", value: id)
+            .execute()
+    }
+
+    func deleteBill(_ billId: Int) async throws {
+        try await supabase.from("bills").delete().eq("id", value: billId).execute()
+    }
 }
