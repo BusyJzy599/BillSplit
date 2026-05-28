@@ -148,14 +148,27 @@ struct GroupDetailView: View {
             AvatarView(avatarUrl: vm.userAvatars[id], displayName: vm.userNames[id] ?? "", size: 32)
             VStack(alignment: .leading, spacing: 2) {
                 Text(vm.userNames[id] ?? "...").font(.subheadline)
-                if id == vm.group.creatorId { Text(loc.creator).font(.caption2).foregroundColor(.secondary) }
+                HStack(spacing: 4) {
+                    if id == vm.group.creatorId { Text(loc.creator).font(.caption2).foregroundColor(.secondary) }
+                }
             }
             Spacer()
-            Text(vm.balanceText(id)).font(.caption).fontWeight(.medium).foregroundColor(balanceColor(id))
+            let bal = vm.memberBalance(id)
+            if abs(bal) > 0.01 {
+                Text(vm.balanceText(id)).font(.caption).fontWeight(.semibold)
+                    .padding(.horizontal, 8).padding(.vertical, 3)
+                    .background(bal > 0 ? Color.green.opacity(0.1) : Color.orange.opacity(0.1))
+                    .foregroundColor(bal > 0 ? .green : .orange)
+                    .cornerRadius(6)
+            } else {
+                Image(systemName: "checkmark").font(.caption2).foregroundColor(.secondary)
+            }
         }
     }
 
-    var settledHistory: [Settlement] { vm.settlements.filter { $0.status == .paid } }
+    var settledHistory: [Settlement] {
+        vm.settlements.filter { $0.status == .paid }.sorted { ($0.id ?? 0) > ($1.id ?? 0) }
+    }
 
     @ViewBuilder func billEntry(_ bill: Bill) -> some View {
         let uid = authVM.currentUserId ?? ""
@@ -223,32 +236,32 @@ struct GroupDetailView: View {
         Task {
             do {
                 try await SettlementService.shared.createSettlement(groupId: groupId, fromUserId: debt.fromUserId, toUserId: debt.toUserId, amount: debt.amount)
-                await MainActor.run { toast = .success("Paid!") }
+                _ = await MainActor.run { toast = .success("Paid!") }
                 await vm.reload()
             } catch {
-                await MainActor.run { toast = .error(error.localizedDescription) }
+                _ = await MainActor.run { toast = .error(error.localizedDescription) }
             }
-            await MainActor.run { settlingIds.remove(debt.id) }
+            _ = await MainActor.run { settlingIds.remove(debt.id) }
         }
     }
     func confirmDeleteBill() {
         guard let bill = deletingBill, let billId = bill.id else { return }
-        Task {
+        _ = Task {
             do { try await BillService.shared.deleteBill(billId); await MainActor.run { toast = .success("Deleted") }; await vm.reload() }
             catch { await MainActor.run { toast = .error(error.localizedDescription) } }
         }
     }
     func confirmDeleteGroup() {
         guard let groupId = vm.group.id else { return }
-        Task {
+        _ = Task {
             do {
                 try await GroupService.shared.deleteGroup(groupId)
-                await MainActor.run {
+                _ = await MainActor.run {
                     NotificationCenter.default.post(name: NSNotification.Name("refreshGroups"), object: nil)
                     dismiss()
                 }
             } catch {
-                await MainActor.run { toast = .error(error.localizedDescription) }
+                _ = await MainActor.run { toast = .error(error.localizedDescription) }
             }
         }
     }
