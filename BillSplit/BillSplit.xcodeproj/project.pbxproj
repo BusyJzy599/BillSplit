@@ -42,6 +42,7 @@
 		F95AB31E556C2F24CD671E17 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42397EE31BFC15E069E8370D /* GlassCard.swift */; };
 		F9AE549B0F7888BEE388CBB5 /* AddBillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5E279B6553B7BE68B162D1 /* AddBillView.swift */; };
 		FBA9FC6CFACD609253138BA8 /* SettlementRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E6F01F98CFC267698D99D6 /* SettlementRow.swift */; };
+		BBA0AB8D5006D61D65B0D983 /* BillSplit.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 4B092AA8A92708C65481B20A /* BillSplit.entitlements */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +81,7 @@
 		DE9FF4A2D14453F090CF2A75 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
 		E4465A1C74FC6B56F24E61B9 /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0 /* ImageCompressor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCompressor.swift; sourceTree = "<group>"; };
+		4B092AA8A92708C65481B20A /* BillSplit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BillSplit.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,6 +187,7 @@
 			isa = PBXGroup;
 			children = (
 				370AFF248F2CC1EEC5204FDF /* BillSplit.xcodeproj */,
+				4B092AA8A92708C65481B20A /* BillSplit.entitlements */,
 				6BDCAD048D3BCF40D5B65CB9 /* BillSplitApp.swift */,
 			);
 			name = BillSplit;
@@ -236,6 +239,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
+				SystemCapabilities = {
+					com.apple.SignInWithApple = {
+						enabled = 1;
+					};
+				};
 			};
 			buildConfigurationList = 9B35EC634C0CD3B8BC5280BE /* Build configuration list for PBXProject "BillSplit" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -269,6 +277,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBA0AB8D5006D61D65B0D983 /* BillSplit.entitlements in Resources */,
 				765CC0B32C08FDF738503CB6 /* BillSplit.xcodeproj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -323,6 +332,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BillSplit.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -399,6 +409,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BillSplit.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
