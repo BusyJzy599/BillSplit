@@ -58,7 +58,7 @@ extension AuthService: ASAuthorizationControllerDelegate {
                     credentials: .init(provider: .apple, idToken: tokenString, nonce: nonce)
                 )
                 let user = try await supabase.auth.session.user
-                let name = credential.fullName.map { "\($0.givenName ?? "") \($0.familyName ?? "")".trimmingCharacters(in: .whitespaces) } ?? "用户"
+                let name = credential.fullName.map { "\($0.givenName ?? "") \($0.familyName ?? "")".trimmingCharacters(in: .whitespaces) } ?? "User"
                 try? await saveUserIfNeeded(userId: user.id.uuidString.lowercased(), displayName: name, email: user.email ?? "")
                 await MainActor.run { self.objectWillChange.send() }
             } catch {

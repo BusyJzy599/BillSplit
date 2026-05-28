@@ -34,7 +34,7 @@ enum StorageError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .compressFailed: return "图片压缩失败"
+        case .compressFailed: return LocaleManager.shared.imageCompressFailed
         }
     }
 }

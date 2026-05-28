@@ -104,8 +104,15 @@ struct GroupDetailView: View {
                         Spacer()
                         if debt.fromUserId == (authVM.currentUserId ?? "") {
                             Button { UIImpactFeedbackGenerator(style: .medium).impactOccurred(); settle(debt) }
-                                label: { Text(loc.payButton).font(.caption2).foregroundColor(.white) }
+                                label: {
+                                    if settlingIds.contains(debt.id) {
+                                        ProgressView().scaleEffect(0.6).tint(.white)
+                                    } else {
+                                        Text(loc.payButton).font(.caption2).foregroundColor(.white)
+                                    }
+                                }
                                 .buttonStyle(.borderedProminent).controlSize(.mini)
+                                .disabled(settlingIds.contains(debt.id))
                         }
                     }
                 }

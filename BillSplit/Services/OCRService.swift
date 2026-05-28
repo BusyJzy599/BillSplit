@@ -109,7 +109,7 @@ enum OCRError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidImage: return "无法处理这张图片"
+        case .invalidImage: return LocaleManager.shared.locale == .zh ? "无法处理这张图片" : "Cannot process this image"
         }
     }
 }
