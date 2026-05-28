@@ -75,9 +75,10 @@ CREATE POLICY "Users are viewable by authenticated users" ON users
 CREATE POLICY "Users can update own record" ON users
   FOR UPDATE USING (auth.uid() = id);
 
--- Groups: members can read; anyone authenticated can create
-CREATE POLICY "Groups viewable by members" ON groups
-  FOR SELECT USING (auth.uid() = ANY(member_ids));
+-- Groups: any authenticated user can read (needed for invite code join)
+-- Member filtering done in app queries via .contains()
+CREATE POLICY "Groups viewable by authenticated users" ON groups
+  FOR SELECT USING (auth.role() = 'authenticated');
 CREATE POLICY "Groups creatable by authenticated users" ON groups
   FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Groups updatable by creator" ON groups
