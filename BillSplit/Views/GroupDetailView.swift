@@ -13,6 +13,7 @@ struct GroupDetailView: View {
     @State private var showDeleteGroupAlert = false
     @State private var showLeaveAlert = false
     @State private var toast: Toast?
+    @State private var settlingIds = Set<UUID>()
 
     init(group: BillGroup) {
         _vm = StateObject(wrappedValue: GroupDetailViewModel(group: group))
@@ -200,7 +201,8 @@ struct GroupDetailView: View {
         let b = vm.memberBalance(id); if abs(b) < 0.01 { return .secondary }; return b > 0 ? .green : .orange
     }
     func settle(_ debt: DebtEntry) {
-        guard let groupId = vm.group.id else { return }
+        guard let groupId = vm.group.id, !settlingIds.contains(debt.id) else { return }
+        settlingIds.insert(debt.id)
         Task {
             do {
                 try await SettlementService.shared.createSettlement(groupId: groupId, fromUserId: debt.fromUserId, toUserId: debt.toUserId, amount: debt.amount)
@@ -209,6 +211,7 @@ struct GroupDetailView: View {
             } catch {
                 await MainActor.run { toast = .error(error.localizedDescription) }
             }
+            await MainActor.run { settlingIds.remove(debt.id) }
         }
     }
     func confirmDeleteBill() {

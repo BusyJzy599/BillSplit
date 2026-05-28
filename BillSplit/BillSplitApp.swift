@@ -18,7 +18,17 @@ struct BillSplitApp: App {
     var body: some Scene {
         WindowGroup {
             if authVM.isLoading {
-                ProgressView("Loading...")
+                ZStack {
+                    Color(.systemGroupedBackground).ignoresSafeArea()
+                    VStack(spacing: 16) {
+                        Image(systemName: "dollarsign.circle.fill")
+                            .resizable().frame(width: 64, height: 64)
+                            .foregroundStyle(.tint)
+                        Text("BillSplit")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                        ProgressView().padding(.top, 8)
+                    }
+                }
             } else if authVM.isLoggedIn {
                 MainTabView().environmentObject(authVM)
             } else {

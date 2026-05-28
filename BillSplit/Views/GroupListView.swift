@@ -64,6 +64,7 @@ struct GroupListView: View {
                             Button(loc.create) {
                                 vm.createGroup(name: newGroupName, userId: authVM.currentUserId ?? "")
                                 newGroupName = ""; showCreateSheet = false
+                                NotificationCenter.default.post(name: NSNotification.Name("refreshGroups"), object: nil)
                             }.disabled(newGroupName.trimmingCharacters(in: .whitespaces).isEmpty)
                         }
                     }
