@@ -110,6 +110,7 @@ struct GroupDetailView: View {
                                 Task {
                                     try? await SettlementService.shared.deleteSettlement(sid)
                                     await vm.reload()
+                                    _ = await MainActor.run { toast = .info("Settlement revoked") }
                                 }
                             } label: {
                                 Image(systemName: "arrow.uturn.backward").font(.caption2).foregroundColor(.red)
