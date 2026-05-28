@@ -78,6 +78,9 @@ struct GroupListView: View {
             } message: { Text(loc.deleteBillMsg(deletingGroup?.name ?? "")) }
         }
         .onAppear { if let uid = authVM.currentUserId { vm.loadGroups(userId: uid) } }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("refreshGroups"))) { _ in
+            if let uid = authVM.currentUserId { vm.loadGroups(userId: uid) }
+        }
     }
 
     // MARK: - Group Row

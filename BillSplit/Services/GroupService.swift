@@ -76,9 +76,9 @@ enum GroupError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notFound: return "未找到账单组，请检查邀请码"
-        case .alreadyMember: return "你已在该账单组中"
-        case .codeGenerationFailed: return "邀请码生成失败，请重试"
+        case .notFound: return "Group not found. Check the invite code."
+        case .alreadyMember: return "You are already in this group."
+        case .codeGenerationFailed: return "Failed to generate invite code. Try again."
         }
     }
 }

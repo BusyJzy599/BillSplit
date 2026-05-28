@@ -223,7 +223,10 @@ struct GroupDetailView: View {
         Task {
             do {
                 try await GroupService.shared.deleteGroup(groupId)
-                await MainActor.run { dismiss() }
+                await MainActor.run {
+                    NotificationCenter.default.post(name: NSNotification.Name("refreshGroups"), object: nil)
+                    dismiss()
+                }
             } catch {
                 await MainActor.run { toast = .error(error.localizedDescription) }
             }

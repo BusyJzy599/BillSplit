@@ -20,6 +20,7 @@ class JoinGroupViewModel: ObservableObject {
                     self.joinedGroup = group
                     self.inviteCode = ""
                     self.isLoading = false
+                    NotificationCenter.default.post(name: NSNotification.Name("refreshGroups"), object: nil)
                 }
             } catch {
                 await MainActor.run {
