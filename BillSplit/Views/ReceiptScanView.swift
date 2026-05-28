@@ -27,8 +27,7 @@ struct ReceiptScanView: View {
                 }
 
                 if isScanning {
-                    ProgressView("识别中...")
-                        .padding()
+                    ProgressView("Scanning with AI...").padding()
                 } else if let image = capturedImage {
                     Image(uiImage: image)
                         .resizable()
@@ -50,7 +49,7 @@ struct ReceiptScanView: View {
                             Button {
                                 showCamera = true
                             } label: {
-                                Label("拍照", systemImage: "camera.fill")
+                                Label("Camera", systemImage: "camera.fill")
                                     .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.borderedProminent)
@@ -89,7 +88,7 @@ struct ReceiptScanView: View {
                     scanImage()
                 })
             }
-            .navigationDestination(isPresented: $navigateToConfirm) {
+            .sheet(isPresented: $navigateToConfirm) {
                 ReceiptConfirmationView(
                     items: receiptItems,
                     groupId: groupId,
