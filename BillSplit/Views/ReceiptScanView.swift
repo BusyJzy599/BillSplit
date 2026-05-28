@@ -15,6 +15,7 @@ struct ReceiptScanView: View {
     @State private var receiptItems: [ReceiptItem] = []
     @State private var errorMessage: String?
     @State private var navigateToConfirm = false
+    @State private var pendingScan = false
 
     var body: some View {
         NavigationStack {
@@ -68,25 +69,16 @@ struct ReceiptScanView: View {
 
                 Spacer()
             }
-            .navigationTitle("收据识别")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
-                }
-            }
+            .navigationTitle("Scan Receipt")
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+            .onChange(of: showCamera) { _, v in if !v && capturedImage != nil { pendingScan = true } }
+            .onChange(of: showPhotoPicker) { _, v in if !v && capturedImage != nil { pendingScan = true } }
+            .onChange(of: pendingScan) { _, v in if v { pendingScan = false; scanImage() } }
             .fullScreenCover(isPresented: $showCamera) {
-                CameraView(image: $capturedImage, onCapture: {
-                    showCamera = false
-                    scanImage()
-                })
-                .ignoresSafeArea()
+                CameraView(image: $capturedImage, onCapture: { showCamera = false }).ignoresSafeArea()
             }
             .sheet(isPresented: $showPhotoPicker) {
-                PhotoPicker(image: $capturedImage, onPick: {
-                    showPhotoPicker = false
-                    scanImage()
-                })
+                PhotoPicker(image: $capturedImage, onPick: { showPhotoPicker = false })
             }
             .sheet(isPresented: $navigateToConfirm) {
                 ReceiptConfirmationView(
