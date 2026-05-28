@@ -96,6 +96,7 @@
 		E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CD0382F895F607D9A273E00D /* ToastModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastModifier.swift; sourceTree = "<group>"; };
 		F7A995EE1EBA868446D16B0D /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
+		5117702DA743E173D8A89419 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,6 +209,7 @@
 				370AFF248F2CC1EEC5204FDF /* BillSplit.xcodeproj */,
 				4B092AA8A92708C65481B20A /* BillSplit.entitlements */,
 				E3D9AD34E03D26BB421EDAF8 /* LaunchScreen.storyboard */,
+				5117702DA743E173D8A89419 /* Assets.xcassets */,
 				6BDCAD048D3BCF40D5B65CB9 /* BillSplitApp.swift */,
 			);
 			name = BillSplit;
