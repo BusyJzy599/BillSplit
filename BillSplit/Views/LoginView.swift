@@ -9,13 +9,28 @@ struct LoginView: View {
     @State private var isSignUp = false
 
     private func quickAuth(_ email: String, _ password: String, _ name: String) {
+        authVM.isLoading = true
+        authVM.authError = nil
         Task {
             do {
                 _ = try await supabase.auth.signIn(email: email, password: password)
             } catch {
-                _ = try? await supabase.auth.signUp(email: email, password: password)
-                try? await Task.sleep(nanoseconds: 500_000_000)
-                _ = try? await supabase.auth.signIn(email: email, password: password)
+                // Sign up if user doesn't exist
+                do {
+                    let resp = try await supabase.auth.signUp(email: email, password: password)
+                    if resp.session == nil {
+                        await MainActor.run {
+                            authVM.authError = "Email confirmation required. Disable it in Supabase Auth settings."
+                            authVM.isLoading = false
+                        }
+                        return
+                    }
+                } catch {
+                    await MainActor.run {
+                        authVM.authError = error.localizedDescription
+                        authVM.isLoading = false
+                    }
+                }
             }
         }
     }
