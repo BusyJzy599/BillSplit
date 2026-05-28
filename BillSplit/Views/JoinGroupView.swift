@@ -9,7 +9,7 @@ struct JoinGroupView: View {
             ZStack {
                 Color(.systemGroupedBackground).ignoresSafeArea()
                 VStack(spacing: 24) {
-                    Spacer()
+                    Spacer(minLength: 0)
 
                     Image(systemName: "envelope.open.fill")
                         .resizable()
@@ -56,6 +56,7 @@ struct JoinGroupView: View {
 
                     Spacer()
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
             }
             .navigationTitle("加入账单组")

@@ -36,6 +36,17 @@ struct ProfileView: View {
                         .padding(.vertical, 8)
                     }
 
+                    Section("货币") {
+                        Picker("显示货币", selection: Binding(
+                            get: { CurrencySettings.shared.selectedCurrency },
+                            set: { CurrencySettings.shared.selectedCurrency = $0; CurrencySettings.shared.objectWillChange.send() }
+                        )) {
+                            ForEach(Currency.allCases, id: \.rawValue) { c in
+                                Text(c.name).tag(c.rawValue)
+                            }
+                        }
+                    }
+
                     Section {
                         Button(role: .destructive) {
                             authVM.signOut()

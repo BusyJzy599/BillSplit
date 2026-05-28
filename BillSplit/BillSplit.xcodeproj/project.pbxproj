@@ -45,6 +45,7 @@
 		BBA0AB8D5006D61D65B0D983 /* BillSplit.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 4B092AA8A92708C65481B20A /* BillSplit.entitlements */; };
 		BAB698ABFCD4445075211582 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3254049E2B5E0F849517DAE /* HomeView.swift */; };
 		F842993C38918B5AB0330E97 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D641F39662FE90BFE21D4551 /* HomeViewModel.swift */; };
+		279929E77E04687836DE1C65 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B47319A536635F9C9E0191 /* Currency.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -86,6 +87,7 @@
 		4B092AA8A92708C65481B20A /* BillSplit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BillSplit.entitlements; sourceTree = "<group>"; };
 		C3254049E2B5E0F849517DAE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		D641F39662FE90BFE21D4551 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		D1B47319A536635F9C9E0191 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				2AAEEFE21002E52EC17E1E51 /* DebtCalculator.swift */,
+				D1B47319A536635F9C9E0191 /* Currency.swift */,
 				E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0 /* ImageCompressor.swift */,
 			);
 			path = Utils;
@@ -328,6 +331,7 @@
 				C2D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7 /* RealtimeService.swift in Sources */,
 				D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8 /* StorageService.swift in Sources */,
 				E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8B9 /* ImageCompressor.swift in Sources */,
+				279929E77E04687836DE1C65 /* Currency.swift in Sources */,
 				BAB698ABFCD4445075211582 /* HomeView.swift in Sources */,
 				F842993C38918B5AB0330E97 /* HomeViewModel.swift in Sources */,
 			);

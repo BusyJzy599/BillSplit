@@ -23,7 +23,7 @@ struct SettlementRow: View {
                     Text("\(userNames[debt.fromUserId] ?? "...") → 你")
                         .font(.subheadline)
                 }
-                Text(String(format: "¥%.2f", debt.amount))
+                Text(CurrencySettings.shared.formatted(debt.amount))
                     .font(.title3)
                     .fontWeight(.bold)
             }

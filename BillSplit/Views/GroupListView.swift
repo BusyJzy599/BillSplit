@@ -33,6 +33,7 @@ struct GroupListView: View {
                         .buttonStyle(.borderedProminent)
                         Spacer()
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding()
                 } else {
                     ScrollView {

@@ -52,7 +52,7 @@ struct HomeView: View {
             GridItem(.flexible()),
             GridItem(.flexible())
         ], spacing: 12) {
-            SummaryCard(title: "总支出", value: String(format: "¥%.0f", vm.totalPaid), icon: "yensign.circle.fill", color: .orange)
+            SummaryCard(title: "总支出", value: CurrencySettings.shared.formatted(vm.totalPaid), icon: "yensign.circle.fill", color: .orange)
             SummaryCard(title: "账单数", value: "\(vm.totalBills)", icon: "doc.text.fill", color: .blue)
             SummaryCard(title: "账单组", value: "\(vm.totalGroups)", icon: "person.3.fill", color: .green)
         }
@@ -129,7 +129,7 @@ struct HomeView: View {
                             Text(item.name)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            Text(String(format: "¥%.0f", item.amount))
+                            Text(CurrencySettings.shared.formatted(item.amount))
                                 .font(.caption)
                                 .fontWeight(.medium)
                         }
@@ -161,7 +161,7 @@ struct HomeView: View {
                     Text(item.name)
                         .font(.subheadline)
                     Spacer()
-                    Text(String(format: "¥%.2f", item.amount))
+                    Text(CurrencySettings.shared.formatted(item.amount))
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     Text(String(format: "%.0f%%", vm.totalPaid > 0 ? item.amount / vm.totalPaid * 100 : 0))
@@ -246,7 +246,7 @@ struct PieChartView: View {
                     Text("总计")
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
-                    Text(String(format: "¥%.0f", total))
+                    Text(CurrencySettings.shared.formatted(total))
                         .font(.system(size: 11, weight: .bold))
                 }
             }

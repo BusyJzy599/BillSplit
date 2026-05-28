@@ -87,7 +87,7 @@ struct GroupDetailView: View {
                                             .font(.subheadline)
                                             .fontWeight(.medium)
                                         Spacer()
-                                        Text(String(format: "¥%.2f", bill.amount))
+                                        Text(CurrencySettings.shared.formatted(bill.amount))
                                             .font(.headline)
                                             .foregroundColor(.accentColor)
                                     }

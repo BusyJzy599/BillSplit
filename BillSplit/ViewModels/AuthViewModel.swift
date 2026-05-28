@@ -11,7 +11,7 @@ class AuthViewModel: ObservableObject {
             for await (_, session) in supabase.auth.authStateChanges {
                 await MainActor.run {
                     self.isLoggedIn = session != nil
-                    self.currentUserId = session?.user.id.uuidString
+                    self.currentUserId = session?.user.id.uuidString.lowercased()
                     self.isLoading = false
                 }
             }
@@ -28,7 +28,7 @@ class AuthViewModel: ObservableObject {
             if let session = try? await supabase.auth.signIn(email: email, password: password) {
                 await MainActor.run {
                     self.isLoggedIn = true
-                    self.currentUserId = session.user.id.uuidString
+                    self.currentUserId = session.user.id.uuidString.lowercased()
                     self.isLoading = false
                 }
                 return
@@ -38,7 +38,7 @@ class AuthViewModel: ObservableObject {
             if let session = try? await supabase.auth.signUp(email: email, password: password) {
                 await MainActor.run {
                     self.isLoggedIn = true
-                    self.currentUserId = session.user.id.uuidString
+                    self.currentUserId = session.user.id.uuidString.lowercased()
                     self.isLoading = false
                 }
                 return
