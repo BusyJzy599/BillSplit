@@ -83,14 +83,14 @@ struct EditProfileView: View {
         isUploading = true
 
         Task {
-            try? await supabase.from("users")
+            _ = try? await supabase.from("users")
                 .update(["display_name": displayName])
                 .eq("id", value: userId)
                 .execute()
 
             if let image = selectedImage,
                let url = try? await StorageService.shared.uploadAvatar(userId: userId, image: image) {
-                try? await supabase.from("users")
+                _ = try? await supabase.from("users")
                     .update(["avatar_url": url])
                     .eq("id", value: userId)
                     .execute()

@@ -17,7 +17,7 @@ class StorageService {
 
         return try supabase.storage
             .from(bucket)
-            .getPublicURL(filePath)
+            .getPublicURL(path: filePath)
             .absoluteString
     }
 

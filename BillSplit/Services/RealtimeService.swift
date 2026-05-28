@@ -12,11 +12,11 @@ class RealtimeService {
         guard channels[channelId] == nil else { return }
 
         let task = Task {
-            let channel = await supabase.channel(channelId)
-            await MainActor.run { channels[channelId] = channel }
+            let channel = supabase.channel(channelId)
+            channels[channelId] = channel
 
-            let changes = await channel.postgresChange(AnyAction.self, schema: "public", table: "bills")
-            await channel.subscribe()
+            let changes = channel.postgresChange(AnyAction.self, schema: "public", table: "bills")
+            try? await channel.subscribeWithError()
 
             for await _ in changes {
                 await MainActor.run { onChange() }
@@ -30,11 +30,11 @@ class RealtimeService {
         guard channels[channelId] == nil else { return }
 
         let task = Task {
-            let channel = await supabase.channel(channelId)
-            await MainActor.run { channels[channelId] = channel }
+            let channel = supabase.channel(channelId)
+            channels[channelId] = channel
 
-            let changes = await channel.postgresChange(AnyAction.self, schema: "public", table: "settlements")
-            await channel.subscribe()
+            let changes = channel.postgresChange(AnyAction.self, schema: "public", table: "settlements")
+            try? await channel.subscribeWithError()
 
             for await _ in changes {
                 await MainActor.run { onChange() }

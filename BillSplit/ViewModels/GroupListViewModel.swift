@@ -39,7 +39,7 @@ class GroupListViewModel: ObservableObject {
         Task {
             do {
                 _ = try await GroupService.shared.createGroup(name: name, creatorId: userId)
-                await loadGroups(userId: userId)
+                loadGroups(userId: userId)
             } catch {
                 print("Create group failed: \(error)")
             }
