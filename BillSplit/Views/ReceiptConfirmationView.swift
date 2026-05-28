@@ -71,11 +71,11 @@ struct ReceiptConfirmationView: View {
                 }
             }
 
+            if let err = submitError { Section { Text(err).foregroundColor(.red).font(.caption) } }
+
             Section {
-                Button("确认生成账单") {
-                    submitBills()
-                }
-                .disabled(items.isEmpty)
+                Button(isSubmitting ? "Creating..." : "Generate Bills") { submitBills() }
+                    .disabled(items.isEmpty || isSubmitting)
             }
         }
         .navigationTitle("收据识别")
@@ -208,37 +208,35 @@ struct ReceiptConfirmationView: View {
         }
     }
 
+    @State private var isSubmitting = false
+    @State private var submitError: String?
+
     private func submitBills() {
-        let sharedItems = items.filter { $0.isShared }
-        let personalItems = items.filter { !$0.isShared }
+        isSubmitting = true; submitError = nil
+        let validItems = items.filter { ($0.amount ?? 0) > 0 }
+        let sharedItems = validItems.filter { $0.isShared }
+        let personalItems = validItems.filter { !$0.isShared }
 
         Task {
-            if !sharedItems.isEmpty {
-                let totalShared = sharedItems.reduce(0.0) { $0 + ($1.amount ?? 0) }
-                let description = sharedItems.map { $0.description }.joined(separator: "、")
-                try? await BillService.shared.createBill(
-                    groupId: groupId,
-                    payerId: payerId,
-                    amount: totalShared,
-                    description: description,
-                    participantIds: memberIds
-                )
-            }
+            do {
+                if !sharedItems.isEmpty {
+                    let totalShared = sharedItems.reduce(0.0) { $0 + ($1.amount ?? 0) }
+                    let description = sharedItems.map { $0.description }.joined(separator: ", ")
+                    try await BillService.shared.createBill(
+                        groupId: groupId, payerId: payerId, amount: totalShared,
+                        description: description, participantIds: memberIds)
+                }
 
-            for item in personalItems {
-                let userId = item.assignedToUserId ?? memberIds.first ?? ""
-                try? await BillService.shared.createBill(
-                    groupId: groupId,
-                    payerId: payerId,
-                    amount: item.amount ?? 0,
-                    description: item.description,
-                    participantIds: [userId]
-                )
-            }
+                for item in personalItems {
+                    let userId = item.assignedToUserId ?? memberIds.first ?? ""
+                    try await BillService.shared.createBill(
+                        groupId: groupId, payerId: payerId, amount: item.amount ?? 0,
+                        description: item.description, participantIds: [userId])
+                }
 
-            await MainActor.run {
-                dismiss()
-                onDismiss()
+                await MainActor.run { dismiss(); onDismiss() }
+            } catch {
+                await MainActor.run { submitError = error.localizedDescription; isSubmitting = false }
             }
         }
     }
