@@ -42,14 +42,6 @@ struct ProfileView: View {
                         }
                     }
 
-                    Section("DeepSeek API Key (for OCR AI)") {
-                        SecureField("sk-...", text: Binding(
-                            get: { UserDefaults.standard.string(forKey: "deepseek_api_key") ?? "" },
-                            set: { UserDefaults.standard.set($0, forKey: "deepseek_api_key") }
-                        ))
-                        .font(.system(.caption, design: .monospaced))
-                    }
-
                     Section(loc.languageLabel) {
                         Picker(loc.languageLabel, selection: Binding(
                             get: { loc.appLocale },
